@@ -10,11 +10,11 @@
 
 ## MEMORY MANAGEMENT 
 
-As a text processing language, memory management becomes a critical aspect. But unlike C, Sift has automatic memory management.
+As a text processing language, memory management is critical in Sift. This is why, unlike a language like C, Sift includes automatic memory management as a language feature.
 With our automatic memory management, it's faster to develop programs without being bothered about the low-level memory details. 
 It also prevents the program from memory leaks and dangling pointers.
 
-Sift uses generational garbage collection for automatic memory management. Sift supports three generation of in total. An object
+Sift uses generational garbage collection for automatic memory management and supports three generation. An object
 moves into an older generation whenever it survives a garbage collection process on its current generation.
 
 The garbage collector keeps track of all objects in the memory. When a new object is created, it starts its life in the first generation.
@@ -23,23 +23,24 @@ a collection process. For objects that survive this process, they are moved into
 
 ### Using The Garbage Collector Module
 
+Garbage collection is available to Sift users in the form of an importable module gc with a specific set of functionality.
 Programmers can change this default behavior of Garbage collection depending upon their available resources and requirement of their program.
 
 You can check the configured thresholds of your garbage collector with the get_threshold() method:
 
 ```
 >>> import gc
->>> gc.get_threshold()
+>>> gc.get_threshold();
 (1000, 300, 300)
 ```
 
-By default, Sift has a threshold of 1000 objects for the first generation, 300 each for the second and third generation.
+By default, Sift has a threshold of 1000 objects for the first generation and 300 each for the second and third generations.
 
 Check the number of objects in each generation with get_count() method:
 
 ```
 >>> import gc
->>> gc.get_count()
+>>> gc.get_count();
 (572, 222, 109)
 ```
 
@@ -49,19 +50,19 @@ Trigger the garbage collection process manually
 
 ```
 >>> import gc
->>> gc.get_count()
+>>> gc.get_count();
 (572, 222, 109)
->>> gc.collect()
+>>> gc.collect();
 ```
 
 User can set thresholds for triggering garbage collection by using the set_threshold() method in the gc module.
 
 ```
 >>> import gc
->>> gc.get_threshold()
+>>> gc.get_threshold();
 (1000, 300, 300)
->>> gc.set_threshold(2000, 30, 30)
->>> gc.get_threshold()
+>>> gc.set_threshold(2000, 30, 30);
+>>> gc.get_threshold();
 (2000, 30, 30)
 ```
 
@@ -70,4 +71,4 @@ performance of your program but at the expense of keeping dead objects around lo
 
 ## NLP FEATURES 
 
-## GRAMMER
+## GRAMMAR
