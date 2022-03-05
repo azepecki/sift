@@ -177,6 +177,12 @@ list type stores a doubly-linked list that can change size dynamically. list ele
 
 `list<sym> test = ["test1", "test2", "test3"];`
 
+**tup**
+
+tup type stores elements that may be from different data types. tup may contain no elements ("empty") or many elements. 
+
+`tup test = (0, 'a', "test");`
+
 **set**
 
 set type stores an unordered collection of declared primitive or non-primitive elements. A set may not contain duplicate elements. 
