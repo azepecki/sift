@@ -25,22 +25,22 @@ A literal expression is a literal(int,str,sym,..etc) followed by a semicolon.
 ### List expressions 
 A list expression can contain zero "empty" or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type. 
 **Syntax:**
-`list <str> x = [];`
-`list <str> x = ["hello", " world "];`
-`list <int> x = [1,2,3];`
+`list<str> x = [];`
+`list<str> x = ["hello", " world "];`
+`list<int> x = [1,2,3];`
 
 ### Array expressions 
 An array expression can contain zero "empty" or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type with a fixed size.  
 **Syntax:**
-`arr <str> x = [];`
-`arr <str> x = ["hello", " world "];`
-`arr <int> x = [1,2,3];`
+`arr<str> x = [];`
+`arr<str> x = ["hello", " world "];`
+`arr<int> x = [1,2,3];`
 
 ### Dictionary expressions
 A dictionary expression contains a series of keys and values enclosed in curly brackets. A colon is used to separate the key and value, and a comma is used to separate key and value pairs. Keys cannot be duplicated; the duplicated keys will be overwritten. 
 **Syntax:**
 ```
-dict <str, str> x = 
+dict<str, str> x = 
 {
 "1":“hello”,
 "2":“world”
@@ -50,13 +50,13 @@ dict <str, str> x =
 A set expression is written by enclosing zero or more elements in parentheses; with a comma that separates the elements. 
 The elements inside the list should have the same data type, in no particular order. Sets cannot contain duplicate elements. 
 **Syntax:**
-`set <str> x = ("hello", " world ");`
-`set <str> x = ( );`
+`set<str> x = ("hello", " world ");`
+`set<str> x = ( );`
 
 ### Tuple expressions
 A tuple expression contains elements from different data types. The tuple can contain zero elements "empty" or many elements. 
 **Syntax:** 
-`(1,’a’,”abc”)`
+`tup test = (1,’a’,”abc”)`
 
 ### Control flow 
 ##### Conditions and If Statements
