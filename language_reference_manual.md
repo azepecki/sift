@@ -59,6 +59,7 @@ break
 continue
 lambda
 default
+tup
 ```
 
 ### Literals
