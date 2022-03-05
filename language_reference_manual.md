@@ -31,16 +31,18 @@ A literal expression is a literal(int,str,sym,..etc) followed by a semicolon.
 A list expression can contain zero "empty" or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type. 
 
 **Syntax:**
-`list<str> x = [];`
-`list<str> x = ["hello", " world "];`
+
+`list<str> x = [];`<br />
+`list<str> x = ["hello", " world "];`<br />
 `list<int> x = [1,2,3];`
 
 ### Array expressions 
 An array expression can contain zero "empty" or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type with a fixed size.  
 
 **Syntax:**
-`arr<str> x = [];`
-`arr<str> x = ["hello", " world "];`
+
+`arr<str> x = [];`<br />
+`arr<str> x = ["hello", " world "];`<br />
 `arr<int> x = [1,2,3];`
 
 ### Dictionary expressions
@@ -60,13 +62,15 @@ A set expression is written by enclosing zero or more elements in parentheses; w
 The elements inside the list should have the same data type, in no particular order. Sets cannot contain duplicate elements. 
 
 **Syntax:**
-`set<str> x = ("hello", " world ");`
+
+`set<str> x = ("hello", " world ");`<br />
 `set<str> x = ( );`
 
 ### Tuple expressions
 A tuple expression contains elements from different data types. The tuple can contain zero elements "empty" or many elements.
 
 **Syntax:** 
+
 `tup test = (1,’a’,”abc”)`
 
 ### Control flow 
