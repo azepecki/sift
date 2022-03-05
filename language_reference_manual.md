@@ -1,33 +1,154 @@
 # LANGUAGE REFERENCE MANUAL: SIFT
 
-## LEXICAL CONVENTIONS
+## Introduction
 
-## TYPES
+Sift is a programming language designed to optimize text processing and filtering for natural language processing (NLP) applications. \par
+Sift draws inspiration from the elegance of C’s syntax while adding its own unique flair. This imperative language is designed for users with some programming experience as knowledge of C or a similar language will allow users to instantly recognize and understand the basic structure of Sift. However, it is the text-specific processing tools that make Sift stand out as the best language to use for NLP purposes; piping, filtering, and basic tokenization functionality give users the tools they need to seamlessly integrate Sift into their existing or future NLP workflows.
+
+## Lexical Conventions
+
+## Types
 
 ## Operators 
-### Arithmetic Operators
-The binary arithmetic operators are `+, -, *, /, % `.
-Integer division truncates any fractional part.
-The binary `+` and `-` operators have the same precedence, which is lower than the
-precedence of `*`,`/`,`%` . Arithmetic operators associate left to right.
+### Multiplicative Operators
 
-### Example Syntax
+The multiplicative operators are `*, /, % ` and group from left to right.
+
+#### expression * expression
+
+The binary * operator indicates multiplication. If both operands are int or char, the result is int; if one is
+int or char and one float, the former is converted to float, and the result is float; if both
+are float, the result is float. No other combinations are allowed.
 
 ```
-int x = 5 * (16 - 6);
+int x = 10;
+int y = 8;
+int z = x * y;
+```
+
+#### expression / expression
+The binary / operator indicates division. The same type considerations as for multiplication apply.
+
+```
+int x = 10;
+int y = 8;
+int z = x / y;
+```
+
+#### expression % expression
+The binary % operator yields the remainder from the division of the first expression by the second. Both operands
+must be int or char, and the result is int. In the current implementation, the remainder has the same sign as the
+dividend.
+
+```
+int x = 10;
+int y = 8;
+int z = x % y;
+```
+
+### Additive Operators
+
+The additive operators + and − group left-to-right.
+
+#### expression + expression
+
+The result is the sum of the expressions. If both operands are int or char, the result is int. If both are float, the result is float. If one is char or int and one is float, the former is converted to
+float and the result is float.
+No other type combinations are allowed.
+
+```
+int x = 10;
+int y = 8;
+int z = x + y;
+```
+
+#### expression - expression
+The result is the difference of the operands. If both operands are int, char, or float, the same type
+considerations as for + apply.
+
+```
+int x = 10;
+int y = 8;
+int z = x + y;
 ```
 
 ### Assignment Operators
-The operator `=` assigns an expression to a variable. It assigns value on right of operator to the left.
 
-### Example Syntax
+#### lvalue = expression
+The operator `=` assigns an expression to a variable. It assigns value on right of operator to the left.
+The value of the expression replaces that of the object referred to by the lvalue. The operands need not have the
+same type, but both must be int, char, float.
 
 ```
 int x = 5;
 ```
 
-### Comaparision Operators
-The relational operators are `<`, `<=`, `>`, `>=` . They all have the same precedence. 
+#### lvalue =+ expression
+
+```
+int x = 5;
+int y =+ x;
+```
+
+#### lvalue =− expression
+
+```
+int x = 5;
+int y =- x;
+```
+
+#### lvalue =* expression
+
+```
+int x = 5;
+int y =* x;
+```
+
+#### lvalue =/ expression
+
+```
+int x = 5;
+int y =/ x;
+```
+
+#### lvalue =% expression
+
+```
+int x = 5;
+int y =% x;
+```
+
+The behavior of an expression of the form ‘‘E1 =op E2’’ may be inferred by taking it as equivalent to
+‘‘E1 = E1 op E2’’; however, E1 is evaluated only once.
+
+### Relational Operators
+The relational operators are `<`, `<=`, `>`, `>=` . They all have the same precedence. They group from left to right.
+
+#### expression < expression
+
+```
+bool less = 5 < 6;
+```
+#### expression > expression
+
+```
+bool greater = 5 > 6;
+```
+
+#### expression <= expression
+
+```
+bool less_than_equal = 5 < 6;
+```
+
+#### expression >= expression
+
+```
+bool greater_than_equal = 5 < 6;
+```
+
+The operators < (less than), > (greater than), <= (less than or equal to) and >= (greater than or equal to) all yield 0
+if the specified relation is false and 1 if it is true. Operand conversion is exactly the same as for the + operator.
 
 ### Pipe Operator
 
@@ -36,32 +157,74 @@ There is also a pipe operator much like pipe in ocaml which applies a function t
 ### Example Syntax
 
 ```
-string x = "hellopeople"
-string s = f | g | x
+str x = "hellopeople";
+str s = f | g | x;
 ```
+
+### Equality Operators
+
+#### expression == expression
+
+```
+str hello = "hello";
+str world = "world";
+bool i_am_false = hello == world;
+```
+#### expression != expression
+
+The == (equal to) and the != (not equal to) operators are exactly analogous to the relational operators except for
+their lower precedence. (Thus `a<b == c<d` is 1 whenever a<b and c<d have the same truth-value).
 
 ### Example Syntax
 
 ```
-bool x = (1 == 1);
+str hello = "hello";
+str world = "world";
+bool i_am_true = hello != world;
 ```
 
 ### Logical Operators
 The logical operators are `&&`, `||`, `!`.
 
-### Example Syntax
+#### expression && expression
+The && operator returns 1 if both its operands are non-zero, 0 otherwise. && guarantees left-to-right
+evaluation; moreover the second operand is not evaluated if the first operand is 0.
+The operands need not have the same type, but each must have one of the fundamental types.
 
 ```
-if(x == y || x == z)
+int x = 5;
+int y = 5;
+int z = 5;
 
-if(x == y && x == z)
-
-if(!x)
+bool i_am_true = (x == y && x == z);
 ```
 
-## STATEMENTS & EXPRESSIONS
+#### expression || expression
 
-## MEMORY MANAGEMENT 
+The || operator returns 1 if either of its operands is non-zero, and 0 otherwise. , || guarantees left-to-right
+evaluation; moreover, the second operand is not evaluated if the value of the first operand is non-zero.
+The operands need not have the same type, but each must have one of the fundamental types.
+
+```
+int x = 5;
+int y = 5;
+int z = 10;
+
+bool i_am_true = (x == y || x == z);
+```
+
+#### !expression
+
+The ! operator returns 1 if operand is zero, and 0 otherwise.
+
+```
+bool i_am_true = true;
+bool i_am_false = !i_am_true;
+```
+
+## Statements & Expressions
+
+## Memory Management 
 
 As a text processing language, memory management is critical in Sift. This is why, unlike a language like C, Sift includes automatic memory management as a language feature.
 With our automatic memory management, it's faster to develop programs without being bothered about the low-level memory details. 
@@ -122,6 +285,4 @@ User can set thresholds for triggering garbage collection by using the set_thres
 Increasing the threshold will reduce the frequency at which the garbage collector runs. This will improve the
 performance of your program but at the expense of keeping dead objects around longer.
 
-## NLP FEATURES 
-
-## GRAMMAR
+## NLP Features
