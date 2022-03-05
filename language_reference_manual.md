@@ -35,7 +35,7 @@ There is also a pipe operator much like pipe in ocaml which applies a function t
 
 ```
 string x = "hellopeople"
-string s = f | g | x
+string s = f |> g |> x
 ```
 
 ### Example Syntax
