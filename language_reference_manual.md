@@ -89,7 +89,7 @@ A str literal is a sequence of chars surrounded by double quotes. The valid set 
 
 **sym literal**
 
-A sym literal is a sequence of chars surrounded by double quotes. The valid set includes anything that can be represented as a char literal. 
+A sym literal is a sequence of chars surrounded by double quotes. The valid set includes anything that can be represented as a char literal. sym literals are final and their values cannot be modified. 
 
 ### Operators
 
@@ -148,6 +148,8 @@ int type stores whole number value in 32 bits
 **float**
 
 float type stores fractional number value in 32 bits
+
+`float x = 1.0;`
 
 **str**
 
