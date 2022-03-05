@@ -58,6 +58,7 @@ case
 break
 continue
 lambda
+default
 ```
 
 ### Literals
