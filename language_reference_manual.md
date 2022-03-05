@@ -4,7 +4,60 @@
 
 ## TYPES
 
-## OPERATORS 
+## Operators 
+### Arithmetic Operators
+The binary arithmetic operators are `+, -, *, /, % `.
+Integer division truncates any fractional part.
+The binary `+` and `-` operators have the same precedence, which is lower than the
+precedence of `*`,`/`,`%` . Arithmetic operators associate left to right.
+
+### Example Syntax
+
+```
+int x = 5 * (16 - 6);
+```
+
+### Assignment Operators
+The operator `=` assigns an expression to a variable. It assigns value on right of operator to the left.
+
+### Example Syntax
+
+```
+int x = 5;
+```
+
+### Comaparision Operators
+The relational operators are `<`, `<=`, `>`, `>=` . They all have the same precedence. 
+
+### Pipe Operator
+
+There is also a pipe operator much like pipe in ocaml which applies a function to another.
+
+### Example Syntax
+
+```
+string x = "hellopeople"
+string s = f | g | x
+```
+
+### Example Syntax
+
+```
+bool x = (1 == 1);
+```
+
+### Logical Operators
+The logical operators are `&&`, `||`, `!`.
+
+### Example Syntax
+
+```
+if(x == y || x == z)
+
+if(x == y && x == z)
+
+if(!x)
+```
 
 ## STATEMENTS & EXPRESSIONS
 
