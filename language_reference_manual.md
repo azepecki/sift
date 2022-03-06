@@ -58,6 +58,8 @@ case
 break
 continue
 lambda
+default
+tup
 ```
 
 ### Literals
@@ -89,7 +91,7 @@ A str literal is a sequence of chars surrounded by double quotes. The valid set 
 
 **sym literal**
 
-A sym literal is a sequence of chars surrounded by double quotes. The valid set includes anything that can be represented as a char literal. 
+A sym literal is a sequence of chars surrounded by double quotes. The valid set includes anything that can be represented as a char literal. sym literals are final and their values cannot be modified. 
 
 ### Operators
 
@@ -149,6 +151,8 @@ int type stores whole number value in 32 bits
 
 float type stores fractional number value in 32 bits
 
+`float x = 1.0;`
+
 **str**
 
 str type stores a sequence of chars in UTF-8 format. Signified by double quotation marks. str types are **mutable**. 
@@ -174,6 +178,12 @@ arr type stores a fixed-size array that contains a decalared primitive or non-pr
 list type stores a doubly-linked list that can change size dynamically. list elements are a declared primitive or non-primitve data type. 
 
 `list<sym> test = ["test1", "test2", "test3"];`
+
+**tup**
+
+tup type stores elements that may be from different data types. tup may contain no elements ("empty") or many elements. 
+
+`tup test = (0, 'a', "test");`
 
 **set**
 
