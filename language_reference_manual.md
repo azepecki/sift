@@ -256,9 +256,9 @@ sym b = (sym) a;
 
 The multiplicative operators are `*, /, % ` and group from left to right.
 
-####  4.1.1. <a name='expressionexpression'></a>expression * expression
+####  4.1.1. <a name='expressionexpression'></a>expression `*` expression
 
-The binary * operator indicates multiplication. If both operands are int or char, the result is int; if one is
+The binary `*` operator indicates multiplication. If both operands are int or char, the result is int; if one is
 int or char and one float, the former is converted to float, and the result is float; if both
 are float, the result is float. No other combinations are allowed.
 
@@ -268,8 +268,8 @@ int y = 8;
 int z = x * y;
 ```
 
-####  4.1.2. <a name='expressionexpression-1'></a>expression / expression
-The binary / operator indicates division. The same type considerations as for multiplication apply.
+####  4.1.2. <a name='expressionexpression-1'></a>expression `/` expression
+The binary `/` operator indicates division. The same type considerations as for multiplication apply.
 
 ```js
 int x = 10;
@@ -277,8 +277,8 @@ int y = 8;
 int z = x / y;
 ```
 
-####  4.1.3. <a name='expressionexpression-1'></a>expression % expression
-The binary % operator yields the remainder from the division of the first expression by the second. Both operands
+####  4.1.3. <a name='expressionexpression-1'></a>expression `%` expression
+The binary `%` operator yields the remainder from the division of the first expression by the second. Both operands
 must be int or char, and the result is int. In the current implementation, the remainder has the same sign as the
 dividend.
 
@@ -290,9 +290,9 @@ int z = x % y;
 
 ###  4.2. <a name='AdditiveOperators'></a>Additive Operators
 
-The additive operators + and − group left-to-right.
+The additive operators `+` and `−` group left-to-right.
 
-####  4.2.1. <a name='expressionexpression-1'></a>expression + expression
+####  4.2.1. <a name='expressionexpression-1'></a>expression `+` expression
 
 The result is the sum of the expressions. If both operands are int or char, the result is int. If both are float, the result is float. If one is char or int and one is float, the former is converted to
 float and the result is float.
@@ -304,7 +304,7 @@ int y = 8;
 int z = x + y;
 ```
 
-####  4.2.2. <a name='expression-expression'></a>expression - expression
+####  4.2.2. <a name='expression-expression'></a>expression `-` expression
 The result is the difference of the operands. If both operands are int, char, or float, the same type
 considerations as for + apply.
 
@@ -316,7 +316,7 @@ int z = x + y;
 
 ###  4.3. <a name='AssignmentOperators'></a>Assignment Operators
 
-####  4.3.1. <a name='lvalueexpression'></a>lvalue = expression
+####  4.3.1. <a name='lvalueexpression'></a>lvalue `=` expression
 The operator `=` assigns an expression to a variable. It assigns value on right of operator to the left.
 The value of the expression replaces that of the object referred to by the lvalue. The operands need not have the
 same type, but both must be int, char, float.
@@ -325,76 +325,76 @@ same type, but both must be int, char, float.
 int x = 5;
 ```
 
-####  4.3.2. <a name='lvalueexpression-1'></a>lvalue =+ expression
+####  4.3.2. <a name='lvalueexpression-1'></a>lvalue `=+` expression
 
 ```js
 int x = 5;
 int y =+ x;
 ```
 
-####  4.3.3. <a name='lvalueexpression-1'></a>lvalue =− expression
+####  4.3.3. <a name='lvalueexpression-1'></a>lvalue `=−` expression
 
 ```js
 int x = 5;
 int y =- x;
 ```
 
-####  4.3.4. <a name='lvalueexpression-1'></a>lvalue =* expression
+####  4.3.4. <a name='lvalueexpression-1'></a>lvalue `=*` expression
 
 ```js
 int x = 5;
 int y =* x;
 ```
 
-####  4.3.5. <a name='lvalueexpression-1'></a>lvalue =/ expression
+####  4.3.5. <a name='lvalueexpression-1'></a>lvalue `=/` expression
 
 ```js
 int x = 5;
 int y =/ x;
 ```
 
-####  4.3.6. <a name='lvalueexpression-1'></a>lvalue =% expression
+####  4.3.6. <a name='lvalueexpression-1'></a>lvalue `=%` expression
 
 ```js
 int x = 5;
 int y =% x;
 ```
 
-The behavior of an expression of the form ‘‘E1 =op E2’’ may be inferred by taking it as equivalent to
-‘‘E1 = E1 op E2’’; however, E1 is evaluated only once.
+The behavior of an expression of the form `E1 =op E2` may be inferred by taking it as equivalent to
+`E1 = E1 op E2`; however, E1 is evaluated only once.
 
 ###  4.4. <a name='RelationalOperators'></a>Relational Operators
 The relational operators are `<`, `<=`, `>`, `>=` . They all have the same precedence. They group from left to right.
 
-####  4.4.1. <a name='expressionexpression-1'></a>expression < expression
+####  4.4.1. <a name='expressionexpression-1'></a>expression `<` expression
 
 ```js
 bool less = 5 < 6;
 ```
-####  4.4.2. <a name='expressionexpression-1'></a>expression > expression
+####  4.4.2. <a name='expressionexpression-1'></a>expression `>` expression
 
 ```js
 bool greater = 5 > 6;
 ```
 
-####  4.4.3. <a name='expressionexpression-1'></a>expression <= expression
+####  4.4.3. <a name='expressionexpression-1'></a>expression `<=` expression
 
 ```js
 bool less_than_equal = 5 < 6;
 ```
 
-####  4.4.4. <a name='expressionexpression-1'></a>expression >= expression
+####  4.4.4. <a name='expressionexpression-1'></a>expression `>=` expression
 
 ```js
 bool greater_than_equal = 5 < 6;
 ```
 
-The operators < (less than), > (greater than), <= (less than or equal to) and >= (greater than or equal to) all yield 0
-if the specified relation is false and 1 if it is true. Operand conversion is exactly the same as for the + operator.
+The operators `<` (less than), `>` (greater than), `<=` (less than or equal to) and `>=` (greater than or equal to) all yield 0
+if the specified relation is false and 1 if it is true. Operand conversion is exactly the same as for the `+` operator.
 
-###  4.5. <a name='PipeOperator'></a>Pipe Operator
+###  4.5. <a name='PipeOperator'></a>Pipe Operator `|>`
 
-There is also a pipe operator much like pipe in ocaml which applies a function to another.
+There is also a pipe operator `|>` much like pipe in ocaml which applies a function to another.
 
 #### Example Syntax
 
@@ -405,7 +405,7 @@ str s = f |> g |> x;
 
 ###  4.7. <a name='EqualityOperators'></a>Equality Operators
 
-####  4.7.1. <a name='expressionexpression-1'></a>expression == expression
+####  4.7.1. <a name='expressionexpression-1'></a>expression `==` expression
 
 ```js
 str hello = "hello";
@@ -414,10 +414,10 @@ bool i_am_false = hello == world;
 string x = "hellopeople"
 string s = f |> g |> x
 ```
-####  4.7.2. <a name='expressionexpression-1'></a>expression != expression
+####  4.7.2. <a name='expressionexpression-1'></a>expression `!=` expression
 
-The == (equal to) and the != (not equal to) operators are exactly analogous to the relational operators except for
-their lower precedence. (Thus `a<b == c<d` is 1 whenever a<b and c<d have the same truth-value).
+The `==` (equal to) and the `!=` (not equal to) operators are exactly analogous to the relational operators except for
+their lower precedence. (Thus `a<b == c<d` is 1 whenever `a<b` and `c<d` have the same truth-value).
 
 ###  4.8. <a name='ExampleSyntax-1'></a>Example Syntax
 
@@ -430,8 +430,8 @@ bool i_am_true = hello != world;
 ###  4.9. <a name='LogicalOperators'></a>Logical Operators
 The logical operators are `&&`, `||`, `!`.
 
-####  4.9.1. <a name='expressionexpression-1'></a>expression && expression
-The && operator returns 1 if both its operands are non-zero, 0 otherwise. && guarantees left-to-right
+####  4.9.1. <a name='expressionexpression-1'></a>expression `&&` expression
+The `&&` operator returns 1 if both its operands are non-zero, 0 otherwise. && guarantees left-to-right
 evaluation; moreover the second operand is not evaluated if the first operand is 0.
 The operands need not have the same type, but each must have one of the fundamental types.
 
@@ -443,9 +443,9 @@ int z = 5;
 bool i_am_true = (x == y && x == z);
 ```
 
-####  4.9.2. <a name='expressionexpression-1'></a>expression || expression
+####  4.9.2. <a name='expressionexpression-1'></a>expression `||` expression
 
-The || operator returns 1 if either of its operands is non-zero, and 0 otherwise. , || guarantees left-to-right
+The `||` operator returns 1 if either of its operands is non-zero, and 0 otherwise. , `||` guarantees left-to-right
 evaluation; moreover, the second operand is not evaluated if the value of the first operand is non-zero.
 The operands need not have the same type, but each must have one of the fundamental types.
 
@@ -457,9 +457,9 @@ int z = 10;
 bool i_am_true = (x == y || x == z);
 ```
 
-####  4.9.3. <a name='expression'></a>!expression
+####  4.9.3. <a name='expression'></a>`!expression`
 
-The ! operator returns 1 if operand is zero, and 0 otherwise.
+The `!` operator returns 1 if operand is zero, and 0 otherwise.
 
 ```js
 bool i_am_true = true;
@@ -477,7 +477,7 @@ In sift, variables are declared by stating their data types followed by variable
 `str client = “David”;`
 
 ###  5.2. <a name='Literalexpressions'></a>Literal expressions
-A literal expression is a literal(int,str,sym,..etc) followed by a semicolon. 
+A literal expression is a literal (i.e.: int,str,sym) followed by a semicolon. 
 
 **Syntax:**
 
@@ -487,8 +487,8 @@ A literal expression is a literal(int,str,sym,..etc) followed by a semicolon.
 `'a';`<br />
 `true;`
 
-###  5.3. <a name='Listexpressions'></a>List expressions 
-A list expression can contain zero "empty" or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type. 
+###  5.3. <a name='Listexpressions'></a>List xpressions 
+A list expression can contain zero ("empty") or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type. 
 
 **Syntax:**
 
@@ -497,7 +497,7 @@ A list expression can contain zero "empty" or more values; the values are placed
 `list<int> x = [1,2,3];`
 
 ###  5.4. <a name='Arrayexpressions'></a>Array expressions 
-An array expression can contain zero "empty" or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type with a fixed size.  
+An array expression can contain zero ("empty") or more values; the values are placed in a comma-separated list inside brackets. The values inside the list should have the same data type with a fixed size.  
 
 **Syntax:**
 
@@ -527,7 +527,7 @@ The elements inside the list should have the same data type, in no particular or
 `set<str> x = ( );`
 
 ###  5.7. <a name='Tupleexpressions'></a>Tuple expressions
-A tuple expression contains elements from different data types. The tuple can contain zero elements "empty" or many elements.
+A tuple expression contains elements from different data types. The tuple can contain zero elements ("empty") or many elements.
 
 **Syntax:** 
 
@@ -538,8 +538,8 @@ A tuple expression contains elements from different data types. The tuple can co
 
 **If/else**
 
-The **if** statement takes a conditional expression and executes the consequent block - enclosed in curly brackets -  if the expression evaluates to true. The **if** statement can have an optional **else** section that executes its consequent block if the conditional expression evaluates to false. 
-The **else if** can add another condition to evaluate; if the conditional expression is true, the consequent block will get executed. And the optional **else** statement will be skipped. If the **else if** conditional expression evaluates to false, then the optional else section get executed. 
+The `if` statement takes a conditional expression and executes the consequent block - enclosed in curly brackets -  if the expression evaluates to true. The `if` statement can have an optional `else` section that executes its consequent block if the conditional expression evaluates to false. 
+The `else if` can add another condition to evaluate; if the conditional expression is true, the consequent block will get executed. And the optional `else` statement will be skipped. If the `else if` conditional expression evaluates to false, then the optional else section get executed. 
 The statement in each block must evaluate to the same unit type. 
  
 **Syntax:** 
@@ -560,9 +560,9 @@ else
 
 **Switch**
 
-To specify many alternatives, we use **switch**. 
-**switch** takes an expression inside parentheses, and compares the value of the expression with the values of each case, if there is a match, the associated block of code is executed. If there is no case match, the switch runs the **default** section "if any". 
-In **switch**, each **case** keyword is followed by a label/value to be matched to, and a colon followed by a code block to be excuted if the case label matches the expression value. 
+To specify many alternatives, we use `switch`. 
+`switch` takes an expression inside parentheses, and compares the value of the expression with the values of each case, if there is a match, the associated block of code is executed. If there is no case match, the switch runs the `default` section ("if any"). 
+In `switch`, each `case` keyword is followed by a label/value to be matched to, and a colon followed by a code block to be excuted if the case label matches the expression value. 
 
 **Syntax:** 
 ```js
@@ -576,7 +576,7 @@ default:
 }
 ```
 ####  5.8.2. <a name='Forloops'></a>For loops 
-In Sift for loops are used to loop through arrays. A loop takes three statements separated by a semicolon. The first statement is the initialization statement, the second statement is a test expression, and the third statement is an update statement. In each iteration, the test expression is tested; if it's evaluated to true, the consequent block get executed, and the update expression is updated. However, if it's evaluated to false, the for loop is terminated.
+In Sift `for` loops are used to loop through arrays. A loop takes three statements separated by a semicolon. The first statement is the initialization statement, the second statement is a test expression, and the third statement is an update statement. In each iteration, the test expression is tested; if it's evaluated to true, the consequent block get executed, and the update expression is updated. However, if it's evaluated to false, the `for` loop is terminated.
 
 **Syntax:** 
 ```js
@@ -588,7 +588,7 @@ for (statement1; statement2; statement3)
 ```
 ####  5.8.3. <a name='While'></a>While 
 
-While loop evaluates the conditional value inside the parentheses, if it's evaluated to true, the consequent block gets executed. The conditional value is tested again; if it's evaluated to false the while loop is terminated; otherwise, the consequent block gets executed again. 
+`while` loops evaluate the conditional value inside the parentheses; if it's evaluated to true, the consequent block gets executed. The conditional value is tested again: if it's evaluated to false the `while` loop is terminated; otherwise, the consequent block gets executed again. 
 
 ```js
 while (condition) 
@@ -599,12 +599,12 @@ while (condition)
 
 ####  5.8.4. <a name='BreakContinue'></a>Break & Continue
 
-**break** and **continue** expressions are used in loops to alter control flow.
-**break** is used to terminate the execution of a block of code. And the **continue** expression terminates the current iteration and cause the next iteration of the loop to run.
+`break` and `continue` expressions are used in loops to alter control flow.
+`break` is used to terminate the execution of a block of code. And the `continue` expression terminates the current iteration and cause the next iteration of the loop to run.
 
 ####  5.8.5. <a name='FunctionCalls'></a>Function Calls 
 
-In Sift, functions are declared with the keyword **def**. The function should have a name and a consequent block of code to be executed when the function is called.
+In Sift, functions are declared with the keyword `def`. The function should have a name and a consequent block of code to be executed when the function is called.
 A function can take zero, one or more arguments and return an expression of a certain type; the retuned type should be declared in the function header. 
 
 **Syntax:**
@@ -722,7 +722,7 @@ The ```match``` method gets all the substrings in the input ```str``` or ```sym`
 
 There is a ```str``` variant and a ```sym``` variant:
 
-* **list\<str\> match(str regular_expression, str text)**
+* `list\<str\> match(str regular_expression, str text)`
 
 ```js
 >>> import regex;
@@ -732,7 +732,7 @@ There is a ```str``` variant and a ```sym``` variant:
 ["wiiiiiiiiiild", "wild", "mild"]
 ```
 
-* **list\<sym\> match(str regular_expression, sym text)**
+* `list\<sym\> match(str regular_expression, sym text)`
 
 ```js
 >>> import regex;
@@ -748,7 +748,7 @@ The ```test``` method checks if a substring exists in the input ```str``` or ```
 
 There is a ```str``` variant and a ```sym``` variant:
 
-* **bool test(str regular_expression, str text)**
+* `bool test(str regular_expression, str text)`
 
 ```js
 >>> import regex;
@@ -764,7 +764,7 @@ false
 true
 ```
 
-* **bool test(str regular_expression, sym text)**
+* `bool test(str regular_expression, sym text)`
 
 ```js
 >>> import regex;
@@ -786,7 +786,7 @@ The ```match_indices``` method gets all the leading indeces of the substrings in
 
 There is a ```str``` variant and a ```sym``` variant:
 
-* **list\<int\> match_indices(str regular_expression, str text)**
+* `list\<int\> match_indices(str regular_expression, str text)`
 
 ```js
 >>> import regex;
@@ -796,7 +796,7 @@ There is a ```str``` variant and a ```sym``` variant:
 [4, 18, 38]
 ```
 
-* **list\<int\> match_indices(str regular_expression, sym text)**
+* `list\<int\> match_indices(str regular_expression, sym text)`
 
 ```js
 >>> import regex;
@@ -827,7 +827,7 @@ The ```word_tokenize``` method is provided for tokenizing input text at the word
 
 There is a ```str``` variant and a ```sym``` variant:
 
-* **list\<str\> word_tokenize(str text)**
+* `list\<str\> word_tokenize(str text)`
 
 ```js
 >>> import nlp;
@@ -836,7 +836,7 @@ There is a ```str``` variant and a ```sym``` variant:
 ["Hello", "world", "!", "How", "are", "we", "doing", "today", "?"]
 ```
 
-* **list\<sym\> word_tokenize(sym text)**
+* `list\<sym\> word_tokenize(sym text)`
 
 ```js
 >>> import nlp;
@@ -851,7 +851,7 @@ The ```sent_tokenize``` method is provided for tokenizing input text at the sent
 
 There is a ```str``` variant and a ```sym``` variant:
 
-* **list\<str\> sent_tokenize(str text)**
+* `list\<str\> sent_tokenize(str text)`
 
 ```js
 >>> import nlp;
@@ -860,7 +860,7 @@ There is a ```str``` variant and a ```sym``` variant:
 ["Hello world!", "How are we doing today?"]
 ```
 
-* **list\<sym\> sent_tokenize(sym text)**
+* `list\<sym\> sent_tokenize(sym text)`
 
 ```js
 >>> import nlp;
