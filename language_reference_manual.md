@@ -122,6 +122,194 @@ User can set thresholds for triggering garbage collection by using the set_thres
 Increasing the threshold will reduce the frequency at which the garbage collector runs. This will improve the
 performance of your program but at the expense of keeping dead objects around longer.
 
+## REGULAR EXPRESSIONS
+
+For general text processing, Sift provides a module for working with regular expressions. When combined with filtering, pattern matching is a powerful tool
+for working with text data. To utilize regular expressions, users must import the ```regex``` module.
+
+```js
+>>> import regex;
+```
+
+Regular expressions must be contained within a  ```str```, then passed to the methods contained in the ```regex``` module.
+
+### REGULAR EXPRESSION SYNTAX
+We utilize the word "string" in this subsection to refer to a sequence of characters. We follow the regex syntax definition layed out by Russ Cox in _Regular Expression Matching Can Be Simple And Fast_: https://swtch.com/~rsc/regexp/regexp1.html
+
+Whenever a string _v_ is in the language defined by some regular expression _e_, we say that _e matches v_. 
+
+The syntax for regular expressions is defined as such:
+
+* The simplest regular expression is a single character. A single-character regular expression matches itself. 
+There are meta-characters which do not match themselves: ```*+?()|```. To match a metacharacter, escape it with the backslash character ```\```.
+* Two regular expressions may be _alternated_ or _concatenated_ to form a new regular expression: 
+if _e<sub>1</sub>_ matches _s_ and _e<sub>2</sub>_ matches _t_, then _e<sub>1</sub>|e<sub>2</sub>_ matches _s_ or _t_, and _e<sub>1</sub>e<sub>2</sub>_ matches _st_. 
+*  The metacharacters ```*```, ```+```, and ```?``` are repetition operators: _e*_ matches a sequence of zero or more strings, each of which match _e_; _e+_ matches one or more; _e?_ matches zero or one.
+
+The operator precedence, from weakest to strongest binding: 
+1. alternation 
+2. concatenation
+3. repetition operators 
+
+Explicit parentheses can be used to force different meanings,
+
+### REGULAR EXPRESSION MODULE
+
+There are a few methods provided to match regular expressions with strings:
+
+#### **1. match**
+
+The ```match``` method gets all the substrings in the input ```str``` or ```sym``` that match a given regular expression.a given regular expression. They are returned in a ```list```:
+
+There is a ```str``` variant and a ```sym``` variant:
+
+* **list\<str\> match(str regular_expression, str text)**
+
+```js
+>>> import regex;
+>>> str expr = "(w|m)i*ld"
+>>> str text = "The wiiiiiiiiiild wild cat lived in a mild climate.";
+>>> regex.match(expr, text);
+["wiiiiiiiiiild", "wild", "mild"]
+```
+
+* **list\<sym\> match(str regular_expression, sym text)**
+
+```js
+>>> import regex;
+>>> str expr = "(w|m)i*ld"
+>>> sym text = "The wiiiiiiiiiild wild cat lived in a mild climate.";
+>>> regex.match(expr, text);
+["wiiiiiiiiiild", "wild", "mild"]
+```
+
+#### **2. test**
+
+The ```test``` method checks if a substring exists in the input ```str``` or ```sym``` that matches a given regular expression. Returns a ```bool```.
+
+There is a ```str``` variant and a ```sym``` variant:
+
+* **bool test(str regular_expression, str text)**
+
+```js
+>>> import regex;
+>>> str expr = "h(i|ello)"
+>>> str hello_text = "hello";
+>>> regex.test(expr, hello_text);
+true
+>>> str ello_text = "ello";
+>>> regex.test(expr, ello_text);
+false
+>>> str hi_text = "hihihihihihihi";
+>>> regex.test(expr, hi_text);
+true
+```
+
+* **bool test(str regular_expression, sym text)**
+
+```js
+>>> import regex;
+>>> str expr = "h(i|ello)"
+>>> sym hello_text = "hello";
+>>> regex.test(expr, hello_text);
+true
+>>> sym ello_text = "ello";
+>>> regex.test(expr, ello_text);
+false
+>>> sym hi_text = "hihihihihihihi";
+>>> regex.test(expr, hi_text);
+true
+```
+
+#### **3. match_indices**
+
+The ```match_indices``` method gets all the leading indeces of the substrings in the input ```str``` or ```sym``` that match a given regular expression. They are returned in a ```list```:
+
+There is a ```str``` variant and a ```sym``` variant:
+
+* **list\<int\> match_indices(str regular_expression, str text)**
+
+```js
+>>> import regex;
+>>> str expr = "(w|m)i*ld"
+>>> str text = "The wiiiiiiiiiild wild cat lived in a mild climate.";
+>>> regex.match_indices(expr, text);
+[4, 18, 38]
+```
+
+* **list\<int\> match_indices(str regular_expression, sym text)**
+
+```js
+>>> import regex;
+>>> str expr = "(w|m)i*ld"
+>>> sym text = "The wiiiiiiiiiild wild cat lived in a mild climate.";
+>>> regex.match_indices(expr, text);
+[4, 18, 38]
+```
+
 ## NLP FEATURES 
+
+As a text processing language, Sift provides some Natural Language Processing (NLP) functionality to aid in processing natural language text data.
+To access nlp functionality, users must import the ```nlp``` module. 
+
+```js
+>>> import nlp;
+```
+
+The module provides methods for performing nlp tasks.
+
+### TOKENIZATION
+
+Methods are provided for performing tokenization at different levels of natural language.
+
+#### **1. word_tokenize** 
+
+The ```word_tokenize``` method is provided for tokenizing input text at the word level. 
+
+There is a ```str``` variant and a ```sym``` variant:
+
+* **list\<str\> word_tokenize(str text)**
+
+```js
+>>> import nlp;
+>>> str text = "Hello world! How are we doing today?";
+>>> nlp.word_tokenize(text);
+["Hello", "world", "!", "How", "are", "we", "doing", "today", "?"]
+```
+
+* **list\<sym\> word_tokenize(sym text)**
+
+```js
+>>> import nlp;
+>>> sym text = "Hello world! How are we doing today?";
+>>> nlp.word_tokenize(text);
+["Hello", "world", "!", "How", "are", "we", "doing", "today", "?"]
+```
+
+#### **2. sent_tokenize** 
+
+The ```sent_tokenize``` method is provided for tokenizing input text at the sentence level. 
+
+There is a ```str``` variant and a ```sym``` variant:
+
+* **list\<str\> sent_tokenize(str text)**
+
+```js
+>>> import nlp;
+>>> str text = "Hello world! How are we doing today?";
+>>> nlp.sent_tokenize(text);
+["Hello world!", "How are we doing today?"]
+```
+
+* **list\<sym\> sent_tokenize(sym text)**
+
+```js
+>>> import nlp;
+>>> sym text = "Hello world! How are we doing today?";
+>>> nlp.sent_tokenize(text);
+["Hello world!", "How are we doing today?"]
+```
+
+
 
 ## GRAMMAR
