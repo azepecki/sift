@@ -1,5 +1,13 @@
 # LANGUAGE REFERENCE MANUAL: SIFT
 
+```
+Anne Zepecki(Manager)
+Lama Abdullah Rashed(Tester)
+Jose Antonio Ramos(Language Guru)
+Rishav Kumar (System Architect)
+Suryanarayana Venkata Akella (System Architect)
+```
+
 <!-- vscode-markdown-toc -->
  1. [Introduction](#Introduction)
  2. [Lexical Conventions](#LexicalConventions)
@@ -127,7 +135,7 @@ Operators are elements reserved for use by Sift and cannot be used for any purpo
 
 **Logical**: `&&, ||, !`
 
-**Special Functionality**: `|`
+**Special Functionality**: `|>`
 
 
 ###  2.6. <a name='Separators'></a>Separators
@@ -388,11 +396,11 @@ if the specified relation is false and 1 if it is true. Operand conversion is ex
 
 There is also a pipe operator much like pipe in ocaml which applies a function to another.
 
-###  4.6. <a name='ExampleSyntax'></a>Example Syntax
+#### Example Syntax
 
 ```js
 str x = "hellopeople";
-str s = f | g | x;
+str s = f |> g |> x;
 ```
 
 ###  4.7. <a name='EqualityOperators'></a>Equality Operators
