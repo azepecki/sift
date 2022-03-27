@@ -3,23 +3,50 @@
   open Ast 
 %}
 
-
 /* Arithmetic Operators */
-%token ADD SUBTRACT MULTIPLY DIVIDE MOD
-/* Arithmetic Operators */
-
-
-
-
-%token SEMI LPAREN RPAREN LBRACE RBRACE PLUS MINUS ASSIGN
-%token EQ NEQ LT AND OR
-%token IF ELSE WHILE INT BOOL
-/* return, COMMA token */
-%token RETURN COMMA
-%token <int> LITERAL
+%token ADD SUBTRACT MULTIPLY DIVIDE MOD POWER
+/* Relational Operators */
+%token EQ LEQ GT GEQ NEQ LT
+/* Logical Operators */
+%token AND OR NOT XOR
+/* Paranthesis and Brackets */
+%token LPAREN RPAREN LBRACE RBRACE LARROW RARROW LSQBRACE RSQBRACE
+/* Delimiters */
+%token COMMA SEMICOLON COLON DOT
+/* Assignment */
+%token ASSIGN 
+/* Features */
+%token PIPE
+/* Keywords */
+%token IF ELIF ELSE SWITCH CASE FOR WHILE CONTINUE BREAK DEFAULT LAMBDA DEFINE EXIT RETURN NULL
+%token IMPORT LIST FROM PURE 
+/* Primitive Data Types */
+%token INT FLOAT CHAR SYMBOL STRING BOOL
+/* Non-primitive Data Types */
+%token ARRAY LIST TUPLE SET DICT
+%token <int> INT_LITERAL
+%token <string> STRING_LITERAL
+%token <float> FLOAT_LITERAL
 %token <bool> BLIT
 %token <string> ID
 %token EOF
+
+
+%left SEMICOLON
+%nonassoc RSQBRACE RBRACE RARROW RPAREN
+%nonassoc LSQBRACE LBRACE LARROW LPAREN
+%nonassoc COLON
+%nonassoc COMMA
+%nonassoc NOELSE
+%left RETURN
+%right ASSIGN
+%left OR AND
+%left EQ NEQ
+%left GT GEQ LEQ LT
+%left ADD SUBTRACT
+%left MULTIPLY DIVIDE MOD
+%right POWER
+%right NOT
 
 %start program
 %type <Ast.program> program
