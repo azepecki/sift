@@ -25,7 +25,6 @@
 /* Non-primitive Data Types */
 %token ARRAY LIST TUPLE SET DICT
 %token <int> INT_LITERAL
-%token <string> STRING_LITERAL
 %token <float> FLOAT_LITERAL
 %token <bool> BLIT
 %token <string> ID
