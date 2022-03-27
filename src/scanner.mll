@@ -82,6 +82,8 @@ rule token = parse
 | "bool" { BOOL }
 | "str" { STRING }
 | "sym" { SYMBOL }
+| "true"   { BLIT(true)  }
+| "false"  { BLIT(false) }
 
 (* identifiers and literals *)
 | digits as lit { INT_LITERAL(int_of_string lit) }
