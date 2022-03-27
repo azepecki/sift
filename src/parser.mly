@@ -4,7 +4,7 @@
 %}
 
 /* Arithmetic Operators */
-%token ADD SUBTRACT MULTIPLY DIVIDE MOD POWER
+%token ADD SUBTRACT MULTIPLY DIVIDE MOD
 /* Relational Operators */
 %token EQ LEQ GT GEQ NEQ LT
 /* Logical Operators */
@@ -45,7 +45,6 @@
 %left GT GEQ LEQ LT
 %left ADD SUBTRACT
 %left MULTIPLY DIVIDE MOD
-%right POWER
 %right NOT
 
 %start program
