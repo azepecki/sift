@@ -25,20 +25,20 @@ type sexpr =
 
 type sstmt =
   SBlock of sstmt list
-| Expr of expr
-| If of expr * sstmt * sstmt
-| For of expr * expr * expr * sstmt
-| While of expr * sstmt
-| Return of sstmt
-| Continue of sstmt
+| SExpr of sexpr
+| SIf of sexpr * sstmt * sstmt
+| SFor of sexpr * sexpr * sexpr * sstmt
+| SWhile of sexpr * sstmt
+| SReturn of sstmt
+| SContinue of sstmt
 
 
 (* func_def: ret_typ fname formals locals body *)
 type sfunc_def = {
   srtyp: typ;
   sfname: string;
-  sformals: bind list;
-  slocals: bind list;
+  sformals: sbind list;
+  slocals: sbind list;
   sbody: stmt list;
 }
 
@@ -58,7 +58,7 @@ let rec string_of_sexpr (t,e)=
   | SCharLit(c) -> c
   | SStrLit(s) -> s
   | SSymLit(s) -> s
-  | SArrayDecl(t, s, e) -> "arr" ^ "<" string_of_typ t ^ ">" ^ " " ^  s ^ " = " ^ "[" ^ String.concat "," (List.map string_of_expr (List.rev e)) ^ "]"
+  | SArrayDecl(t, s, e) -> "arr" ^ "<" string_of_typ t ^ ">" ^ " " ^  s ^ " = " ^ "[" ^ String.concat "," (List.map string_of_sexpr (List.rev e)) ^ "]"
   | SArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_sexpr (List.rev e)) ^ "]"
   | SArrayAccess (s, e) ->  s ^ "[" ^ string_of_sexpr e ^ "]"
   | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr  e2
@@ -91,12 +91,13 @@ let rec string_of_sstmt = function
 
 
 let string_of_sfdecl fdecl =
-  string_of_typ fdecl.srtyp ^ " " ^
-  fdecl.sfname ^ "(" ^ String.concat ", " (List.map snd fdecl.sformals) ^
+  "def" ^ " " ^ "<" ^ string_of_typ fdecl.srtyp ^ ">" ^ " " ^
+  fdecl.sfname ^ "(" String.concat ", " (List.map snd fdecl.sformals) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_vdecl fdecl.slocals) ^
   String.concat "" (List.map string_of_sstmt fdecl.sbody) ^
-  "}\n"
+  "};\n"
+
 
 let string_of_sprogram (vars, funcs) =
   "\n\nParsed program: \n\n" ^
