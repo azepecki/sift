@@ -49,13 +49,6 @@
 %start program
 %type <Ast.program> program
 
-%right ASSIGN
-%left OR
-%left AND
-%left EQ NEQ
-%left LT
-%left PLUS MINUS
-
 %%
 
 /* add function declarations*/
@@ -75,9 +68,15 @@ vdecl_list:
 vdecl:
   typ ID { ($1, $2) }
 
+
 typ:
     INT   { Int   }
   | BOOL  { Bool  }
+  | STRING { String }
+  | SYMBOL { Symbol }
+  | FLOAT { Float }
+  | CHAR { Char }
+  | ARRAY { Array } (* Does this belong here? *)
 
 /* fdecl */
 fdecl:
@@ -111,6 +110,7 @@ stmt:
   /* if (condition) { block1} else {block2} */
   /* if (condition) stmt else stmt */
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
+  /* While loop */
   | WHILE LPAREN expr RPAREN stmt           { While ($3, $5)  }
   /* return */
   | RETURN expr SEMI                        { Return $2      }
@@ -119,13 +119,22 @@ expr:
     LITERAL          { Literal($1)            }
   | BLIT             { BoolLit($1)            }
   | ID               { Id($1)                 }
-  | expr PLUS   expr { Binop($1, Add,   $3)   }
-  | expr MINUS  expr { Binop($1, Sub,   $3)   }
+  | expr ADD   expr { Binop($1, Add,   $3)   }
+  | expr SUBTRACT  expr { Binop($1, Sub,   $3)   }
+  | expr MULTIPLY expr { Binop($1, Multiply,    $3)}
+  | expr DIVIDE expr { Binop($1, Divide,    $3)}
+  | expr MOD expr {Binop($1, Mod,    $3)      }
+  | expr PIPE expr {Binop($1, Pipe, $3)       }
   | expr EQ     expr { Binop($1, Equal, $3)   }
   | expr NEQ    expr { Binop($1, Neq, $3)     }
   | expr LT     expr { Binop($1, Less,  $3)   }
+  | expr GT     expr { Binop($1, Greater, $3) }
+  | expr LEQ    expr { Binop($1, Leq,    $3)  }
+  | expr GEQ expr { Binop($1, Geq,    $3)     }
   | expr AND    expr { Binop($1, And,   $3)   }
   | expr OR     expr { Binop($1, Or,    $3)   }
+  | NOT expr        {Binop(Not, $2)           }
+  | expr XOR expr { Binop($1, Xor, $2)        }
   | ID ASSIGN expr   { Assign($1, $3)         }
   | LPAREN expr RPAREN { $2                   }
   /* call */
@@ -140,3 +149,9 @@ args:
   expr  { [$1] }
   | expr COMMA args { $1::$3 }
 
+/***
+Expressions that still need to be added: 
+- arrays [ list of literals ];
+- arr<typ> 
+
+***/ 
