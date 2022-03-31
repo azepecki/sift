@@ -64,6 +64,10 @@ make clean
 11. Or
 12. Pipe
 
+### Testing Overview 
+
+Please see Testing.pdf. 
+
 ### Features in Progress
 
 * Nested array indexing (ast, parser)
