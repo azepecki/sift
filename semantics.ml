@@ -12,7 +12,7 @@ module StringMap = Map.Make(String)
 
 let check_program (script: stmt list) (functions: func_def list) =
 
-  let check_expr e =
+  let check_expr (symbol_table: StringMap) e =
     function
     | Literal l               -> (Int, SLiteral l)
     | FloatLit l              -> (Float, SFloatLit l)
@@ -63,13 +63,13 @@ let check_program (script: stmt list) (functions: func_def list) =
 (* | Lambda (s, e) -> GET TYPE OF e (check_expr e), THEN _INFER_ TYPE OF s (WEIRD!) *)
 (* | DeclAssign (typ, s, e)  -> LIKE Assign BUT WE ADD TO THE SYMBOL TABLE!!!! *)
 
-
+(* 
   let check_bool_expr e =
     let (t, e') = check_expr e in
     match t with
     | Bool -> (t, e')
     |  _ -> raise (Failure ("expected Boolean expression in " ^ string_of_expr e))
-  in
+  in *)
 
   (*
   let check_decl_expr e =
@@ -80,19 +80,24 @@ let check_program (script: stmt list) (functions: func_def list) =
   in
   *)
 
-  let rec check_stmt_list  =
+  let rec check_stmt_list (symbol_table: StringMap) =
     function
     | [] -> []
     | Block sl :: sl'  -> check_stmt_list  (sl @ sl') (* Flatten blocks *)
     | s :: sl -> check_stmt s :: check_stmt_list sl
   (* Return a semantically-checked statement i.e. containing sexprs *)
-  and check_stmt =
-    function (* A block is correct if each statement is correct and nothing follows any Return statement.  Nested blocks are flattened. *)
+  and check_stmt (symbol_table: StringMap) =
+  (* A block is correct if each statement is correct and nothing follows any Return statement.  
+    Nested blocks are flattened. 
+  
+    CHECKS are applied to ensure that expressions are of a certain type in certain statements, 
+    AND symbol table is always passed in and then the updated symbol table returned *)
+    function  (*each of these has to be a mess of lets *)
     | Block sl            -> SBlock (check_stmt_list sl)
     | Expr e              -> SExpr (check_expr e)
-    | IfElse(e, st1, st2) -> SIfElse(check_bool_expr e, check_stmt st1, check_stmt st2)
-    | While(e, st)        -> SWhile(check_bool_expr e, check_stmt st)
-    | For(e1, e2, e3, st) -> SFor(check_expr e1, check_expr e2, check_expr e3, check_stmt st)
+    | IfElse(e, st1, st2) -> SIfElse(check_expr e, check_stmt st1, check_stmt st2) (*check that exprs are of a certain kind*)
+    | While(e, st)        -> SWhile(check_expr e, check_stmt st) (*check that exprs are of a certain kind*)
+    | For(e1, e2, e3, st) -> SFor(check_expr e1, check_expr e2, check_expr e3, check_stmt st) (*check that exprs are of a certain kind*)
     | Continue            -> SContinue
     | Break               -> SBreak
     (*RETURN ONLY MAKES SENSE IN FUNCTIONS!!!!!*)
