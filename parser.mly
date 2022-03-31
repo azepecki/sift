@@ -77,8 +77,6 @@ typ:
     INT             { Int   }
   | BOOL            { Bool  }
   | FLOAT           { Float }
-  | CHAR            { Char }
-  | SYMBOL          { Sym }
   | STRING          { String }
   | ARRAY LT typ GT { Arr($3) }
 

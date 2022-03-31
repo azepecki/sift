@@ -3,9 +3,9 @@
 type op = Add | Sub | Mul | Div | Mod | Equal | Neq | Less |
  Leq | Greater | Geq | And | Or | Pipe 
 
-type uop = Neg | Not
+type uop = Not | Neg
 
-type typ = Int | Float | Bool | Char | String | Sym | Arr of typ
+type typ = Int | Float | Bool  | String | Arr of typ (*| Char | Sym *)
 
 (* int x: name binding *)
 type bind = typ * string
@@ -14,9 +14,9 @@ type expr =
   Literal of int
 | FloatLit of float
 | BoolLit of bool
-| CharLit of char
+(*| CharLit of char unimplemented*)
 | StrLit of string
-| SymLit of string
+(*| SymLit of string unimplemented*)
 | ArrayLit of expr list
 | ArrayAccess of string * expr
 | ArrayAssign of string * expr * expr
@@ -35,7 +35,7 @@ type expr =
 type stmt =
   Block of stmt list
 | Expr of expr
-| If of expr * stmt
+| If of expr * stmt (*unimplemented*)
 | IfElse of expr * stmt * stmt
 | For of expr * expr * expr * stmt
 | While of expr * stmt
@@ -81,9 +81,9 @@ let rec string_of_typ = function
   Int -> "int"
 | Float -> "float"
 | Bool -> "bool"
-| Char -> "char"
+(* | Char -> "char" *)
 | String -> "str"
-| Sym -> "sym"
+(* | Sym -> "sym" *)
 | Arr(t) -> string_of_typ t ^ "[]"
 
 
@@ -92,9 +92,9 @@ let rec string_of_expr = function
   | FloatLit(l) -> string_of_float l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
-  | CharLit(c) -> String.make 1 c
+  (* | CharLit(c) -> String.make 1 c *)
   | StrLit(s) -> s
-  | SymLit(s) -> s (* List.rev e below ? *)
+  (* | SymLit(s) -> s  *)
   | ArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_expr (List.rev e)) ^ "]"
   | ArrayAccess (s, e) ->  s ^ "[" ^ string_of_expr e ^ "]"
   | ArrayAssign(s, e1, e2) -> s ^ "[" ^ string_of_expr e1 ^ "] = " ^ string_of_expr  e2

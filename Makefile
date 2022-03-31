@@ -11,6 +11,9 @@
 default:
 	ocamlbuild run.native
 
+run:
+	./run.native
+
 clean: 
 	rm -f run.native
 	rm -r _build

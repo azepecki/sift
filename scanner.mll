@@ -16,10 +16,6 @@ rule token = parse
 | '}' { RBRACE }
 | '[' { LSQBRACE }
 | ']' { RSQBRACE }
-(* THESE CONFLICT WITH THE COMPARISON OPERATORS
-| '<' { LARROW }
-| '>' { RARROW }
-*)
 
 (* arithmetic operators *)
 | '+' { ADD }

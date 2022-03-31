@@ -7,9 +7,9 @@ and sx =
   SLiteral of int
 | SFloatLit of string
 | SBoolLit of bool
-| SCharLit of char
+(* | SCharLit of char *)
 | SStrLit of string
-| SSymLit of string
+(* | SSymLit of string *)
 | SArrayLit of sexpr list
 | SArrayAccess of string * sexpr
 | SArrAssign of string * sexpr * sexpr
@@ -18,7 +18,7 @@ and sx =
 | SUnop of uop * sexpr
 | SAssign of string * sexpr
 | SLambda of string * sexpr
-| SDeclAssn of typ * string * sexpr
+| SDeclAssign of typ * string * sexpr
 | SCall of string * sexpr list
 (* | SIncrement of string * sexpr 
 | SDecrement of string * sexpr
@@ -55,9 +55,9 @@ let rec string_of_sexpr (t, e) =
   | SFLit(l) -> string_of_float l
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
-  | SCharLit(c) -> String.make 1 c
+  (* | SCharLit(c) -> String.make 1 c *)
   | SStrLit(s) -> s
-  | SSymLit(s) -> s
+  (* | SSymLit(s) -> s *)
   | SArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_sexpr (List.rev e)) ^ "]"
   | SArrayAccess (s, e) ->  s ^ "[" ^ string_of_sexpr e ^ "]"
   | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr  e2
