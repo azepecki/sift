@@ -121,8 +121,8 @@ let rec string_of_stmt = function
       string_of_stmt s1  ^ "else"  ^ string_of_stmt s2 ^ ";"
   | For(e1, e2, e3, s) ->
       "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
-      string_of_expr e3  ^ ") " ^ "{" ^ string_of_stmt s ^ "}"
-  | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ "{" ^ string_of_stmt s ^ "}"
+      string_of_expr e3  ^ ") " ^ string_of_stmt s 
+  | While(e, s) -> "while (" ^ string_of_expr e ^ ") "  ^ string_of_stmt s 
   | Continue -> "continue;\n"
   | Break ->  "break;\n"
 
