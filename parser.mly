@@ -120,8 +120,8 @@ stmt:
 
 pipeline:
   /* pipe */
-  | expr PIPE anonymous           { Binop($1, Pipe, $3)    } 
-  | pipeline PIPE anonymous       { Binop($1, Pipe, $3)    } 
+  | anonymous                     { $1                  }
+  | expr PIPE anonymous           { Binop($1, Pipe, $3) } 
 
 anonymous:
   ID ANON expr                    { Lambda ($1, $3)}
@@ -135,7 +135,6 @@ expr:
   | ID                  { Id($1)                 }
   /* PIPING AND LAMBDAS*/
   | pipeline            { $1                     }
-  | anonymous           { $1                     }
   /* arithmetic operators */
   | expr ADD   expr     { Binop($1, Add,   $3)   }
   | expr SUBTRACT  expr { Binop($1, Sub,   $3)   }
