@@ -1,51 +1,19 @@
-all : calc.out
-
-##############################
+#	Makefile for Sift: Hello World
+#	COMS W4115 PLT
 #
-# HW 2: Question 1
-#
-# Compilation: 
-# Option 1: Simply type "make" to compile the calculator (recommended, auto-test included)
-# Option 2: "ocamlbuild calc.native" will also build the calculator
+#	Team:
+#	Anne Zepecki            amz2145
+#	Jose Antonio Ramos      jar2333
+#	Lama Abdullah Rashed    lar2231
+#	Suryanarayana V Akella  sa4084
+#	Rishav Kumar            rk3142
 
-# For testing, you can run the binary executable and test it with
-# standard input via terminal.
-# Or use calc.tb (testbench file): you can modify the file directly
-# with the exprssion you want to test before make. After compiling
-# your executable successfully, the output of test case will be 
-# generate automatically in a file named calc.out
+default:
+	ocamlbuild run.native
 
+run:
+	./run.native
 
-calc : parser.cmo scanner.cmo calc.cmo
-	ocamlc -w A -o calc $^
-
-%.cmo : %.ml
-	ocamlc -w A -c $<
-
-%.cmi : %.mli
-	ocamlc -w A -c $<
-
-scanner.ml : scanner.mll
-	ocamllex $^
-
-parser.ml parser.mli : parser.mly
-	ocamlyacc $^
-
-calc.out : calc calc.tb
-	./calc < calc.tb > calc.out
-
-# Depedencies from ocamldep
-calc.cmo : scanner.cmo parser.cmi ast.cmi
-calc.cmx : scanner.cmx parser.cmx ast.cmi
-parser.cmo : ast.cmi parser.cmi
-parser.cmx : ast.cmi parser.cmi
-scanner.cmo : parser.cmi
-scanner.cmx : parser.cmx
-
-
-##############################
-
-
-.PHONY : clean
-clean :
-	rm -rf *.cmi *.cmo parser.ml parser.mli scanner.ml calc.out calc
+clean: 
+	rm -f run.native
+	rm -r _build
