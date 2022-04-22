@@ -1,4 +1,4 @@
-* Ocamlyacc parser for SIFT */
+/* Ocamlyacc parser for SIFT */
 %{ 
   open Ast 
 %}
