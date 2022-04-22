@@ -118,13 +118,6 @@ stmt:
   /* return (Should it ONLY be allowed in functions?) */
   | RETURN expr SEMI                                 { Return $2      }
 
-pipeline:
-  /* pipe */
-  | anonymous                     { $1                  }
-  | expr PIPE anonymous           { Binop($1, Pipe, $3) } 
-
-anonymous:
-  ID ANON expr                    { Lambda ($1, $3)}
 
 expr:
   /* literals and id */
@@ -133,8 +126,6 @@ expr:
   | FLOAT_LITERAL       { FloatLit($1)           }
   | BLIT                { BoolLit($1)            }
   | ID                  { Id($1)                 }
-  /* PIPING AND LAMBDAS*/
-  | pipeline            { $1                     }
   /* arithmetic operators */
   | expr ADD   expr     { Binop($1, Add,   $3)   }
   | expr SUBTRACT  expr { Binop($1, Sub,   $3)   }
@@ -156,12 +147,30 @@ expr:
   | ID ASSIGN expr      { Assign($1, $3)         }
   | typ ID ASSIGN expr  { DeclAssign($1, $2, $4) }
   | LPAREN expr RPAREN  { $2                     }
-  /* call */
-  | ID LPAREN args_opt RPAREN  { Call ($1, $3) }
+  /* lambdas  */
+  | lambda              {$1}
+  /* id call */
+  | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }
+  /* lambda call */
+  /* PIPING (alternate id call)*/
+  | expr PIPE ID               { Call ($3, [$1]) }
+  /* PIPING (alternate lambda call) */
   /* arrays! */
   | LSQBRACE args_opt RSQBRACE { ArrayLit($2) }
   | ID LSQBRACE expr RSQBRACE  { ArrayAccess($1, $3) }
   | ID LSQBRACE expr RSQBRACE ASSIGN expr  { ArrayAssign($1, $3, $6) }
+
+lambda:
+  | ID ANON expr  { Lambda ([$1], $3)}
+  | LPAREN anon_args_opt RPAREN ANON expr  { Lambda ($2, $5)}
+
+anon_args_opt:
+  /*nothing*/ { [] }
+  | anon_args { $1 }
+
+anon_args:
+    ID COMMA ID {[$1 ; $3]}
+  | ID COMMA anon_args {$1 :: $3}
 
 /* args_opt*/
 args_opt:
