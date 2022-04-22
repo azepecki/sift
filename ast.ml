@@ -1,7 +1,7 @@
 (* Abstract Syntax Tree and functions for printing it *)
 
 type op = Add | Sub | Mul | Div | Mod | Equal | Neq | Less |
- Leq | Greater | Geq | And | Or | Pipe 
+ Leq | Greater | Geq | And | Or 
 
 type uop = Not | Neg
 
@@ -24,7 +24,7 @@ type expr =
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Assign of string * expr
-| Lambda of string * expr
+| Lambda of string list * expr
 | DeclAssign of typ * string * expr
 | Call of string * expr list
 (* | Increment of string * expr 
@@ -70,7 +70,7 @@ let string_of_op = function
   | Geq -> "=>"
   | And -> "&&"
   | Or -> "||"
-  | Pipe -> "|>"
+  (* | Pipe -> "|>" *)
 
 let string_of_uop = function
     Neg -> "-"
@@ -103,7 +103,7 @@ let rec string_of_expr = function
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(op, e) -> string_of_uop op ^ " " ^ string_of_expr e
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
-  | Lambda(v, e) -> v ^ " => " ^ string_of_expr e
+  | Lambda(v, e) -> "( " ^ (List.hd v) ^ " ) => " ^ string_of_expr e (*add support for printing all args*)
   | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"

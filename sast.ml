@@ -17,7 +17,7 @@ and sx =
 | SBinop of sexpr * op * sexpr
 | SUnop of uop * sexpr
 | SAssign of string * sexpr
-| SLambda of string * sexpr
+| SLambda of string list * sexpr
 | SDeclAssign of typ * string * sexpr
 | SCall of string * sexpr list
 (* | SIncrement of string * sexpr 
@@ -66,7 +66,7 @@ let rec string_of_sexpr (t, e) =
      string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
   | SUnop(op, e) -> string_of_uop op ^ " " ^ string_of_sexpr e
   | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
-  | SLambda(v, e) -> v ^ " => " ^ string_of_sexpr e
+  | SLambda(v, e) -> "( " ^ (List.hd v) ^ " ) => " ^ string_of_sexpr e
   | SDeclAssn(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_sexpr e 
   | SCall(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
