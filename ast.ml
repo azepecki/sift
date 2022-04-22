@@ -27,6 +27,7 @@ type expr =
 | Lambda of string list * expr
 | DeclAssign of typ * string * expr
 | Call of string * expr list
+| LambdaCall of expr * expr list
 (* | Increment of string * expr 
 | Decrement of string * expr *)
 (* | Noexpr *)
@@ -107,6 +108,8 @@ let rec string_of_expr = function
   | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+  | LambdaCall(l, a) -> 
+    "(" ^ (string_of_expr l) ^ ")(" ^ (String.concat "," (List.map string_of_expr (List.rev a))) ^ ")"
   (* | Increment(v, e) -> v ^ "+= " ^ string_of_expr e
   | Decrement(v, e) -> v ^ "-="  ^ string_of_expr e 
   | Noexpr -> "" *)

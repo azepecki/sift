@@ -87,8 +87,8 @@ fdecl:
     {
       rtyp=fst $2;
       fname=snd $2;
-      formals=$4;
-      body=$7
+      formals= $4;
+      body= $7
     }
   }
 
@@ -120,8 +120,10 @@ stmt:
 
 
 expr:
+  /* nesting */
+   LPAREN expr RPAREN  { $2                     }
   /* literals and id */
-    INT_LITERAL         { Literal($1)            }
+  |  INT_LITERAL         { Literal($1)            }
   | STRING_LITERAL      { StrLit($1)             }
   | FLOAT_LITERAL       { FloatLit($1)           }
   | BLIT                { BoolLit($1)            }
@@ -146,19 +148,24 @@ expr:
   /*assignment*/
   | ID ASSIGN expr      { Assign($1, $3)         }
   | typ ID ASSIGN expr  { DeclAssign($1, $2, $4) }
-  | LPAREN expr RPAREN  { $2                     }
   /* lambdas  */
   | lambda              {$1}
+  /* lambda call */
+  | LSQBRACE lambda RSQBRACE LPAREN args_opt RPAREN  { LambdaCall( $2, $5) }
   /* id call */
   | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }
-  /* lambda call */
+  /* PIPING (alternate lambda call) */
+  | expr PIPE lambda           { LambdaCall ( $3, [$1] ) }
   /* PIPING (alternate id call)*/
   | expr PIPE ID               { Call ($3, [$1]) }
-  /* PIPING (alternate lambda call) */
   /* arrays! */
   | LSQBRACE args_opt RSQBRACE { ArrayLit($2) }
   | ID LSQBRACE expr RSQBRACE  { ArrayAccess($1, $3) }
   | ID LSQBRACE expr RSQBRACE ASSIGN expr  { ArrayAssign($1, $3, $6) }
+  /* UNIVERSAL FUNCTION SYNTAX 
+   a.f() = f(a)
+   id call (dot notation) 
+  | expr DOT ID LPAREN args_opt RPAREN  { Call ($3, $1 :: $5)   } */
 
 lambda:
   | ID ANON expr  { Lambda ([$1], $3)}
