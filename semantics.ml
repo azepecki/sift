@@ -38,10 +38,6 @@ let check_program (script: stmt list) (functions: func_def list) =
         check_type_expr symbol_table e Int
       in
     
-      let check_bool_expr (symbol_table: Ast.typ StringMap.t) e = 
-        check_type_expr symbol_table e Bool
-      in
-  
       match e with
       | Literal l               -> (Int, SLiteral l)
       | FloatLit l              -> (Float, SFloatLit l)
@@ -147,10 +143,6 @@ let check_program (script: stmt list) (functions: func_def list) =
       if (fst e') = Int
       then e'
       else raise (Failure ("Expression of type " ^ (Ast.string_of_typ t)  ^ " expected"))
-    in
-  
-    let check_int_expr (symbol_table: Ast.typ StringMap.t) e = 
-      check_type_expr symbol_table e Int
     in
     
     let check_bool_expr (symbol_table: Ast.typ StringMap.t) e = 
