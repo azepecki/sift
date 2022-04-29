@@ -1,6 +1,6 @@
 open Ast
 open Sast
-open Semantics
+(* open Semantics *)
 
 let _ =
   let lexbuf = Lexing.from_channel stdin in

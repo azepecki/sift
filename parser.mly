@@ -105,18 +105,35 @@ stmt_list:
   /* nothing */ { [] }
   | stmt stmt_list  { $1::$2 }
 
-stmt:
-    expr SEMI                                        { Expr $1      }
+stmt: 
+  | open_stmt           {$1}
+  | closed_stmt    {$1}
+
+open_stmt: 
+    IF LPAREN expr RPAREN stmt                        { If($3, $5) }
+  | IF LPAREN expr RPAREN closed_stmt ELSE open_stmt  { IfElse($3, $5, $7) }
+  | WHILE LPAREN expr RPAREN open_stmt                { While ($3, $5)  }
+  | FOR LPAREN stmt expr SEMI expr RPAREN open_stmt   { For ($3, $4, $6, $8) }
+  // | LBRACE stmt_list RBRACE                          { Block $2 }
+
+closed_stmt: 
+  non_if_stmt {$1}
+  | IF LPAREN expr RPAREN closed_stmt ELSE closed_stmt { IfElse($3, $5, $7) }
+  | WHILE LPAREN expr RPAREN closed_stmt               { While ($3, $5)  }
+  | FOR LPAREN stmt expr SEMI expr RPAREN closed_stmt  { For ($3, $4, $6, $8) }
+  // 
+
+non_if_stmt:
   | LBRACE stmt_list RBRACE                          { Block $2 }
-  /* if (condition) { block1} else {block2} */
-  /* if (condition) stmt else stmt */
-  | IF LPAREN expr RPAREN stmt ELSE stmt             { IfElse($3, $5, $7) }
-  | WHILE LPAREN expr RPAREN stmt                    { While ($3, $5)  }
-  | FOR LPAREN expr SEMI expr SEMI expr RPAREN stmt  { For ($3, $5, $7, $9) }
+  | expr SEMI                                        { Expr $1      }
   | CONTINUE SEMI                                    { Continue }
   | BREAK SEMI                                       { Break }
-  /* return (Should it ONLY be allowed in functions?) */
+  /* return (ONLY allowed in functions) */
   | RETURN expr SEMI                                 { Return $2      }
+  /* declaration */
+  | typ ID SEMI                                      { Declare ($1, $2)       }
+  /* declaration + assignment */
+  | typ ID ASSIGN expr SEMI                          { DeclAssign($1, $2, $4) }
 
 
 expr:
@@ -147,10 +164,6 @@ expr:
   | NOT expr            { Unop(Not, $2)          }
   /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
-  /* declaration */
-  | typ ID              { Declare ($1, $2)       }
-  /* declaration + assignment */
-  | typ ID ASSIGN expr  { DeclAssign($1, $2, $4) }
   /* lambdas  
   | lambda              {$1}
    lambda call 

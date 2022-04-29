@@ -24,8 +24,6 @@ type expr =
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Assign of string * expr
-| Declare of typ * string
-| DeclAssign of typ * string * expr
 | Call of string * expr list
 (* | Lambda of string list * expr *)
 (* | LambdaCall of expr * expr list *)
@@ -37,13 +35,15 @@ type expr =
 type stmt =
   Block of stmt list
 | Expr of expr
-| If of expr * stmt (*unimplemented*)
+| If of expr * stmt 
 | IfElse of expr * stmt * stmt
-| For of expr * expr * expr * stmt
+| For of stmt * expr * expr * stmt
 | While of expr * stmt
 | Return of expr
 | Continue
 | Break
+| Declare of typ * string
+| DeclAssign of typ * string * expr
 
 
 (* func_def: ret_typ fname formals locals body *)
@@ -104,10 +104,7 @@ let rec string_of_expr = function
   | Unop(op, e) -> string_of_uop op ^ " " ^ string_of_expr e
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
   (* | Lambda(v, e) -> "( " ^ (String.concat "," ((v))) ^ " ) => " ^ string_of_expr e add support for printing all args *)
-  | Declare(t, s) -> string_of_typ t ^ " " ^ s 
-  | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
-  | Call(f, el) ->
-      f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+  | Call(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   (* | LambdaCall(l, a) -> 
     "(" ^ (string_of_expr l) ^ ")(" ^ (String.concat "," (List.map string_of_expr (a))) ^ ")" *)
   (* | Increment(v, e) -> v ^ "+= " ^ string_of_expr e
@@ -116,18 +113,20 @@ let rec string_of_expr = function
 
 let rec string_of_stmt = function
     Block(stmts) ->
-      "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
-  | Expr(expr) -> string_of_expr expr ^ ";\n";
-  | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";
+      "{\n" ^ String.concat "\n" (List.map string_of_stmt stmts) ^ "}"
+  | Expr(expr) -> string_of_expr expr ^ ";";
+  | Return(expr) -> "return " ^ string_of_expr expr ^ ";";
   | If(e, s) -> "if (" ^ string_of_expr e ^ ")"  ^ string_of_stmt s ^ ";"
   | IfElse(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")"  ^
       string_of_stmt s1  ^ "else"  ^ string_of_stmt s2 ^ ";"
   | For(e1, e2, e3, s) ->
-      "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
+      "for (" ^ string_of_stmt e1  ^ " " ^ string_of_expr e2 ^ " ; " ^
       string_of_expr e3  ^ ") " ^ string_of_stmt s 
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") "  ^ string_of_stmt s 
-  | Continue -> "continue;\n"
-  | Break ->  "break;\n"
+  | Continue -> "continue;"
+  | Break ->  "break;"
+  | Declare(t, s) -> string_of_typ t ^ " " ^ s ^ ";"
+  | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e ^ ";"
 
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
@@ -141,6 +140,6 @@ let string_of_fdecl fdecl =
 
 let string_of_program (statements, funcs) =
     "\n\nParsed program: \n\n" ^
-    String.concat "" (List.map string_of_stmt statements) ^ "\n" ^
+    String.concat "\n" (List.map string_of_stmt statements) ^ "\n" ^
     String.concat "\n" (List.map string_of_fdecl funcs)
 

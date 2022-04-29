@@ -17,8 +17,7 @@ and sx =
 | SBinop of sexpr * op * sexpr
 | SUnop of uop * sexpr
 | SAssign of string * sexpr
-| SDeclare of typ * string
-| SDeclAssign of typ * string * sexpr
+
 | SCall of string * sexpr list
 (* | SLambda of string list * sexpr *)
 (* | SIncrement of string * sexpr 
@@ -31,11 +30,13 @@ type sstmt =
 | SExpr of sexpr
 | SIf of sexpr * sstmt
 | SIfElse of sexpr * sstmt * sstmt
-| SFor of sexpr * sexpr * sexpr * sstmt
+| SFor of sstmt * sexpr * sexpr * sstmt
 | SWhile of sexpr * sstmt
 | SReturn of sexpr
 | SContinue 
 | SBreak 
+| SDeclare of typ * string
+| SDeclAssign of typ * string * sexpr
 
 
 (* func_def: ret_typ fname formals locals body *)
@@ -70,8 +71,6 @@ let rec string_of_sexpr (t, e) =
   | SUnop(op, e) -> string_of_uop op ^ " " ^ string_of_sexpr e
   | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
   (* | SLambda(v, e) -> "( " ^ (List.hd v) ^ " ) => " ^ string_of_sexpr e *)
-  | SDeclare(t, s) -> string_of_typ t ^ " " ^ s 
-  | SDeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_sexpr e 
   | SCall(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   )
 
@@ -84,11 +83,13 @@ let rec string_of_sstmt = function
   | SIfElse(e, s1, s2) ->  "if (" ^ string_of_sexpr e ^ ")"  ^
       string_of_sstmt s1  ^ "else"  ^ string_of_sstmt s2 ^ ";"
   | SFor(e1, e2, e3, s) ->
-      "for (" ^ string_of_sexpr e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
+      "for (" ^ string_of_sstmt e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
       string_of_sexpr e3  ^ ") " ^ "{" ^ string_of_sstmt s ^ "}"
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") "  ^ string_of_sstmt s 
   | SContinue -> "continue;\n"
   | SBreak ->  "break;\n"
+  | SDeclare(t, s) -> string_of_typ t ^ " " ^ s ^ ";\n"
+  | SDeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_sexpr e ^ ";\n"
 
 
 let string_of_sfdecl fdecl =
