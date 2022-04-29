@@ -24,10 +24,11 @@ type expr =
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Assign of string * expr
-| Lambda of string list * expr
+| Declare of typ * string
 | DeclAssign of typ * string * expr
 | Call of string * expr list
-| LambdaCall of expr * expr list
+(* | Lambda of string list * expr *)
+(* | LambdaCall of expr * expr list *)
 (* | Increment of string * expr 
 | Decrement of string * expr *)
 (* | Noexpr *)
@@ -71,7 +72,6 @@ let string_of_op = function
   | Geq -> "=>"
   | And -> "&&"
   | Or -> "||"
-  (* | Pipe -> "|>" *)
 
 let string_of_uop = function
     Neg -> "-"
@@ -82,7 +82,6 @@ let rec string_of_typ = function
   Int -> "int"
 | Float -> "float"
 | Bool -> "bool"
-(* | Char -> "char" *)
 | String -> "str"
 (* | Sym -> "sym" *)
 | Arr(t) -> string_of_typ t ^ "[]"
@@ -104,12 +103,13 @@ let rec string_of_expr = function
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(op, e) -> string_of_uop op ^ " " ^ string_of_expr e
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
-  | Lambda(v, e) -> "( " ^ (String.concat "," ((v))) ^ " ) => " ^ string_of_expr e (*add support for printing all args*)
+  (* | Lambda(v, e) -> "( " ^ (String.concat "," ((v))) ^ " ) => " ^ string_of_expr e add support for printing all args *)
+  | Declare(t, s) -> string_of_typ t ^ " " ^ s 
   | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | LambdaCall(l, a) -> 
-    "(" ^ (string_of_expr l) ^ ")(" ^ (String.concat "," (List.map string_of_expr (a))) ^ ")"
+  (* | LambdaCall(l, a) -> 
+    "(" ^ (string_of_expr l) ^ ")(" ^ (String.concat "," (List.map string_of_expr (a))) ^ ")" *)
   (* | Increment(v, e) -> v ^ "+= " ^ string_of_expr e
   | Decrement(v, e) -> v ^ "-="  ^ string_of_expr e 
   | Noexpr -> "" *)

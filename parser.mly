@@ -145,17 +145,22 @@ expr:
   | expr AND    expr    { Binop($1, And,   $3)   }
   | expr OR     expr    { Binop($1, Or,    $3)   }
   | NOT expr            { Unop(Not, $2)          }
-  /*assignment*/
+  /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
+  /* declaration */
+  | typ ID              { Declare ($1, $2)       }
+  /* declaration + assignment */
   | typ ID ASSIGN expr  { DeclAssign($1, $2, $4) }
-  /* lambdas  */
+  /* lambdas  
   | lambda              {$1}
-  /* lambda call */
-  | LSQBRACE lambda RSQBRACE LPAREN args_opt RPAREN  { LambdaCall( $2, $5) }
+   lambda call 
+  | lambda LPAREN args_opt RPAREN  { LambdaCall( $1, $3) }
+  */
   /* id call */
   | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }
-  /* PIPING (alternate lambda call) */
+  /* PIPING (alternate lambda call) 
   | expr PIPE lambda           { LambdaCall ( $3, [$1] ) }
+  */
   /* PIPING (alternate id call)*/
   | expr PIPE ID               { Call ($3, [$1]) }
   /* arrays! */
@@ -167,17 +172,19 @@ expr:
    id call (dot notation) 
   | expr DOT ID LPAREN args_opt RPAREN  { Call ($3, $1 :: $5)   } */
 
+/*
 lambda:
   | ID ANON expr  { Lambda ([$1], $3)}
   | LPAREN anon_args_opt RPAREN ANON expr  { Lambda ($2, $5)}
 
 anon_args_opt:
-  /*nothing*/ { [] }
+              { [] }
   | anon_args { $1 }
 
 anon_args:
     ID COMMA ID {[$1 ; $3]}
   | ID COMMA anon_args {$1 :: $3}
+*/
 
 /* args_opt*/
 args_opt:
