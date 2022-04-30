@@ -170,7 +170,8 @@ let check_program (script: stmt list) (functions: func_def list) =
     | While(e, st)        -> (SWhile(check_bool_expr table e, fst (check_stmt table st func)), table) 
     (* This for loop thing requires extra thought and care. Check that stmt is DeclAssign, add it to table, check that e2 is boolean *)
     | For(DeclAssign(typ, a, e) as e1, e2, e3, st) -> 
-      (SFor(fst (check_stmt table e1 func), check_bool_expr table e2, check_expr table e3, fst (check_stmt table st func)) , table)
+      let updated_table = add a typ table in
+      (SFor(fst (check_stmt table e1 func), check_bool_expr updated_table e2, check_expr updated_table e3, fst (check_stmt updated_table st func)) , table)
     | For(_, _, _, _)     -> raise (Failure ("First statement in for loop must be assignment"))
     | Continue            -> (SContinue, table) (* Add proper checks!!! *)
     | Break               -> (SBreak , table) (* Add proper checks!!! *)
