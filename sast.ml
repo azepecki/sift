@@ -73,6 +73,7 @@ let rec string_of_sexpr (t, e) =
   (* | SLambda(v, e) -> "( " ^ (List.hd v) ^ " ) => " ^ string_of_sexpr e *)
   | SCall(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
   )
+  ^ ")"
 
 let rec string_of_sstmt = function
     SBlock(stmts) ->
