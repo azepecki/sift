@@ -9,11 +9,14 @@ type symbol_table = (Ast.typ StringMap.t) list;; (* Basically a linked list of s
 
 (* Declares a new variable in current scope *)
 (* int x; *)
-let add (id : string) (t : Ast.typ) (current_scope :: tl : symbol_table) : symbol_table =
+let add (id : string) (t : Ast.typ) (table : symbol_table) : symbol_table =
   (* let current_scope :: tl = table in *)
+  match table with
+  | current_scope :: tl ->
   if StringMap.mem id current_scope
   then raise (Failure ("Variable " ^ (id)  ^ " already declared in current scope."))
   else (StringMap.add id t current_scope) :: tl
+  | _ -> raise (Failure ("No scopes."))
 
 (* Tries finding in current scope, if fails then goes up in symbol table *)
 (* x; *)
@@ -28,16 +31,28 @@ let rec find (id : string) (table : symbol_table) : Ast.typ =
 let add_scope (table : symbol_table) : symbol_table = 
   StringMap.empty :: table
 
-(* Removes most recent scope *)
-let remove_scope (_ :: prev : symbol_table) : symbol_table = 
-  prev
+let new_table : symbol_table =
+  [StringMap.empty]
 
-let check_script_scope (table : symbol_table) (s : Sast.sstmt) (statement : string): Sast.sstmt = 
+let new_table_from_formals formals : symbol_table =
+    [List.fold_left (fun x y -> StringMap.add (snd y) (fst y) x ) StringMap.empty formals ]
+
+(* Removes most recent scope
+let remove_scope (_ :: prev : symbol_table) : symbol_table = 
+  prev *)
+
+(* let check_script_scope (table : symbol_table) (s : Sast.sstmt) (statement : string): Sast.sstmt = 
   match table with
-  | [_] -> s
-  | _   -> raise (Failure ("Cannot do " ^ statement ^ " in global scope"))
+  | [_] -> raise (Failure ("Cannot do " ^ statement ^ " in global scope"))
+  | _   -> s *)
   
 let check_program (script: stmt list) (functions: func_def list) =
+
+  let find_func fname = 
+    match (List.find_opt (fun x -> x.fname = fname) functions) with
+    | Some (fd) -> fd
+    | None -> raise (Failure ("Function " ^ fname ^ " not defined"))
+    in
 
   let rec check_expr (table: symbol_table) e : sexpr =
     
@@ -110,32 +125,31 @@ let check_program (script: stmt list) (functions: func_def list) =
                         if v_type = typ
                         then (typ, SAssign(s, e'))
                         else raise (Failure ("Expression of type " ^ Ast.string_of_typ v_type ^ " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
-    (* | Call(fname, args) as call ->
+    | Call(fname, args) as call ->
                             let fd = find_func fname in (*find function in symbol table*)
                             let param_length = List.length fd.formals in (*get length of input parameters*)
                             if List.length args != param_length then (* check if input parameters and input signature length equal*)
-                              raise (Failure ("expecting " ^ string_of_int param_length ^ (*if not, fail*)
+                              raise (Failure ("Expecting " ^ string_of_int param_length ^ (*if not, fail*)
                                               " arguments in " ^ string_of_expr call))
-                            else let check_call (ft, _) e = (*i dont know what this is*)
-                                   let (et, e') = check_expr e in
-                                   let err = "illegal argument found " ^ string_of_typ et ^
-                                             " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e
-                                   in (check_assign ft et err, e')
-                              in
-                              let args' = List.map2 check_call fd.formals args
-                              in (fd.rtyp, SCall(fname, args')) *) 
+                            else  let check_call (ft, _) e = (*oooh, basically checks to see that function type equals arg type. Lol *)
+                                    let (et, e') = check_expr table e in
+                                    if ft = et
+                                    then (et, e')
+                                    else raise ( Failure ("Illegal argument found " ^ string_of_typ et ^
+                                             ", expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))
+                                  in
+                                  let args' = List.map2 check_call fd.formals args (* Calls check_call on each (formal, arg) pair *)
+                                  in (fd.rtyp, SCall(fname, args'))  
 (* | Lambda (s, e) -> GET TYPE OF e (check_expr e), THEN _INFER_ TYPE OF s (WEIRD!) *)
   in
 
-
-  (* I deal with blocks in two places here. Hmm. How does that work *)
-  let rec check_stmt_list (table: symbol_table) =
-    function
+  let rec check_stmt_list (table: symbol_table) (func : Ast.func_def option) (lst : Ast.stmt list) : Sast.sstmt list =
+    match lst with
     | [] -> []
-    | Block sl :: sl'  -> check_stmt_list table (sl @ sl') (* Add scoping add/remove here *)
-    | s :: sl -> check_stmt table s :: check_stmt_list table sl (* add variable declaration here *)
+    | s :: sl  -> let (s', updated_table) = check_stmt table s func in
+                  s' :: (check_stmt_list updated_table func sl )
   (* Return a semantically-checked statement i.e. containing sexprs *)
-  and check_stmt (table: symbol_table) =
+  and check_stmt (table: symbol_table) (s : Ast.stmt) (func : Ast.func_def option): sstmt * symbol_table =
   (* Statements may follow a return (though we issue a warning if so) 
   
     CHECKS are applied to ensure that expressions are of a certain type in certain statements, 
@@ -148,27 +162,56 @@ let check_program (script: stmt list) (functions: func_def list) =
       else raise (Failure ("Expression of type bool expected"))
     in
 
-    function 
-    | Block sl            -> SBlock (check_stmt_list (add_scope table) sl) (*add new scope to table*)
-    | Expr e              -> SExpr (check_expr table e)
-    | IfElse(e, st1, st2) -> SIfElse(check_bool_expr table e, check_stmt table st1, check_stmt table st2) (*check that exprs are of a certain kind*)
-    | While(e, st)        -> SWhile(check_bool_expr table e, check_stmt table st) (*check that exprs are of a certain kind*)
-    | For(e1, e2, e3, st) -> (* Check that stmt is DeclAssign, add it to table*) 
-      SFor(check_stmt table e1, check_bool_expr table e2, check_expr table e3, check_stmt table st) (*check that exprs are of a certain kind*)
-    (* | Continue            -> check_script_scope table SContinue "continue"
-    | Break               -> check_script_scope table SBreak "continue" 
-    | Return e            -> let (t, e') = check_expr e in
-                             if t = func.rtyp then SReturn (t, e')
-                             else raise (Failure ("return gives " ^ string_of_typ t ^ " expected " ^
-                                         string_of_typ func.rtyp ^ " in " ^ string_of_expr e)) *)
-  (* | Declare (typ, s) ->  add s typ table *)
-      (* | DeclAssign (typ, s, e) -> if StringMap.mem a table 
-                                then let typ = StringMap.find a table in
-                                  let e' = check_expr table e in
-                                  let v_type = (fst e') in
-                                  if v_type = typ
-                                  then (typ, SAssign(a, e'))
-                                  else raise (Failure ("Expression of type " ^ Ast.string_of_typ v_type ^ 
-                                              " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
-                                else raise (Failure ("Variable not in scope")) *)
-    in 0
+    match s with                (*add new scope to table for this block, return old scope though*)
+    | Block sl            -> (SBlock (check_stmt_list (add_scope table) func sl), table)
+    | Expr e              -> (SExpr (check_expr table e), table)
+    | IfElse(e, st1, st2) -> (SIfElse(check_bool_expr table e, fst (check_stmt table st1 func), fst (check_stmt table st2 func)), table)
+    | If(e, st)          -> (SIf(check_bool_expr table e, fst (check_stmt table st func)), table)
+    | While(e, st)        -> (SWhile(check_bool_expr table e, fst (check_stmt table st func)), table) 
+    (* This for loop thing requires extra thought and care. Check that stmt is DeclAssign, add it to table, check that e2 is boolean *)
+    | For(DeclAssign(typ, a, e) as e1, e2, e3, st) -> 
+      (SFor(fst (check_stmt table e1 func), check_bool_expr table e2, check_expr table e3, fst (check_stmt table st func)) , table)
+    | For(_, _, _, _)     -> raise (Failure ("First statement in for loop must be assignment"))
+    | Continue            -> (SContinue, table) (* Add proper checks!!! *)
+    | Break               -> (SBreak , table) (* Add proper checks!!! *)
+    | Return e            -> let (t, e') = check_expr table e in
+                            (
+                             match func with 
+                             | Some (f_def) when t = f_def.rtyp -> (SReturn (t, e'), table)
+                             | Some(f_def) -> raise (Failure ("Return gives " ^ string_of_typ t ^ " expected " ^
+                                         string_of_typ f_def.rtyp ^ " in " ^ string_of_expr e)) 
+                             | None -> raise (Failure ("Cannot do return in global scope") )
+                            )
+   
+    | Declare (typ, s) ->  (SDeclare(typ, s), add s typ table)
+    | DeclAssign (typ, s, e) -> 
+        let updated_table = add s typ table in
+        let e' = check_expr table e in (* does not use updated table because any var in e must exist beforehand *)
+        let v_type = (fst e') in
+        if v_type = typ
+        then (SDeclAssign(typ, s, e'), updated_table)
+        else raise (Failure ("Expression of type " ^ Ast.string_of_typ v_type ^ 
+                    " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
+    in 
+
+    let check_func f = 
+      {
+      srtyp = f.rtyp;
+      sfname = f.fname;
+      sformals = f.formals;
+      sbody = check_stmt_list (new_table_from_formals f.formals) (Some(f)) f.body;
+      }
+    
+    in
+
+    let check_functions functions = 
+      List.map (check_func) functions
+    
+    in
+
+    let check_script script = 
+      check_stmt_list (new_table) (None) script
+
+    in
+    
+    (check_script script, check_functions functions)
