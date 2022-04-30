@@ -71,8 +71,4 @@ Please see Testing.pdf.
 ### Features in Progress
 
 * Nested array indexing (ast, parser)
-* Standalone if statement (dangling if: parser)
-* Allow only assignment in the first slot of a for loop (parser or semantics?)
-* Allow only boolean in the second slot of for loop and slot of while loop (parser or semantics?)
-* Allow return statement only inside functions (parser or semantics?)
-* Allow continue/break only in while/for/if/else (parser or semantics?)
+* Allow continue/break only inside while/for (semantics)
