@@ -143,6 +143,13 @@ let check_program (script: stmt list) (functions: func_def list) =
 (* | Lambda (s, e) -> GET TYPE OF e (check_expr e), THEN _INFER_ TYPE OF s (WEIRD!) *)
   in
 
+  let check_bool_expr (table: symbol_table) e : sexpr = 
+    let e' = check_expr table e in
+    if (fst e') = Bool
+    then e'
+    else raise (Failure ("Expression of type bool expected"))
+  in
+
   let rec check_stmt_list (table: symbol_table) (func : Ast.func_def option) (lst : Ast.stmt list) : Sast.sstmt list =
     match lst with
     | [] -> []
@@ -155,12 +162,7 @@ let check_program (script: stmt list) (functions: func_def list) =
     CHECKS are applied to ensure that expressions are of a certain type in certain statements, 
     AND symbol table is always passed in and then the updated symbol table returned *)
     
-    let check_bool_expr (table: symbol_table) e : sexpr = 
-      let e' = check_expr table e in
-      if (fst e') = Bool
-      then e'
-      else raise (Failure ("Expression of type bool expected"))
-    in
+
 
     match s with                (*add new scope to table for this block, return old scope though*)
     | Block sl            -> (SBlock (check_stmt_list (add_scope table) func sl), table)
@@ -195,13 +197,41 @@ let check_program (script: stmt list) (functions: func_def list) =
                     " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
     in 
 
+
+    let rec check_return_stmt_list (lst : Ast.stmt list) =
+      match lst with
+      | [] -> false
+      | hd::tl -> (
+                  let hd_returns = check_return_stmt hd in
+                  match tl with
+                  | [] when hd_returns -> true 
+                  | _ when hd_returns -> let () = Printf.eprintf "Warning: code after a return statement in some block\n" in true
+                  | _ -> check_return_stmt_list tl
+                  )
+    and check_return_stmt (s : Ast.stmt) =
+      match s with
+      | Block sl -> check_return_stmt_list sl
+      | Return _ -> true
+      | IfElse(_, st1, st2) -> check_return_stmt st1 && check_return_stmt st2
+      | If(_, st)           -> check_return_stmt st (* Supposed to also check if the condition is always true, ehhh *)
+      | While(_, st)        -> check_return_stmt st (* Supposed to also check if the condition is always true, ehhh *)
+      | For(_, _, _, st)    -> check_return_stmt st
+      | _ -> false
+    in
+    let check_return_function (func : Ast.func_def) =
+      check_return_stmt_list func.body
+    in
+
     let check_func f = 
+      if check_return_function f 
+      then
       {
       srtyp = f.rtyp;
       sfname = f.fname;
       sformals = f.formals;
       sbody = check_stmt_list (new_table_from_formals f.formals) (Some(f)) f.body;
       }
+      else raise (Failure ("Not all code paths return"))
     
     in
 
@@ -215,4 +245,7 @@ let check_program (script: stmt list) (functions: func_def list) =
 
     in
     
-    (check_script script, check_functions functions)
+    let sscript = check_script script
+    and sfunctions = check_functions functions
+    in
+    (sscript, sfunctions)
