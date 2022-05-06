@@ -31,7 +31,7 @@ exception Error of string
 
 let translate (globals, functions) =
   let context = L.global_context () in
-  let the_module = create_module context "Sift" in
+  let the_module = L.create_module context "Sift" in
 
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
@@ -45,7 +45,7 @@ let translate (globals, functions) =
       A.Int   -> i32_t
     | A.Bool  -> i1_t
     | A.Float -> float_t
-    | A.Void  -> void_t
+    (*| A.Void  -> void_t*)
     | A.String -> str_t
     (* Arrays as list of strings *)
   in
@@ -74,7 +74,7 @@ let translate (globals, functions) =
   let word_tokenize_t : L.lltype =
     L.function_type i32_t [| str_t |] in  
   let word_tokenize_func : L.llvalue =
-    L.declare_function "word_tokenize" tokenize_t the_module in
+    L.declare_function "word_tokenize" word_tokenize_t the_module in
 
   (* TODO: sent tokenize, return type, list of strings *)
   let sent_tokenize_t : L.lltype =
@@ -149,7 +149,7 @@ let translate (globals, functions) =
   
       let formals = List.fold_left2 add_formal StringMap.empty fdecl.sformals
           (Array.to_list (L.params the_function)) in
-      List.fold_left add_local formals fdecl.slocals
+      List.fold_left add_local formals fdecl.sformals
     in
   
     (* Return the value for a variable or formal argument.
@@ -226,7 +226,7 @@ let translate (globals, functions) =
      | SExpr e -> ignore(build_expr builder e); builder (* We need the original builder value hence we discard the e.address returned by the expression*)
      | SReturn e -> 
        ignore(L.build_ret (build_expr builder e) builder); builder
-     | SIf (predicate, then_stmt, else_stmt) ->
+     | SIfElse (predicate, then_stmt, else_stmt) ->
         let bool_val = build_expr builder predicate in
 
         let then_bb = L.append_block context "then" the_function in
