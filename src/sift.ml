@@ -21,12 +21,12 @@
      let ast = Parser.main Scanner.tokenize lexbuf in
      match !action with
        Ast -> print_string (Ast.string_of_program ast)
-     | _ -> let sast = Semant.check ast in
+     | _ -> let sast = Semantics.check ast in
        match !action with
          Ast   -> ()
        | Sast    -> print_string (Sast.string_of_sprogram sast)
-       | LLVM_IR -> print_string (Llvm.string_of_llmodule (Codegen.translate sast))
-       | Compile -> let m = Codegen.translate sast in
+       | LLVM_IR -> print_string (Llvm.string_of_llmodule (Irgen.translate sast))
+       | Compile -> let m = Irgen.translate sast in
      Llvm_analysis.assert_valid_module m;
      print_string (Llvm.string_of_llmodule m)
    
