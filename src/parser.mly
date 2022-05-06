@@ -40,8 +40,8 @@
 %nonassoc NOELSE
 
 
-%start program
-%type <Ast.program> program
+%start main
+%type <Ast.program> main
 
 %right ASSIGN
 %left PIPE
@@ -61,7 +61,7 @@
 %%
 
 /* add function declarations*/
-program:
+main:
   decls EOF { $1}
 
 decls:
