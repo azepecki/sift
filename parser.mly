@@ -18,7 +18,7 @@
 /* Assignment */
 %token ASSIGN 
 /* Keywords */
-%token IF ELIF ELSE SWITCH CASE FOR WHILE CONTINUE BREAK DEFAULT LAMBDA DEFINE EXIT RETURN NULL TRUE FALSE
+%token IF ELIF ELSE SWITCH CASE DEFAULT FOR WHILE CONTINUE BREAK LAMBDA DEFINE EXIT RETURN NULL TRUE FALSE
 %token IMPORT LIST FROM PURE 
 /* Primitive Data Types */
 %token INT FLOAT CHAR SYMBOL STRING BOOL
@@ -29,6 +29,7 @@
 %token <string> STRING_LITERAL
 %token <bool> BLIT
 %token <string> ID
+%token INCREMENT DECREMENT
 %token EOF
 
 
@@ -57,6 +58,7 @@
 %left ADD SUBTRACT
 %left MULTIPLY DIVIDE MOD
 %right NOT
+%right INCREMENT DECREMENT
 
 %%
 
@@ -114,6 +116,15 @@ open_stmt:
   | IF LPAREN expr RPAREN closed_stmt ELSE open_stmt  { IfElse($3, $5, $7) }
   | WHILE LPAREN expr RPAREN open_stmt                { While ($3, $5)  }
   | FOR LPAREN stmt expr SEMI expr RPAREN open_stmt   { For ($3, $4, $6, $8) }
+  | SWITCH expr COLON switch_cases                    { 
+                                                        let rec build_switch cases = 
+                                                        match cases with
+                                                        | [default_stmt] -> snd default_stmt 
+                                                        | hd::tl -> IfElse(Binop($2, Equal, fst hd), snd hd, build_switch tl)
+                                                        | _ -> raise (Failure ("Parse error: no cases in switch"))
+                                                        in
+                                                        build_switch $4
+                                                      } 
   // | LBRACE stmt_list RBRACE                          { Block $2 }
 
 closed_stmt: 
@@ -135,6 +146,9 @@ non_if_stmt:
   /* declaration + assignment */
   | typ ID ASSIGN expr SEMI                          { DeclAssign($1, $2, $4) }
 
+switch_cases:
+  | DEFAULT COLON stmt                          {[(BoolLit(true), $3)]}
+  | CASE expr COLON stmt switch_cases {($2, $4) :: $5}
 
 expr:
   /* nesting */
@@ -164,6 +178,9 @@ expr:
   | NOT expr            { Unop(Not, $2)          }
   /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
+  // | ID ADD ASSIGN expr  { Assign($1, Binop(Id($1), Add, $4))}
+  | ID INCREMENT          { Assign($1, Binop(Id($1), Add, Literal(1)))}
+  | ID DECREMENT          { Assign($1, Binop(Id($1), Sub, Literal(1)))}
   /* lambdas  
   | lambda              {$1}
    lambda call 

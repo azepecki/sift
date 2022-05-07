@@ -115,18 +115,18 @@ let rec string_of_stmt = function
     Block(stmts) ->
       "{\n" ^ String.concat "\n" (List.map string_of_stmt stmts) ^ "}"
   | Expr(expr) -> string_of_expr expr ^ ";";
-  | Return(expr) -> "return " ^ string_of_expr expr ^ ";";
-  | If(e, s) -> "if (" ^ string_of_expr e ^ ")"  ^ string_of_stmt s ^ ";"
+  | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";
+  | If(e, s) -> "if (" ^ string_of_expr e ^ ")"  ^ string_of_stmt s ^ ";\n"
   | IfElse(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")"  ^
-      string_of_stmt s1  ^ "else"  ^ string_of_stmt s2 ^ ";"
-  | For(e1, e2, e3, s) ->
-      "for (" ^ string_of_stmt e1  ^ " " ^ string_of_expr e2 ^ " ; " ^
+      string_of_stmt s1  ^ "else"  ^ string_of_stmt s2 ^ ";\n"
+  | For(e1, e2, e3, s) -> let decl = string_of_stmt e1 in
+      "for (" ^ String.sub decl 0 ((String.length decl) - 2)  ^ "; " ^ string_of_expr e2 ^ " ; " ^
       string_of_expr e3  ^ ") " ^ string_of_stmt s 
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") "  ^ string_of_stmt s 
-  | Continue -> "continue;"
-  | Break ->  "break;"
-  | Declare(t, s) -> string_of_typ t ^ " " ^ s ^ ";"
-  | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e ^ ";"
+  | Continue -> "continue;\n"
+  | Break ->  "break;\n"
+  | Declare(t, s) -> string_of_typ t ^ " " ^ s ^ ";\n"
+  | DeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e ^ ";\n"
 
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"

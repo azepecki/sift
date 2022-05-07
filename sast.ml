@@ -83,8 +83,9 @@ let rec string_of_sstmt = function
   | SIf(e, s) -> "if (" ^ string_of_sexpr e ^ ")"  ^ string_of_sstmt s ^ ";"
   | SIfElse(e, s1, s2) ->  "if (" ^ string_of_sexpr e ^ ")"  ^
       string_of_sstmt s1  ^ "else"  ^ string_of_sstmt s2 ^ ";"
-  | SFor(e1, e2, e3, s) ->
-      "for (" ^ string_of_sstmt e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
+  | SFor(e1, e2, e3, s) -> let decl = string_of_sstmt e1 in
+       "for (" ^ String.sub decl 0 ((String.length decl) - 2)  ^ "; " 
+       ^ string_of_sexpr e2 ^ " ; " ^
       string_of_sexpr e3  ^ ") " ^ "{" ^ string_of_sstmt s ^ "}"
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") "  ^ string_of_sstmt s 
   | SContinue -> "continue;\n"

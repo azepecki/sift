@@ -105,7 +105,7 @@ let check_program (script: stmt list) (functions: func_def list) =
                                   | Add | Sub | Mul | Div | Mod when typ1 = Int              -> (Int,    SBinop(e1', op, e2'))  
                                   | Add | Sub | Mul | Div when typ1 = Float                  -> (Float,  SBinop(e1', op, e2'))  
                                   | Equal | Neq | Less | Leq | Greater | Geq when typ1 = Int -> (Bool,   SBinop(e1', op, e2')) 
-                                  | And | Or when typ1 = Bool                                -> (Bool,   SBinop(e1', op, e2'))  
+                                  | Equal | Neq | And | Or when typ1 = Bool                                -> (Bool,   SBinop(e1', op, e2'))  
                                   | _ -> raise (Failure ("Invalid operation " ^ Ast.string_of_op op ^ 
                                                 " with argument types " ^ Ast.string_of_typ typ1 ^ 
                                                 ", " ^ Ast.string_of_typ typ2) )
@@ -218,12 +218,22 @@ let check_program (script: stmt list) (functions: func_def list) =
       | For(_, _, _, st)    -> check_return_stmt st
       | _ -> false
     in
-    let check_return_function (func : Ast.func_def) =
-      check_return_stmt_list func.body
+
+    let rec check_break_continue_stmt_list (depth : int) (lst : Ast.stmt list) =
+      List.for_all (check_break_continue_stmt depth) lst
+    and check_break_continue_stmt (depth : int) (s : Ast.stmt) =
+      match s with
+      | Block sl -> check_break_continue_stmt_list depth sl 
+      | IfElse(_, st1, st2) -> check_break_continue_stmt depth st1 && check_break_continue_stmt depth st2
+      | If(_, st)           -> check_break_continue_stmt depth st     (* Supposed to also check if the condition is always true, ehhh *)
+      | While(_, st)        -> check_break_continue_stmt (depth+1) st (* Supposed to also check if the condition is always true, ehhh *)
+      | For(_, _, _, st)    -> check_break_continue_stmt (depth+1) st
+      | Break | Continue    -> if depth > 0 then true else raise (Failure "No loop to break/continue.")
+      | _ -> true
     in
 
     let check_func f = 
-      if check_return_function f 
+      if (check_break_continue_stmt_list 0 f.body) && (check_return_stmt_list f.body)
       then
       {
       srtyp = f.rtyp;
@@ -237,11 +247,12 @@ let check_program (script: stmt list) (functions: func_def list) =
 
     let check_functions functions = 
       List.map (check_func) functions
-    
     in
 
     let check_script script = 
-      check_stmt_list (new_table) (None) script
+      if (check_break_continue_stmt_list 0 script) && (not (check_return_stmt_list script))
+      then check_stmt_list (new_table) (None) script
+      else raise (Failure ("Can't return in global scope"))
 
     in
     

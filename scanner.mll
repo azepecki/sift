@@ -40,6 +40,8 @@ rule token = parse
 
 (* assignment *)
 | "=" { ASSIGN }
+| "++" { INCREMENT }
+| "--" { DECREMENT }
 
 (* pipe *)
 | "|>" { PIPE }
