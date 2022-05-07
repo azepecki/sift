@@ -6,6 +6,56 @@
 
 using namespace std;
 
+string InputString(){
+	string str;
+	cin>>str;
+	return str;
+}
+
+int InputInteger(){
+	int str;
+	
+	cin>>str;
+
+	return str;
+}
+
+string InputSentence(){
+	string sentence;
+	getline(cin, sentence);
+	return sentence;
+}
+
+void testInput(){
+	string str, exp;
+	cin>>str;
+	cin>>exp;
+	test(str, exp);
+}
+
+void testmatchInput(){
+	string sentence, exp;
+	getline(cin, sentence);
+	cin>>exp;
+	vector<int> result = match_indices(sentence, exp);
+}
+
+void testmatchInput(){
+	string sentence, exp;
+	getline(cin, sentence);
+	cin>>exp;
+	vector<string> result = match(sentence, exp);
+}
+
+void splitInput(){
+	string sentence;
+	getline(cin, sentence);
+	char ch;
+	cin>>ch;
+	vector<string> tokens = split(sentence, ch);
+	for(int i = 0 ; i < tokens.size(); i++) cout<<tokens[i]<<"-";
+}
+
 bool test(string str, string exp){
 
 	regex e(exp);
