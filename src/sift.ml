@@ -18,14 +18,14 @@
      let channel = ref stdin in
      Arg.parse speclist (fun filename -> channel := open_in filename) usage_msg;
      let lexbuf = Lexing.from_channel !channel in
-     let ast = Parser.main Scanner.token lexbuf in
+     let (v, f) = Parser.main Scanner.token lexbuf in
      match !action with
-       Ast -> print_string (Ast.string_of_program ast)
-     | _ -> let sast = Semantics.check_program ast in
+       Ast -> print_string (Ast.string_of_program (v, f))
+     | _ -> let (sast, func) = Semantics.check_program v f in
        match !action with
          Ast   -> ()
-       | Sast    -> print_string (Sast.string_of_sprogram sast)
-       | LLVM_IR -> print_string (Llvm.string_of_llmodule (Irgen.translate sast))
+       | Sast    -> print_string (Sast.string_of_sprogram (sast,func))
+       | LLVM_IR -> print_string (Llvm.string_of_llmodule (Irgen.translate (sast, func)))
        | Compile -> let m = Irgen.translate sast in
      Llvm_analysis.assert_valid_module m;
      print_string (Llvm.string_of_llmodule m)
