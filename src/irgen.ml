@@ -50,21 +50,25 @@ let translate (globals, functions) =
     (* Arrays as list of strings *)
   in
 
+  (* Done *)
   let string_concat_t : L.lltype =
     L.function_type str_t [| str_t; str_t |] in  
   let string_concat_func : L.llvalue =
     L.declare_function "str_add" string_concat_t the_module in
   
+  (* Done *)
   let string_equality_t : L.lltype = 
     L.function_type i1_t [| str_t; str_t |] in
   let string_equality_func : L.llvalue =
     L.declare_function "str_eql" string_equality_t the_module in
 
+  (* Done *)
   let len_t : L.lltype =
     L.function_type i32_t [| str_t |] in  
   let len_func : L.llvalue =
     L.declare_function "len" len_t the_module in
 
+  (* Done *)
   let printf_t : L.lltype =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
@@ -80,19 +84,19 @@ let translate (globals, functions) =
   let sent_tokenize_t : L.lltype =
     L.function_type i32_t [| str_t |] in  
   let sent_tokenize_func : L.llvalue =
-    L.declare_function "send_tokenize" sent_tokenize_t the_module in
+    L.declare_function "sent_tokenize" sent_tokenize_t the_module in
 
   (* TODO: regex, return type, list of strings *)
   let reg_match_t : L.lltype =
     L.function_type i32_t [| str_t; str_t |] in  
   let reg_match_func : L.llvalue =
-    L.declare_function "match" reg_match_t the_module in
+    L.declare_function "reg_match" reg_match_t the_module in
   
   (* TODO: list of strings *)
   let reg_test_t : L.lltype =
     L.function_type i1_t [| str_t; str_t |] in  
   let reg_test_func : L.llvalue =
-    L.declare_function "test" reg_test_t the_module in
+    L.declare_function "reg_test" reg_test_t the_module in
   
   (* TODO: match_indices, return type, list of indices *)
   let reg_match_indices_t : L.lltype =
