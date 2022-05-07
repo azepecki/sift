@@ -3,7 +3,6 @@
    and dump the module *)
 
    type action = Ast | Sast | LLVM_IR | Compile
-
    let () = 
      let action = ref Compile in
      let set_action a () = action := a in
@@ -14,7 +13,7 @@
        ("-c", Arg.Unit (set_action Compile),
          "Check and print the generated LLVM IR (default)");
      ] in
-     let usage_msg = "usage: ./sift.native [-a|-s|-l|-c] [file.tl]" in
+     let usage_msg = "usage: ./sift.native [-a|-s|-l|-c] [file.sf]" in
      let channel = ref stdin in
      Arg.parse speclist (fun filename -> channel := open_in filename) usage_msg;
      let lexbuf = Lexing.from_channel !channel in
