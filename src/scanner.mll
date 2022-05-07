@@ -40,6 +40,8 @@ rule token = parse
 
 (* assignment *)
 | "=" { ASSIGN }
+| "++" { INCREMENT }
+| "--" { DECREMENT }
 
 (* pipe *)
 | "|>" { PIPE }
@@ -59,6 +61,9 @@ rule token = parse
 | "list"     { LIST }
 | "dict"     { DICT }
 | "set"      { SET}
+
+(* higher order function *)
+| "fun"      { FUNCTION }
 
 (* Keywords *)
 | "if"       { IF }

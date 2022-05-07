@@ -18,17 +18,19 @@
 /* Assignment */
 %token ASSIGN 
 /* Keywords */
-%token IF ELIF ELSE SWITCH CASE FOR WHILE CONTINUE BREAK DEFAULT LAMBDA DEFINE EXIT RETURN NULL TRUE FALSE
+%token IF ELIF ELSE SWITCH CASE DEFAULT FOR WHILE CONTINUE BREAK LAMBDA DEFINE EXIT RETURN NULL TRUE FALSE
 %token IMPORT LIST FROM PURE 
 /* Primitive Data Types */
 %token INT FLOAT CHAR SYMBOL STRING BOOL
 /* Non-primitive Data Types */
 %token ARRAY LIST TUPLE SET DICT
+%token FUNCTION
 %token <int> INT_LITERAL
 %token <float> FLOAT_LITERAL
 %token <string> STRING_LITERAL
 %token <bool> BLIT
 %token <string> ID
+%token INCREMENT DECREMENT
 %token EOF
 
 
@@ -40,8 +42,8 @@
 %nonassoc NOELSE
 
 
-%start main
-%type <Ast.program> main
+%start program
+%type <Ast.program> program
 
 %right ASSIGN
 %left PIPE
@@ -57,11 +59,12 @@
 %left ADD SUBTRACT
 %left MULTIPLY DIVIDE MOD
 %right NOT
+%right INCREMENT DECREMENT
 
 %%
 
 /* add function declarations*/
-main:
+program:
   decls EOF { $1}
 
 decls:
@@ -79,16 +82,30 @@ typ:
   | FLOAT           { Float }
   | STRING          { String }
   | ARRAY LT typ GT { Arr($3) }
+  | FUNCTION LT typ_list GT  { Fun ($3) }
+
+typ_list:
+  | typ {[$1]}
+  | typ COMMA typ_list {$1 :: $3}
 
 /* fdecl */
 fdecl:
-  DEFINE vdecl LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
+  | DEFINE vdecl LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
   {
     {
       rtyp=fst $2;
       fname=snd $2;
       formals= $4;
       body= $7
+    }
+  }
+  | DEFINE vdecl LPAREN formals_opt RPAREN ANON expr SEMI
+  {
+    {
+      rtyp=fst $2;
+      fname=snd $2;
+      formals= $4;
+      body= [Return $7]
     }
   }
 
@@ -114,6 +131,15 @@ open_stmt:
   | IF LPAREN expr RPAREN closed_stmt ELSE open_stmt  { IfElse($3, $5, $7) }
   | WHILE LPAREN expr RPAREN open_stmt                { While ($3, $5)  }
   | FOR LPAREN stmt expr SEMI expr RPAREN open_stmt   { For ($3, $4, $6, $8) }
+  | SWITCH expr COLON switch_cases                    { 
+                                                        let rec build_switch cases = 
+                                                        match cases with
+                                                        | [default_stmt] -> snd default_stmt 
+                                                        | hd::tl -> IfElse(Binop($2, Equal, fst hd), snd hd, build_switch tl)
+                                                        | _ -> raise (Failure ("Parse error: no cases in switch"))
+                                                        in
+                                                        build_switch $4
+                                                      } 
   // | LBRACE stmt_list RBRACE                          { Block $2 }
 
 closed_stmt: 
@@ -135,12 +161,15 @@ non_if_stmt:
   /* declaration + assignment */
   | typ ID ASSIGN expr SEMI                          { DeclAssign($1, $2, $4) }
 
+switch_cases:
+  | DEFAULT COLON stmt                          {[(BoolLit(true), $3)]}
+  | CASE expr COLON stmt switch_cases {($2, $4) :: $5}
 
 expr:
   /* nesting */
    LPAREN expr RPAREN  { $2                     }
   /* literals and id */
-  |  INT_LITERAL        { Literal($1)            }
+  | INT_LITERAL        { Literal($1)            }
   | STRING_LITERAL      { StrLit($1)             }
   | FLOAT_LITERAL       { FloatLit($1)           }
   | BLIT                { BoolLit($1)            }
@@ -164,6 +193,9 @@ expr:
   | NOT expr            { Unop(Not, $2)          }
   /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
+  // | ID ADD ASSIGN expr  { Assign($1, Binop(Id($1), Add, $4))}
+  | ID INCREMENT          { Assign($1, Binop(Id($1), Add, Literal(1)))}
+  | ID DECREMENT          { Assign($1, Binop(Id($1), Sub, Literal(1)))}
   /* lambdas  
   | lambda              {$1}
    lambda call 
