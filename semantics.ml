@@ -27,6 +27,13 @@ let rec find (id : string) (table : symbol_table) : Ast.typ =
               then StringMap.find id h
               else find id t
 
+let rec find_opt (id : string) (table : symbol_table) : Ast.typ option = 
+  match table with 
+  | []     -> None
+  | h :: t -> if StringMap.mem id h
+              then Some(StringMap.find id h)
+              else find_opt id t
+
 (* Adds a new scope *)
 let add_scope (table : symbol_table) : symbol_table = 
   StringMap.empty :: table
@@ -64,7 +71,11 @@ let check_program (script: stmt list) (functions: func_def list) =
     in
 
     match e with
-    | Id var               -> (find var table, SId var)
+    | Id var               -> (
+                              try (find var table, SId var) 
+                              with Failure _ -> let f_def = find_func var in (* If variable not in scope , check if it is a function *)
+                                                (Fun(f_def.rtyp::(List.map (fst) f_def.formals)), SId var) (* test the ordering of this *)
+                              )
     | Literal l               -> (Int, SLiteral l)
     | FloatLit l              -> (Float, SFloatLit l)
     | BoolLit l               -> (Bool, SBoolLit l)
@@ -105,7 +116,7 @@ let check_program (script: stmt list) (functions: func_def list) =
                                   | Add | Sub | Mul | Div | Mod when typ1 = Int              -> (Int,    SBinop(e1', op, e2'))  
                                   | Add | Sub | Mul | Div when typ1 = Float                  -> (Float,  SBinop(e1', op, e2'))  
                                   | Equal | Neq | Less | Leq | Greater | Geq when typ1 = Int -> (Bool,   SBinop(e1', op, e2')) 
-                                  | Equal | Neq | And | Or when typ1 = Bool                                -> (Bool,   SBinop(e1', op, e2'))  
+                                  | Equal | Neq | And | Or when typ1 = Bool                  -> (Bool,   SBinop(e1', op, e2'))  
                                   | _ -> raise (Failure ("Invalid operation " ^ Ast.string_of_op op ^ 
                                                 " with argument types " ^ Ast.string_of_typ typ1 ^ 
                                                 ", " ^ Ast.string_of_typ typ2) )
@@ -125,21 +136,30 @@ let check_program (script: stmt list) (functions: func_def list) =
                         if v_type = typ
                         then (typ, SAssign(s, e'))
                         else raise (Failure ("Expression of type " ^ Ast.string_of_typ v_type ^ " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
-    | Call(fname, args) as call ->
-                            let fd = find_func fname in (*find function in symbol table*)
-                            let param_length = List.length fd.formals in (*get length of input parameters*)
-                            if List.length args != param_length then (* check if input parameters and input signature length equal*)
-                              raise (Failure ("Expecting " ^ string_of_int param_length ^ (*if not, fail*)
-                                              " arguments in " ^ string_of_expr call))
-                            else  let check_call (ft, _) e = (*oooh, basically checks to see that function type equals arg type. Lol *)
-                                    let (et, e') = check_expr table e in
-                                    if ft = et
-                                    then (et, e')
-                                    else raise ( Failure ("Illegal argument found " ^ string_of_typ et ^
-                                             ", expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))
-                                  in
-                                  let args' = List.map2 check_call fd.formals args (* Calls check_call on each (formal, arg) pair *)
-                                  in (fd.rtyp, SCall(fname, args'))  
+    (* First look for a variable that references a function. If not found, look at global list of funcs. *)
+    | Call(fname, args) as call -> (
+                            let helper h t = 
+                              let param_length = List.length t in (*get length of input parameters*)
+                              if List.length args != param_length 
+                              then (* check if input parameters and input signature length equal*)
+                                raise (Failure ("Expecting " ^ string_of_int param_length ^ (*if not, fail*)
+                                                " arguments in " ^ string_of_expr call))
+                              else   ( let check_call ft e = (*oooh, basically checks to see that function type equals arg type. Lol *)
+                                        let (et, e') = check_expr table e in
+                                        if ft = et
+                                        then (et, e')
+                                        else raise ( Failure ("Illegal argument found " ^ string_of_typ et ^ ", expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))
+                                      in
+                                      let args' = List.map2 (check_call) t args (* Calls check_call on each (formal, arg) pair *)
+                                      in 
+                                      (h, SCall(fname, args'))  )
+                            in
+                            let f_typ = find_opt fname table in
+                            match f_typ with
+                            | Some(Fun(hd::tl)) -> helper hd tl
+                            | _ ->  let fd = find_func fname in (* find function in function delcarations *)
+                                    helper fd.rtyp (List.map fst fd.formals)
+    )
 (* | Lambda (s, e) -> GET TYPE OF e (check_expr e), THEN _INFER_ TYPE OF s (WEIRD!) *)
   in
 
@@ -161,8 +181,6 @@ let check_program (script: stmt list) (functions: func_def list) =
   
     CHECKS are applied to ensure that expressions are of a certain type in certain statements, 
     AND symbol table is always passed in and then the updated symbol table returned *)
-    
-
 
     match s with                (*add new scope to table for this block, return old scope though*)
     | Block sl            -> (SBlock (check_stmt_list (add_scope table) func sl), table)
@@ -225,8 +243,8 @@ let check_program (script: stmt list) (functions: func_def list) =
       match s with
       | Block sl -> check_break_continue_stmt_list depth sl 
       | IfElse(_, st1, st2) -> check_break_continue_stmt depth st1 && check_break_continue_stmt depth st2
-      | If(_, st)           -> check_break_continue_stmt depth st     (* Supposed to also check if the condition is always true, ehhh *)
-      | While(_, st)        -> check_break_continue_stmt (depth+1) st (* Supposed to also check if the condition is always true, ehhh *)
+      | If(_, st)           -> check_break_continue_stmt depth st     
+      | While(_, st)        -> check_break_continue_stmt (depth+1) st 
       | For(_, _, _, st)    -> check_break_continue_stmt (depth+1) st
       | Break | Continue    -> if depth > 0 then true else raise (Failure "No loop to break/continue.")
       | _ -> true

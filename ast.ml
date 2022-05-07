@@ -5,7 +5,7 @@ type op = Add | Sub | Mul | Div | Mod | Equal | Neq | Less |
 
 type uop = Not | Neg
 
-type typ = Int | Float | Bool  | String | Arr of typ (*| Char | Sym *)
+type typ = Int | Float | Bool  | String | Arr of typ | Fun of typ list
 
 (* int x: name binding *)
 type bind = typ * string
@@ -85,6 +85,7 @@ let rec string_of_typ = function
 | String -> "str"
 (* | Sym -> "sym" *)
 | Arr(t) -> string_of_typ t ^ "[]"
+| Fun(tl) -> "fun<" ^ String.concat ", " (List.map string_of_typ tl) ^ ">"
 
 
 let rec string_of_expr = function

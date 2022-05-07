@@ -62,6 +62,9 @@ rule token = parse
 | "dict"     { DICT }
 | "set"      { SET}
 
+(* higher order function *)
+| "fun"      { FUNCTION }
+
 (* Keywords *)
 | "if"       { IF }
 | "elif"     { ELIF }

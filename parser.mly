@@ -24,6 +24,7 @@
 %token INT FLOAT CHAR SYMBOL STRING BOOL
 /* Non-primitive Data Types */
 %token ARRAY LIST TUPLE SET DICT
+%token FUNCTION
 %token <int> INT_LITERAL
 %token <float> FLOAT_LITERAL
 %token <string> STRING_LITERAL
@@ -81,16 +82,30 @@ typ:
   | FLOAT           { Float }
   | STRING          { String }
   | ARRAY LT typ GT { Arr($3) }
+  | FUNCTION LT typ_list GT  { Fun ($3) }
+
+typ_list:
+  | typ {[$1]}
+  | typ COMMA typ_list {$1 :: $3}
 
 /* fdecl */
 fdecl:
-  DEFINE vdecl LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
+  | DEFINE vdecl LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
   {
     {
       rtyp=fst $2;
       fname=snd $2;
       formals= $4;
       body= $7
+    }
+  }
+  | DEFINE vdecl LPAREN formals_opt RPAREN ANON expr SEMI
+  {
+    {
+      rtyp=fst $2;
+      fname=snd $2;
+      formals= $4;
+      body= [Return $7]
     }
   }
 
@@ -154,7 +169,7 @@ expr:
   /* nesting */
    LPAREN expr RPAREN  { $2                     }
   /* literals and id */
-  |  INT_LITERAL        { Literal($1)            }
+  | INT_LITERAL        { Literal($1)            }
   | STRING_LITERAL      { StrLit($1)             }
   | FLOAT_LITERAL       { FloatLit($1)           }
   | BLIT                { BoolLit($1)            }
