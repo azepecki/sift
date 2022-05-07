@@ -17,7 +17,7 @@
      let channel = ref stdin in
      Arg.parse speclist (fun filename -> channel := open_in filename) usage_msg;
      let lexbuf = Lexing.from_channel !channel in
-     let (v, f) = Parser.main Scanner.token lexbuf in
+     let (v, f) = Parser.program Scanner.token lexbuf in
      match !action with
        Ast -> print_string (Ast.string_of_program (v, f))
      | _ -> let (sast, func) = Semantics.check_program v f in
