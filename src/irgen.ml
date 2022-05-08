@@ -29,7 +29,7 @@ module StringHash = Hashtbl.Make(HashtblString);;
 
 exception Error of string
 
-let translate (globals, functions) =
+let translate (script, functions) =
   let context = L.global_context () in
   let the_module = L.create_module context "Sift" in
 
