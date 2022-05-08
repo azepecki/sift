@@ -18,14 +18,44 @@ open Sast
 
 module StringMap = Map.Make(String)
 
-module HashtblString =
+(* Symbol Table: stores addresses of all variables *)
+
+(* Basically a linked list of string maps*)
+type symbol_table = (L.llvalue StringMap.t) list;; 
+
+(* Declares a new variable in current scope *)
+(* int x; *)
+let add (id : string) (addr : L.llvalue) (current_scope :: tl : symbol_table) : symbol_table =
+  (StringMap.add id addr current_scope) :: tl
+
+(* Tries finding in current scope, if fails then goes up in symbol table *)
+(* x; *)
+let rec lookup (id : string) (table : symbol_table) : L.llvalue = 
+  match table with 
+  | []     -> raise Not_found
+  | h :: t -> if StringMap.mem id h
+              then StringMap.find id h
+              else lookup id t
+
+(* Adds a new scope *)
+let add_scope (table : symbol_table) : symbol_table = 
+  StringMap.empty :: table
+
+let new_table : symbol_table =
+  [StringMap.empty]
+
+let new_table_from_formals formals : symbol_table =
+    [List.fold_left (fun x y -> StringMap.add (snd y) (fst y) x ) StringMap.empty formals ]
+
+
+(* module HashtblString =
    struct 
     type t = string
     let equal = ( = )
     let hash = Hashtbl.hash
    end;;
 
-module StringHash = Hashtbl.Make(HashtblString);;
+module StringHash = Hashtbl.Make(HashtblString);; *)
 
 exception Error of string
 
@@ -48,6 +78,12 @@ let translate (script, functions) =
     (*| A.Void  -> void_t*)
     | A.String -> str_t
     (* Arrays as list of strings *)
+    | A.Fun(hd::tl) -> 
+      let formal_types = Array.of_list (List.map (fun t -> ltype_of_typ t) tl)
+      and return_type = ltype_of_typ hd
+      in 
+      L.function_type return_type formal_types 
+
   in
 
   (* Done *)
@@ -104,15 +140,10 @@ let translate (script, functions) =
   let reg_match_indices_func : L.llvalue =
     L.declare_function "match_indices" reg_match_indices_t the_module in
 
-  (* Create a map of global variables after creating each *)
-  let global_vars : L.llvalue StringMap.t =
-    let global_var m (t, n) =
-      let init = L.const_int (ltype_of_typ t) 0
-      in StringMap.add n (L.define_global n init the_module) m in
-    List.fold_left global_var StringMap.empty globals in
-
   (* Define each function (arguments and return type) so we can
-     call it even before we've created its body *)
+     call it even before we've created its body 
+     These are GLOBAL 
+     Map : name -> (llvm address, func_def) *)
   let function_decls : (L.llvalue * sfunc_def) StringMap.t =
     let function_decl m fdecl =
       let name = fdecl.sfname
@@ -124,45 +155,31 @@ let translate (script, functions) =
     
     (* Fill in the body of the given function *)
   let build_function_body fdecl =
+
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
     let builder = L.builder_at_end context (L.entry_block the_function) in
   
+    (* Only for the int print, loool *)
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
   
-    (* Construct the function's "locals": formal arguments and locally
-        declared variables.  Allocate each on the stack, initialize their
-        value, if appropriate, and remember their values in the "locals" map *)
+    (* Construct the function's "locals": formal arguments. Allocate each on the stack, 
+    initialize their value and remember their values in the "locals" map *)
     let local_vars =
-      let add_formal m (t, n) p =
-        L.set_value_name n p;
-        let local = L.build_alloca (ltype_of_typ t) n builder in
-        ignore (L.build_store p local builder);
-        StringMap.add n local m
-  
-        (* Allocate space for any locally declared variables and add the
-         * resulting registers to our map 
-         build_alloc method is used to generate LLVM code.
-         *)
-        and add_local m (t, n) =
-          let local_var = L.build_alloca (ltype_of_typ t) n builder
-          (*
-            We add the address of local variable n with m   
-          *)
-          in StringMap.add n local_var m
-        in
-  
-      let formals = List.fold_left2 add_formal StringMap.empty fdecl.sformals
-          (Array.to_list (L.params the_function)) in
-      List.fold_left add_local formals fdecl.sformals
-    in
-  
-    (* Return the value for a variable or formal argument.
-        Check local names first, then global names
-        
-        We have separate maps for global and local variables
-        *)
-    let lookup n = try StringMap.find n local_vars
-      with Not_found -> StringMap.find n global_vars
+      let add_formal (table : symbol_table) (typ, name) param = 
+        (* Sets name of the param value *)
+        L.set_value_name name param; 
+        (* Allocates var of correct type with given name, returns address (local) *)
+        (* Can we cheat here by using L.type_of? (since semantic analysis succeeded?) *)
+        let local = L.build_alloca (ltype_of_typ typ) name builder in 
+        (* Stores param value in allocated address *)
+        ignore (L.build_store param local builder);
+        (* Add the (name, address) pair to symbol_table *)
+        add name local table
+      in 
+      let formals = List.fold_left2 add_formal new_table fdecl.sformals
+          (Array.to_list (L.params the_function)) 
+      in
+      formals
     in
 
     (* Construct code for an expression; return its value 
@@ -173,18 +190,24 @@ let translate (script, functions) =
 
     *)
 
-    let rec build_expr builder ((_, e) : sexpr) = match e with
+    let rec build_expr table builder ((_, e) : sexpr) = match e with
         SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
-      | SId s       -> L.build_load (lookup s) s builder
-      | SAssign (s, e) -> let e' = build_expr builder e in
+      | SId s       ->  
+        (try let addr = lookup s table in L.build_load addr s builder
+        with Not_found -> 
+          let (v, fdef) = StringMap.find s function_decls 
+          in
+          v)
+
+      | SAssign (s, e) -> let e' = build_expr table builder e in
 
         (*
           E.code ||
           e' -> e.addr
 
         *)
-        ignore(L.build_store e' (lookup s) builder); e'
+        ignore(L.build_store e' (lookup s table) builder); e'
         (*
           e1' = e1.eddr
           e2' = e2.addr
@@ -193,8 +216,8 @@ let translate (script, functions) =
            binary operation
           *)
       | SBinop (e1, op, e2) ->
-        let e1' = build_expr builder e1
-        and e2' = build_expr builder e2 in
+        let e1' = build_expr table builder e1
+        and e2' = build_expr table builder e2 in
         (match op with
             A.Add     -> L.build_add
           | A.Sub     -> L.build_sub
@@ -204,14 +227,45 @@ let translate (script, functions) =
           | A.Neq     -> L.build_icmp L.Icmp.Ne
           | A.Less    -> L.build_icmp L.Icmp.Slt
         ) e1' e2' "tmp" builder
-      | SCall ("print", [e]) ->
-        L.build_call printf_func [| int_format_str ; (build_expr builder e) |]
-          "printf" builder
+
+      (* General Call *)
       | SCall (f, args) ->
         let (fdef, fdecl) = StringMap.find f function_decls in
-        let llargs = List.rev (List.map (build_expr builder) (List.rev args)) in
+        let llargs = List.rev (List.map (build_expr table builder) (List.rev args)) in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
+
+      (* 
+        On all these calls, do not confuse the name with which they invoked
+        with the name that they have in the C file (though they may be the same ) 
+      *)
+      (* | SCall ("print", [e1]) ->
+        L.build_call printf_func [| int_format_str ; (build_expr table builder e1) |]
+          "printf" builder
+      | SCall ("str_add", [e1, e2]) ->
+         L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
+          "str_add" builder       
+      | SCall ("str_eql", [e1, e2]) ->
+         L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
+          "str_eql" builder 
+      | SCall ("len", [e1]) ->
+         L.build_call len_func [| (build_expr table builder e1) |]
+          "len" builder 
+      | SCall ("word_tokenize", [e1]) ->
+         L.build_call word_tokenize_func [| (build_expr table builder e1) |]
+          "word_tokenize" builder 
+      | SCall ("sent_tokenize", [e1]) ->
+         L.build_call sent_tokenize_func [| (build_expr table builder e1) |]
+          "sent_tokenize" builder 
+      | SCall ("match", [e1, e2]) ->
+         L.build_call reg_match_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
+          "reg_match" builder 
+      | SCall ("match_indeces", [e1, e2]) ->
+         L.build_call reg_match_indeces_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
+          "reg_match_indeces" builder 
+      | SCall ("test", [e1, e2]) ->
+         L.build_call reg_test_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
+          "reg_test" builder  *)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
@@ -225,18 +279,18 @@ let translate (script, functions) =
     (* Build the code for the given statement; return the builder for
        the statement's successor (i.e., the next instruction will be built
        after the one generated by this call) *)
-    let rec build_stmt builder = function
-       SBlock sl -> List.fold_left build_stmt builder sl  (* This will apply the builder statement to every statement *)
-     | SExpr e -> ignore(build_expr builder e); builder (* We need the original builder value hence we discard the e.address returned by the expression*)
+    let rec build_stmt table builder = function
+       SBlock sl -> List.fold_left (build_stmt table) builder sl  (* This will apply the builder statement to every statement *)
+     | SExpr e -> ignore(build_expr table builder e); builder (* We need the original builder value hence we discard the e.address returned by the expression*)
      | SReturn e -> 
-       ignore(L.build_ret (build_expr builder e) builder); builder
+       ignore(L.build_ret (build_expr table builder e) builder); builder
      | SIfElse (predicate, then_stmt, else_stmt) ->
-        let bool_val = build_expr builder predicate in
+        let bool_val = build_expr table builder predicate in
 
         let then_bb = L.append_block context "then" the_function in
-        ignore (build_stmt (L.builder_at_end context then_bb) then_stmt);
+        ignore (build_stmt table (L.builder_at_end context then_bb) then_stmt);
         let else_bb = L.append_block context "else" the_function in
-        ignore (build_stmt (L.builder_at_end context else_bb) else_stmt);
+        ignore (build_stmt table (L.builder_at_end context else_bb) else_stmt);
 
         let end_bb = L.append_block context "if_end" the_function in
         let build_br_end = L.build_br end_bb in (* partial function *)
@@ -250,18 +304,24 @@ let translate (script, functions) =
         let build_br_while = L.build_br while_bb in (* partial function *)
         ignore (build_br_while builder);
         let while_builder = L.builder_at_end context while_bb in
-        let bool_val = build_expr while_builder predicate in
+        let bool_val = build_expr table while_builder predicate in
 
         let body_bb = L.append_block context "while_body" the_function in
-        add_terminal (build_stmt (L.builder_at_end context body_bb) body) build_br_while;
+        add_terminal (build_stmt table (L.builder_at_end context body_bb) body) build_br_while;
 
         let end_bb = L.append_block context "while_end" the_function in
 
         ignore(L.build_cond_br bool_val body_bb end_bb while_builder);
         L.builder_at_end context end_bb
+      | SFor (declr, predicate, inc, body) -> builder
+      | SIf (predicate, body) -> builder
+      | SContinue -> builder
+      | SBreak -> builder
+      | SDeclare (typ, name) -> builder
+      | SDeclAssign (typ, name, e) -> builder
     in
 
-    let func_builder = build_stmt builder (SBlock fdecl.sbody) in
+    let func_builder = build_stmt local_vars builder (SBlock fdecl.sbody) in
 
     (* Add a return if the last block falls off the end *)
     add_terminal func_builder (L.build_ret (L.const_int i32_t 0))
