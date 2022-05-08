@@ -20,9 +20,6 @@ and sx =
 
 | SCall of string * sexpr list
 (* | SLambda of string list * sexpr *)
-(* | SIncrement of string * sexpr 
-| SDecrement of string * sexpr
-| SNoexpr *)
 
 
 type sstmt =

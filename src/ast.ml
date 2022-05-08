@@ -27,8 +27,6 @@ type expr =
 | Call of string * expr list
 (* | Lambda of string list * expr *)
 (* | LambdaCall of expr * expr list *)
-(* | Increment of string * expr 
-| Decrement of string * expr *)
 (* | Noexpr *)
 
 
