@@ -21,9 +21,9 @@
 
 # .PHONY: test
 # test: all generate.sh test.sh
-# 	./generate.sh ./tests/*-test/test-*.tl
-# 	./test.sh ./tests/*-test/test-*.tl
-# 	./generate.sh ./tests/fails/fail-*.tl
+# 	./generate.sh ./tests/*-test/test-*.sf
+# 	./test.sh ./tests/*-test/test-*.sf
+# 	./generate.sh ./tests/fails/test-*.sf
 
 .PHONY: all
 all: sift.native
