@@ -44,19 +44,6 @@ let add_scope (table : symbol_table) : symbol_table =
 let new_table : symbol_table =
   [StringMap.empty]
 
-let new_table_from_formals formals : symbol_table =
-    [List.fold_left (fun x y -> StringMap.add (snd y) (fst y) x ) StringMap.empty formals ]
-
-
-(* module HashtblString =
-   struct 
-    type t = string
-    let equal = ( = )
-    let hash = Hashtbl.hash
-   end;;
-
-module StringHash = Hashtbl.Make(HashtblString);; *)
-
 exception Error of string
 
 let translate (script, functions) =
@@ -82,7 +69,7 @@ let translate (script, functions) =
       let formal_types = Array.of_list (List.map (fun t -> ltype_of_typ t) tl)
       and return_type = ltype_of_typ hd
       in 
-      L.function_type return_type formal_types 
+      L.pointer_type (L.function_type return_type formal_types )
 
   in
 
@@ -201,7 +188,7 @@ let translate (script, functions) =
         with Not_found -> 
           let (v, fdef) = StringMap.find name function_decls 
           in
-          L.build_load v name builder (* load the fuction into name *)
+          v (* load the fuction into name *)
         ) 
 
       | SAssign (s, e) -> let e' = build_expr table builder e in
@@ -254,6 +241,7 @@ let translate (script, functions) =
       (* | SCall ("print", [e1]) ->
         L.build_call printf_func [| int_format_str ; (build_expr table builder e1) |]
           "printf" builder
+      (*
       | SCall ("str_add", [e1, e2]) ->
          L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
           "str_add" builder       
@@ -356,5 +344,7 @@ let translate (script, functions) =
     add_terminal func_builder (L.build_ret (L.const_int i32_t 0))
   in
 
-  List.iter build_function_body functions;
+  (* let main = {srtyp = Int; sfname = "main"; sformals = []; sbody = script} in
+  List.iter build_function_body (main :: functions); *)
+  List.iter build_function_body (functions);
   the_module
