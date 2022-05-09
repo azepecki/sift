@@ -240,7 +240,7 @@ let translate (script, functions) =
       *)
       (* | SCall ("print", [e1]) ->
         L.build_call printf_func [| int_format_str ; (build_expr table builder e1) |]
-          "printf" builder
+          "printf" builder *)
       (*
       | SCall ("str_add", [e1, e2]) ->
          L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
