@@ -1,0 +1,11 @@
+def int foo(int a, str b) {
+	int c = a;
+	print(b);
+	return c;
+}
+
+def int main() {
+	int c = foo(3, 4);
+	print(c);
+	return 0;
+}
