@@ -193,43 +193,24 @@ expr:
   | NOT expr            { Unop(Not, $2)          }
   /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
-  // | ID ADD ASSIGN expr  { Assign($1, Binop(Id($1), Add, $4))}
   | ID INCREMENT          { Assign($1, Binop(Id($1), Add, Literal(1)))}
   | ID DECREMENT          { Assign($1, Binop(Id($1), Sub, Literal(1)))}
-  /* lambdas  
-  | lambda              {$1}
-   lambda call 
-  | lambda LPAREN args_opt RPAREN  { LambdaCall( $1, $3) }
-  */
+
   /* id call */
   | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }
-  /* PIPING (alternate lambda call) 
-  | expr PIPE lambda           { LambdaCall ( $3, [$1] ) }
-  */
   /* PIPING (alternate id call)*/
-  | expr PIPE ID               { Call ($3, [$1]) }
+  | piping              { $1 }
+
   /* arrays! */
   | LSQBRACE args_opt RSQBRACE { ArrayLit($2) }
   | ID LSQBRACE expr RSQBRACE  { ArrayAccess($1, $3) }
   | ID LSQBRACE expr RSQBRACE ASSIGN expr  { ArrayAssign($1, $3, $6) }
-  /* UNIVERSAL FUNCTION SYNTAX 
-   a.f() = f(a)
-   id call (dot notation) 
-  | expr DOT ID LPAREN args_opt RPAREN  { Call ($3, $1 :: $5)   } */
 
-/*
-lambda:
-  | ID ANON expr  { Lambda ([$1], $3)}
-  | LPAREN anon_args_opt RPAREN ANON expr  { Lambda ($2, $5)}
 
-anon_args_opt:
-              { [] }
-  | anon_args { $1 }
-
-anon_args:
-    ID COMMA ID {[$1 ; $3]}
-  | ID COMMA anon_args {$1 :: $3}
-*/
+piping:
+  /* PIPING (alternate id call)*/
+    expr PIPE ID LPAREN args_opt RPAREN  { Call ($3, $1::$5) }
+  | expr PIPE ID                         { Call ($3, [$1]) }
 
 /* args_opt*/
 args_opt:

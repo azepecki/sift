@@ -92,7 +92,7 @@ let rec string_of_expr = function
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
   (* | CharLit(c) -> String.make 1 c *)
-  | StrLit(s) -> s
+  | StrLit(s) -> "\"" ^ s ^ "\""
   (* | SymLit(s) -> s  *)
   | ArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_expr (List.rev e)) ^ "]"
   | ArrayAccess (s, e) ->  s ^ "[" ^ string_of_expr e ^ "]"

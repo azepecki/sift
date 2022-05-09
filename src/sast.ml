@@ -57,7 +57,7 @@ let rec string_of_sexpr (t, e) =
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
   (* | SCharLit(c) -> String.make 1 c *)
-  | SStrLit(s) -> s
+  | SStrLit(s) -> "\"" ^ s ^ "\""
   (* | SSymLit(s) -> s *)
   | SArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_sexpr (List.rev e)) ^ "]"
   | SArrayAccess (s, e) ->  s ^ "[" ^ string_of_sexpr e ^ "]"
