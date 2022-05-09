@@ -5,21 +5,21 @@ type sexpr = typ * sx
 
 and sx =
   SLiteral of int
-| SFloatLit of string
+| SFloatLit of float
 | SBoolLit of bool
 (* | SCharLit of char *)
 | SStrLit of string
 (* | SSymLit of string *)
 | SArrayLit of sexpr list
 | SArrayAccess of string * sexpr
-| SArrAssign of string * sexpr * sexpr
+| SArrayAssign of string * sexpr * sexpr
 | SId of string
 | SBinop of sexpr * op * sexpr
 | SUnop of uop * sexpr
 | SAssign of string * sexpr
-| SLambda of string * sexpr
-| SDeclAssign of typ * string * sexpr
+
 | SCall of string * sexpr list
+(* | SLambda of string list * sexpr *)
 (* | SIncrement of string * sexpr 
 | SDecrement of string * sexpr
 | SNoexpr *)
@@ -30,11 +30,13 @@ type sstmt =
 | SExpr of sexpr
 | SIf of sexpr * sstmt
 | SIfElse of sexpr * sstmt * sstmt
-| SFor of sexpr * sexpr * sexpr * sstmt
+| SFor of sstmt * sexpr * sexpr * sstmt
 | SWhile of sexpr * sstmt
 | SReturn of sexpr
 | SContinue 
 | SBreak 
+| SDeclare of typ * string
+| SDeclAssign of typ * string * sexpr
 
 
 (* func_def: ret_typ fname formals locals body *)
@@ -50,9 +52,11 @@ type program = sstmt list * sfunc_def list
 (* Pretty-printing functions *)
 
 let rec string_of_sexpr (t, e) =
-  "(" ^ string_of_typ t ^ " : " ^ (match e with
-    SLiteral(l) -> string_of_int l
-  | SFLit(l) -> string_of_float l
+  "(" ^ string_of_typ t ^ " : " ^ 
+  (
+  match e with
+  | SLiteral(l) -> string_of_int l
+  | SFloatLit(l) -> string_of_float l
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
   (* | SCharLit(c) -> String.make 1 c *)
@@ -60,20 +64,16 @@ let rec string_of_sexpr (t, e) =
   (* | SSymLit(s) -> s *)
   | SArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_sexpr (List.rev e)) ^ "]"
   | SArrayAccess (s, e) ->  s ^ "[" ^ string_of_sexpr e ^ "]"
-  | SArrAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr  e2
+  | SArrayAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr  e2
   | SId(s) -> s
   | SBinop(e1, o, e2) ->
      string_of_sexpr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_sexpr e2
   | SUnop(op, e) -> string_of_uop op ^ " " ^ string_of_sexpr e
   | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
-  | SLambda(v, e) -> v ^ " => " ^ string_of_sexpr e
-  | SDeclAssn(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_sexpr e 
-  | SCall(f, el) ->
-      f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
-  (* | SIncrement(v, e) -> v ^ "+= " ^ string_of_sexpr e
-  | SDecrement(v, e) -> v ^ "-="  ^ string_of_sexpr e 
-  | SNoexpr -> ""
-          ) ^ ")"	 *)
+  (* | SLambda(v, e) -> "( " ^ (List.hd v) ^ " ) => " ^ string_of_sexpr e *)
+  | SCall(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+  )
+  ^ ")"
 
 let rec string_of_sstmt = function
     SBlock(stmts) ->
@@ -83,17 +83,20 @@ let rec string_of_sstmt = function
   | SIf(e, s) -> "if (" ^ string_of_sexpr e ^ ")"  ^ string_of_sstmt s ^ ";"
   | SIfElse(e, s1, s2) ->  "if (" ^ string_of_sexpr e ^ ")"  ^
       string_of_sstmt s1  ^ "else"  ^ string_of_sstmt s2 ^ ";"
-  | SFor(e1, e2, e3, s) ->
-      "for (" ^ string_of_sexpr e1  ^ " ; " ^ string_of_sexpr e2 ^ " ; " ^
-      string_of_sexpr e3  ^ ") " ^ "{" string_of_sstmt s ^ "}"
-  | SWhile(e, s) -> "while (" ^ string_of_expr e ^ ") "  ^ string_of_stmt s 
+  | SFor(e1, e2, e3, s) -> let decl = string_of_sstmt e1 in
+       "for (" ^ String.sub decl 0 ((String.length decl) - 2)  ^ "; " 
+       ^ string_of_sexpr e2 ^ " ; " ^
+      string_of_sexpr e3  ^ ") " ^ "{" ^ string_of_sstmt s ^ "}"
+  | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") "  ^ string_of_sstmt s 
   | SContinue -> "continue;\n"
   | SBreak ->  "break;\n"
+  | SDeclare(t, s) -> string_of_typ t ^ " " ^ s ^ ";\n"
+  | SDeclAssign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_sexpr e ^ ";\n"
 
 
 let string_of_sfdecl fdecl =
   "def" ^ " " ^ string_of_typ fdecl.srtyp ^ " " ^
-  fdecl.sfname ^ "(" String.concat ", " (List.map snd fdecl.sformals) ^
+  fdecl.sfname ^ "(" ^ String.concat ", " (List.map snd fdecl.sformals) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_sstmt fdecl.sbody) ^
   "}\n"
