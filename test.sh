@@ -28,7 +28,7 @@ globalerror=0
 keep=0
 
 Usage() {
-    echo "Usage: testall.sh [options] [.sf files]"
+    echo "Usage: test.sh [options] [.sf files]"
     echo "-k    Keep intermediate files"
     echo "-h    Print this help"
     exit 1
@@ -169,7 +169,7 @@ if [ $# -ge 1 ]
 then
     files=$@
 else
-    files="tests/test-*.tl tests/fail-*.tl"
+    files="tests/test-*.sf tests/fail-*.sf"
 fi
 
 for file in $files

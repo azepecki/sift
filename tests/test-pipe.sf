@@ -1,0 +1,7 @@
+def int func(int a, int b, int c, int d) {
+    return a + b + c + d;
+}
+
+def int main(){
+   return 2 |> x => x + 7 |> y => func(a, b, 4, 9);
+}

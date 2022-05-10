@@ -1,0 +1,6 @@
+def int main() {
+    arr<int> numbers = [1,2,3,4,5];
+    printf(arr[0]);
+    return 0;
+}
+

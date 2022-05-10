@@ -1,0 +1,12 @@
+def int while_test(int a){
+      while ( a < 4 ) {
+        a = a + 1; 
+        printf(a); 
+    }
+}
+
+def int main(){
+    while_test(2)
+    return 0;
+}
+
