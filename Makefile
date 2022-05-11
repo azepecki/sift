@@ -32,7 +32,7 @@ clean: cleandir
 	rm -rf *.ll *.out *.s *.diff *.exe *.err
 	rm -rf sift.native
 	rm -rf _build
-	rm -f *.o *.output sift_func.bc
+	rm -f *.o *.output sift_func.bc similarity.bc regex.bc
 
 cleandir :
 	@if [ -d build ]; then make -C build clean; \
