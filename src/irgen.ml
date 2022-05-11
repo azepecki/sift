@@ -50,6 +50,8 @@ let translate (script, functions) =
   let context = L.global_context () in
   let the_module = L.create_module context "Sift" in
 
+  L.set_data_layout "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128" the_module ;
+
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
@@ -188,7 +190,7 @@ let translate (script, functions) =
         with Not_found -> 
           let (v, fdef) = StringMap.find name function_decls 
           in
-          v (* load the fuction into name *)
+          v (* return the function address *)
         ) 
 
       | SAssign (s, e) -> let e' = build_expr table builder e in
