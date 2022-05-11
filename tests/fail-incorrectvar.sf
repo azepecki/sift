@@ -1,0 +1,3 @@
+def int main() {
+	int c = 4 + b;
+}
