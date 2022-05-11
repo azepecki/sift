@@ -43,15 +43,6 @@ let new_table : symbol_table =
 
 let new_table_from_formals formals : symbol_table =
     [List.fold_left (fun x y -> StringMap.add (snd y) (fst y) x ) StringMap.empty formals ]
-
-(* Removes most recent scope
-let remove_scope (_ :: prev : symbol_table) : symbol_table = 
-  prev *)
-
-(* let check_script_scope (table : symbol_table) (s : Sast.sstmt) (statement : string): Sast.sstmt = 
-  match table with
-  | [_] -> raise (Failure ("Cannot do " ^ statement ^ " in global scope"))
-  | _   -> s *)
   
 let check_program (script: stmt list) (functions: func_def list) =
 
@@ -115,12 +106,15 @@ let check_program (script: stmt list) (functions: func_def list) =
                               and typ2 = fst e2' in
                               if typ1 = typ2 (* types must be equal in all binops SBinop(checked e1, op, checked e2) *)
                               then match op with
-                                  | Add when typ1 = String                                   -> (String, SBinop(e1', op, e2'))
+                                  (* STRING FUNCTIONS!!! Convert operations to functions!! *)
+                                  | Add when typ1 = String                                                -> (String, SCall("str_add", [e1'; e2']))
+                                  | Equal when typ1 = String                                              -> (Bool, SCall("str_eql", [e1'; e2']))
+                                  | Neq when typ1 = String                                                -> (Bool, SUnop(Not, (Bool, SCall("str_eql", [e1'; e2']))))
                                   (* List/Array concat: Add when typ1 = Arr -> (String, SBinop(e1', op, e2')) *)
-                                  | Add | Sub | Mul | Div | Mod when typ1 = Int              -> (Int,    SBinop(e1', op, e2'))  
-                                  | Add | Sub | Mul | Div when typ1 = Float                  -> (Float,  SBinop(e1', op, e2'))  
-                                  | Equal | Neq | Less | Leq | Greater | Geq when typ1 = Int -> (Bool,   SBinop(e1', op, e2')) 
-                                  | Equal | Neq | And | Or when typ1 = Bool                  -> (Bool,   SBinop(e1', op, e2'))  
+                                  | Add | Sub | Mul | Div | Mod when typ1 = Int                           -> (Int,    SBinop(e1', op, e2'))  
+                                  | Add | Sub | Mul | Div when typ1 = Float                               -> (Float,  SBinop(e1', op, e2'))  
+                                  | Equal | Neq | Less | Leq | Greater | Geq when typ1=Int || typ1=Float  -> (Bool,   SBinop(e1', op, e2')) 
+                                  | Equal | Neq | And | Or when typ1 = Bool                               -> (Bool,   SBinop(e1', op, e2'))  
                                   | _ -> raise (Failure ("Invalid operation " ^ Ast.string_of_op op ^ 
                                                 " with argument types " ^ Ast.string_of_typ typ1 ^ 
                                                 ", " ^ Ast.string_of_typ typ2) )
@@ -148,7 +142,7 @@ let check_program (script: stmt list) (functions: func_def list) =
                               then (* check if input parameters and input signature length equal*)
                                 raise (Failure ("Expecting " ^ string_of_int param_length ^ (*if not, fail*)
                                                 " arguments in " ^ string_of_expr call))
-                              else   ( let check_call ft e = (*oooh, basically checks to see that function type equals arg type. Lol *)
+                              else   ( let check_call ft e : Sast.sexpr = (*oooh, basically checks to see that function type equals arg type. Lol *)
                                         let (et, e') = check_expr table e in
                                         if ft = et
                                         then (et, e')
