@@ -5,8 +5,8 @@
 
 char *str_add(char *s1, char *s2) {
     char *new = (char *) malloc(strlen(s1) + strlen(s2));
-    strncpy(new, s1, strlen(s1)-1);
-    strncat(new, s2+1, strlen(s2)-1);
+    strncpy(new, s1, strlen(s1));
+    strncat(new, s2, strlen(s2));
     return new; //MUST BE FREED LATER!!!!
 }
 
@@ -14,7 +14,7 @@ bool str_eql(char *s1, char *s2) {
 	bool result;
 	int res = strcmp(s1, s2);
 	bool bres = false;
-	if (res == 0){
+	if (res == 0) {
 		bres = true;
 	}
 	else{
@@ -27,7 +27,7 @@ bool str_eql(char *s1, char *s2) {
 int len(const char *str) {
 	int l;
 	size_t len = strlen(str);
-	l = (int)(len) - 2;
+	l = (int)(len);
 	return l;
 }
 

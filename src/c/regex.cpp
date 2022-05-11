@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int test(char *str, char *exp){
+int test(char *str, char *exp) {
 	regex e(exp);
 	bool match = regex_match(str, e);
 	return (match ? 1 : 0);
