@@ -32,7 +32,7 @@ all: sift.native
 
 sift.native:
 	opam  exec -- \
-	ocamlbuild -I src -use-ocamlfind -pkgs llvm.bitreader sift.native
+	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.bitreader,llvm.analysis sift.native
 	chmod 777 sift.native
 	gcc -c ./src/c/sift_func.c
 	chmod 777 sift_func.o

@@ -1,6 +1,7 @@
 def int main() { 
     if (true) {
-        return 20;
+        "hi" |> <out>;
     } 
+    "ok" |> <out>;
     return 0;
 }
