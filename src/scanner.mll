@@ -16,7 +16,7 @@ rule token = parse
 | '}' { RBRACE }
 | '[' { LSQBRACE }
 | ']' { RSQBRACE }
-
+ 
 (* arithmetic operators *)
 | '+' { ADD }
 | '-' { SUBTRACT }
@@ -90,6 +90,9 @@ rule token = parse
 | "bool"     { BOOL }
 | "str"      { STRING }
 | "sym"      { SYMBOL }
+
+| ("<" ("stdin"|"STDIN"|"in")? ">")    { STDIN }
+| ("<" ("stdout"|"STDOUT"|"out") ">")  { STDOUT }
 
 (* identifiers and literals *)
 | "true"                                { BLIT(true)  }
