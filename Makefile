@@ -29,8 +29,9 @@
 all: sift.native
 
 sift.native:
-	opam config exec -- \
+	opam exec -- \
 	ocamlbuild -I src -use-ocamlfind -package llvm sift.native
+	chmod 777 sift.native
 
 .PHONY: clean
 clean: cleandir
