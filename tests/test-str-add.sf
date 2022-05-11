@@ -1,11 +1,7 @@
-def str add_two_strings(str a, str b) {
-	return str_add(a, b);
-}
-
 def int main() {
 	str a = "ap";
 	str b = "ple";
-	a = add_two_strings(a, b);
-	print(a);
+	str c = str_add(a, b);
+	c |> <out>;
 	return 0;
 }
