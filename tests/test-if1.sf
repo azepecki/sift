@@ -3,5 +3,6 @@ def int main() {
         "Inside If" |> <out>;
     }
     "Hello" |> <out>;
+    "World" |> <out>;
     return 0;
 }

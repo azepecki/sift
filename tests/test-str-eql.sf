@@ -2,7 +2,8 @@ def int main() {
 
 	str a = "apple";
 	str b = "apple";
-	if str_eql(a, b) {
+        
+	if (str_eql(a, b)) {
 		"The two strings are equal" |> <out>;
 	} else {
 		"The two strings are not equal" |> <out>;
