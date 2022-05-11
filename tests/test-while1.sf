@@ -1,7 +1,7 @@
 def int while_test(int a){
       while ( a < 4 ) {
         a = a + 1; 
-        printf(a); 
+        print(a); 
     }
 }
 

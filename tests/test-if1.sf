@@ -1,8 +1,7 @@
 def int main() { 
     if(true) {
-        "hi" |> <out>;
+        "Inside If" |> <out>;
     }
     "Hello" |> <out>;
-    "Super" |> <out>;
     return 0;
 }

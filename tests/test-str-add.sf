@@ -3,8 +3,8 @@ def str add_two_strings(str a, str b) {
 }
 
 def int main() {
-	str a = "apple";
-	str b = "mango";
+	str a = "ap";
+	str b = "ple";
 	a = add_two_strings(a, b);
 	print(a);
 	return 0;

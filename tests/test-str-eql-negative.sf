@@ -3,9 +3,9 @@ def int main() {
 	str a = "apple";
 	str b = "mango";
 	if str_eql(a, b) {
-		print("The two strings are equal");
+		"The two strings are equal" |> <out>;
 	} else {
-		print("The two strings are not equal");
+		"The two strings are not equal" |> <out>;
 	}
 	
 	return 0;
