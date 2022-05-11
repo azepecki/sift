@@ -19,14 +19,6 @@
 # 	rm -r _build
 
 
-.PHONY: test
-test: all generate.sh test.sh
-	./generate.sh ./tests/test-*.sf
-	./test.sh ./tests/test-*.sf
-	./generate.sh ./tests/fail-*.sf
-
-
-
 .PHONY: all
 all: sift.native
 
@@ -37,6 +29,13 @@ sift.native:
 	gcc -c ./src/c/sift_func.c
 	chmod 777 sift_func.o
 	cc -emit-llvm -o sift_func.bc -c ./src/c/sift_func.c -Wno-varargs
+
+.PHONY: test
+test: all generate.sh test.sh
+	./generate.sh ./tests/test-*.sf
+	./test.sh ./tests/test-*.sf
+	./generate.sh ./tests/fail-*.sf
+
 
 .PHONY: clean
 clean: cleandir
