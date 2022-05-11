@@ -35,8 +35,8 @@ Compare() {
 Generate() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.tl//'`
-    reffile=`echo $1 | sed 's/.tl$//'`
+                             s/.sf//'`
+    reffile=`echo $1 | sed 's/.sf$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -51,8 +51,8 @@ Generate() {
 CheckFail() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.tl//'`
-    reffile=`echo $1 | sed 's/.tl$//'`
+                             s/.sf//'`
+    reffile=`echo $1 | sed 's/.sf$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -91,7 +91,7 @@ if [ $# -ge 1 ]
 then
     files=$@
 else
-    files="tests/test-*.tl tests/fail-*.tl"
+    files="tests/test-*.sf tests/fail-*.sf"
 fi
 
 for file in $files
