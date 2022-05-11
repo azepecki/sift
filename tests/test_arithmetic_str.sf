@@ -1,2 +1,0 @@
-str a = "test " + "string";
-printf(a);
