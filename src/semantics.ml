@@ -55,8 +55,12 @@ let remove_scope (_ :: prev : symbol_table) : symbol_table =
   
 let check_program (script: stmt list) (functions: func_def list) =
 
+  let pre_built_functions = [{rtyp=Int; fname="print"; formals=[(String , "input")]; body=[]}] in
+
+  let all_functions = functions @ pre_built_functions in
+
   let find_func fname = 
-    match (List.find_opt (fun x -> x.fname = fname) functions) with
+    match (List.find_opt (fun x -> x.fname = fname) (all_functions)) with
     | Some (fd) -> fd
     | None -> raise (Failure ("Function " ^ fname ^ " not defined"))
     in
