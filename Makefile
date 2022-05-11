@@ -19,11 +19,11 @@
 # 	rm -r _build
 
 
-# .PHONY: test
-# test: all generate.sh test.sh
-# 	./generate.sh ./tests/*-test/test-*.tl
-# 	./test.sh ./tests/*-test/test-*.tl
-# 	./generate.sh ./tests/fails/fail-*.tl
+.PHONY: test
+test: all generate.sh test.sh
+ 	./generate.sh ./tests/*-test/test-*.tl
+ 	./test.sh ./tests/*-test/test-*.tl
+ 	./generate.sh ./tests/fails/fail-*.tl
 
 .PHONY: all
 all: sift.native
@@ -32,6 +32,8 @@ sift.native:
 	opam exec -- \
 	ocamlbuild -I src -use-ocamlfind -package llvm sift.native
 	chmod 777 sift.native
+	gcc -c ./src/c/sift_func.c
+	cc -emit-llvm -o sift_func.bc -c ./src/c/sift_func.c -Wno-varargs
 
 .PHONY: clean
 clean: cleandir
