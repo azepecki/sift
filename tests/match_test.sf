@@ -1,0 +1,4 @@
+def int main() {
+    test("hello", "h(i|ello"));
+    return 0;
+}
