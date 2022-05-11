@@ -1,0 +1,6 @@
+def int main() {
+    print(get_jaro("THOUGHT",    "THROW"));
+    print(get_jaro("ANALYZE",     "PARALYZE"));
+    print(get_jaro("JELLYFISH", "SMELLYFISH"));
+    return 0;
+}
