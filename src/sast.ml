@@ -18,6 +18,8 @@ and sx =
 | SUnop of uop * sexpr
 | SAssign of string * sexpr
 | SCall of string * sexpr list
+| SStdin of sexpr
+| SStdout of sexpr
 (* | SLambda of string list * sexpr *)
 
 
@@ -66,6 +68,8 @@ let rec string_of_sexpr (t, e) =
   | SAssign(v, e) -> v ^ " = " ^ string_of_sexpr e
   (* | SLambda(v, e) -> "( " ^ (List.hd v) ^ " ) => " ^ string_of_sexpr e *)
   | SCall(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+  | SStdin(e) -> "stdin(" ^ string_of_sexpr e ^ ")"
+  | SStdout(e) -> "stdout(" ^ string_of_sexpr e ^ ")"
   )
   ^ ")"
 
