@@ -55,7 +55,41 @@ let remove_scope (_ :: prev : symbol_table) : symbol_table =
   
 let check_program (script: stmt list) (functions: func_def list) =
 
-  let pre_built_functions = [{rtyp=Int; fname="print"; formals=[(String , "input")]; body=[]}] in
+  let check_program (script: stmt list) (functions: func_def list) =
+
+    let pre_built_functions = [{rtyp=Int; fname="print"; formals=[(String , "input")]; body=[]},
+                               {rtyp=Int; fname="stringLength"; formals=[(String , "s")]; body=[]}, 
+                               {rtyp=String; fname="stringClear"; formals=[(String , "s")]; body=[]}, 
+                               {rtyp=Bool; fname="stringEmpty"; formals=[(String , "s")]; body=[]}, 
+                               {rtyp=String; fname="charAt"; formals=[(String , "s"),(Int, "index")]; body=[]}, 
+                               {rtyp=String; fname="stringAppend"; formals=[(String , "left"),(String, "right")]; body=[]}, 
+                               {rtyp=String; fname="stringInsert"; formals=[(String , "s"),(String, "toInsert")]; body=[]}, 
+                               {rtyp=String; fname="stringErase"; formals=[(String , "s")]; body=[]}, 
+                               {rtyp=String; fname="stringReplace"; formals=[(String , "s")]; body=[]}, 
+                               {rtyp=Int; fname="stringFind"; formals=[(String , "s"),(String , "c")]; body=[]}, 
+                               {rtyp=Int; fname="stringRFind"; formals=[(String , "s"),(String , "c")]; body=[]}, 
+                               {rtyp=Int; fname="stringFirstNot"; formals=[(String , "s"),(String , "c")]; body=[]}, 
+                               {rtyp=Int; fname="stringFirst"; formals=[(String , "s"),(String , "c")]; body=[]}, 
+                               {rtyp=String; fname="stringSubstring"; formals=[(String , "s")]; body=[]},
+                               {rtyp=String; fname="firstName"; formals=[(String , "s")]; body=[]},
+                               {rtyp=String; fname="middleName"; formals=[(String , "s")]; body=[]},
+                               {rtyp=String; fname="lastName"; formals=[(String , "s")]; body=[]},
+                               {rtyp=String; fname="capitalize"; formals=[(String , "s")]; body=[]},
+                               {rtyp=Bool; fname="include"; formals=[(String , "s"),(String , "c")]; body=[]}, 
+                               {rtyp=String; fname="substitute"; formals=[(String , "s"),(String , "target"),(String , "replacement")]; body=[]}, 
+                               {rtyp=Float; fname="get_jaro"; formals=[(String , "str1"),(String , "str3")]; body=[]},
+                               {rtyp=String; fname="str_add"; formals=[(String , "s1"),(String , "s2")]; body=[]},
+                               {rtyp=Bool; fname="str_eql"; formals=[(String , "s1"),(String , "s2")]; body=[]},
+                               {rtyp=Int; fname="len"; formals=[(String , "str")]; body=[]},
+                               {rtyp=String; fname="word_tokenize"; formals=[(String , "str")]; body=[]},
+                               {rtyp=Bool; fname="test"; formals=[(String , "str"),(String , "exp")]; body=[]},
+                               {rtyp=Arr(String); fname="match"; formals=[(String, "sentence"), (String, "exp")]; body=[]},
+                               {rtyp=Arr(Int); fname="match_indices"; formals=[(String, "sentence"), (String, "exp")]; body=[]},
+                               {rtyp=Arr(String); fname="split"; formals=[(String, "line"), (String, "ch")]; body=[]},
+                               {rtyp=String; fname="InputString"; formals=[]; body=[]},
+                               {rtyp=Int; fname="InputInteger"; formals=[]; body=[]},
+                               {rtyp=String; fname="InputSentence"; formals=[]; body=[]}
+                               ] in
 
   let all_functions = functions @ pre_built_functions in
 
