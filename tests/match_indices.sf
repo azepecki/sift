@@ -1,0 +1,9 @@
+def int main() {
+    
+    arr<int> numbers = match_indices("The wiiiiiiiiiild wild cat lived in a mild climate.", "(w|m)i*ld");
+    printf(numbers[0]);
+    printf(numbers[1]);
+    printf(numbers[2]);
+    
+    return 0;
+}
