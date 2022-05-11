@@ -26,8 +26,5 @@
        | Sast    -> print_string (Sast.string_of_sprogram (sscript, sfunctions))
        | LLVM_IR -> print_string (Llvm.string_of_llmodule (Irgen.translate (sscript, sfunctions)))
        | Compile -> let m = Irgen.translate (sscript, sfunctions) in
-                    let sift_functions = Llvm_irreader.parse_ir (Llvm.global_context ()) (Llvm.MemoryBuffer.of_file "./c/sift_func.ll") in
-                    Llvm_linker.link_modules' m sift_functions;
                     Llvm_analysis.assert_valid_module m;
-                    print_string (Llvm.string_of_llmodule m)
-   
+                    print_string (Llvm.string_of_llmodule m) 
