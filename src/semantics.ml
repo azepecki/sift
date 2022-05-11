@@ -43,20 +43,49 @@ let new_table : symbol_table =
 
 let new_table_from_formals formals : symbol_table =
     [List.fold_left (fun x y -> StringMap.add (snd y) (fst y) x ) StringMap.empty formals ]
-
-(* Removes most recent scope
-let remove_scope (_ :: prev : symbol_table) : symbol_table = 
-  prev *)
-
-(* let check_script_scope (table : symbol_table) (s : Sast.sstmt) (statement : string): Sast.sstmt = 
-  match table with
-  | [_] -> raise (Failure ("Cannot do " ^ statement ^ " in global scope"))
-  | _   -> s *)
   
 let check_program (script: stmt list) (functions: func_def list) =
 
+  let pre_built_functions = [
+    {rtyp=Int; fname="print"; formals=[(String , "input")]; body=[]};
+    {rtyp=Int; fname="stringLength"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="stringClear"; formals=[(String , "s")]; body=[]};
+    {rtyp=Bool; fname="stringEmpty"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="charAt"; formals=[(String , "s");(Int, "index")]; body=[]}; 
+    {rtyp=String; fname="stringAppend"; formals=[(String , "left"); (String, "right")]; body=[]}; 
+    {rtyp=String; fname="stringInsert"; formals=[(String , "s"); (String, "toInsert")]; body=[]}; 
+    {rtyp=String; fname="stringErase"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="stringReplace"; formals=[(String , "s")]; body=[]};
+    {rtyp=Int; fname="stringFind"; formals=[(String , "s"); (String , "c")]; body=[]};
+    {rtyp=Int; fname="stringRFind"; formals=[(String , "s"); (String , "c")]; body=[]};
+    {rtyp=Int; fname="stringFirstNot"; formals=[(String , "s"); (String , "c")]; body=[]};
+    {rtyp=Int; fname="stringFirst"; formals=[(String , "s"); (String , "c")]; body=[]};
+    {rtyp=String; fname="stringSubstring"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="firstName"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="middleName"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="lastName"; formals=[(String , "s")]; body=[]};
+    {rtyp=String; fname="capitalize"; formals=[(String , "s")]; body=[]};
+    {rtyp=Bool; fname="include"; formals=[(String , "s"); (String , "c")]; body=[]};
+    {rtyp=String; fname="substitute"; formals=[(String , "s"); (String , "target");(String , "replacement")]; body=[]};
+    {rtyp=Float; fname="get_jaro"; formals=[(String , "str1"); (String , "str3")]; body=[]};
+    {rtyp=String; fname="str_add"; formals=[(String , "s1"); (String , "s2")]; body=[]};
+    {rtyp=Bool; fname="str_eql"; formals=[(String , "s1"); (String , "s2")]; body=[]};
+    {rtyp=Int; fname="len"; formals=[(String , "str")]; body=[]};
+    {rtyp=String; fname="word_tokenize"; formals=[(String , "str")]; body=[]};
+    {rtyp=Bool; fname="test"; formals=[(String , "str");(String , "exp")]; body=[]};
+    {rtyp=Arr(String); fname="match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
+    {rtyp=Arr(Int); fname="match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
+    {rtyp=Arr(String); fname="split"; formals=[(String, "line"); (String, "ch")]; body=[]};
+    {rtyp=String; fname="InputString"; formals=[]; body=[]};
+    {rtyp=Int; fname="InputInteger"; formals=[]; body=[]};
+    {rtyp=String; fname="InputSentence"; formals=[]; body=[]}
+    ]in
+
+  let all_functions = functions @ pre_built_functions in
+  
+
   let find_func fname = 
-    match (List.find_opt (fun x -> x.fname = fname) functions) with
+    match (List.find_opt (fun x -> x.fname = fname) (all_functions)) with
     | Some (fd) -> fd
     | None -> raise (Failure ("Function " ^ fname ^ " not defined"))
     in
@@ -111,12 +140,14 @@ let check_program (script: stmt list) (functions: func_def list) =
                               and typ2 = fst e2' in
                               if typ1 = typ2 (* types must be equal in all binops SBinop(checked e1, op, checked e2) *)
                               then match op with
-                                  | Add when typ1 = String                                   -> (String, SBinop(e1', op, e2'))
+                                  (* STRING FUNCTIONS!!! Convert operations to functions!! Not proper, but gets the job done *)
+                                  | Add when typ1 = String                                                -> (String,  SBinop(e1', op, e2'))
+                                  | Equal | Neq when typ1 = String                                        -> (Bool, SBinop(e1', op, e2'))
                                   (* List/Array concat: Add when typ1 = Arr -> (String, SBinop(e1', op, e2')) *)
-                                  | Add | Sub | Mul | Div | Mod when typ1 = Int              -> (Int,    SBinop(e1', op, e2'))  
-                                  | Add | Sub | Mul | Div when typ1 = Float                  -> (Float,  SBinop(e1', op, e2'))  
-                                  | Equal | Neq | Less | Leq | Greater | Geq when typ1 = Int -> (Bool,   SBinop(e1', op, e2')) 
-                                  | Equal | Neq | And | Or when typ1 = Bool                  -> (Bool,   SBinop(e1', op, e2'))  
+                                  | Add | Sub | Mul | Div | Mod when typ1 = Int                           -> (Int,    SBinop(e1', op, e2'))  
+                                  | Add | Sub | Mul | Div when typ1 = Float                               -> (Float,  SBinop(e1', op, e2'))  
+                                  | Equal | Neq | Less | Leq | Greater | Geq when typ1=Int || typ1=Float  -> (Bool,   SBinop(e1', op, e2')) 
+                                  | Equal | Neq | And | Or when typ1 = Bool                               -> (Bool,   SBinop(e1', op, e2'))  
                                   | _ -> raise (Failure ("Invalid operation " ^ Ast.string_of_op op ^ 
                                                 " with argument types " ^ Ast.string_of_typ typ1 ^ 
                                                 ", " ^ Ast.string_of_typ typ2) )
@@ -136,6 +167,14 @@ let check_program (script: stmt list) (functions: func_def list) =
                         if v_type = typ
                         then (typ, SAssign(s, e'))
                         else raise (Failure ("Expression of type " ^ Ast.string_of_typ v_type ^ " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
+    | Stdin(e) -> let e' = check_expr table e in
+                if fst e' = Int
+                then (String, SStdin(e')) 
+                else raise (Failure ("Stdin buffer size must be an int"))
+    | Stdout(e) -> let e' = check_expr table e in
+                  if fst e' = String
+                  then (Int, SStdout(e')) 
+                  else raise (Failure ("Only strings can be piped to stdout"))
     (* First look for a variable that references a function. If not found, look at global list of funcs. *)
     | Call(fname, args) as call -> (
                             let helper h t = 
@@ -144,7 +183,7 @@ let check_program (script: stmt list) (functions: func_def list) =
                               then (* check if input parameters and input signature length equal*)
                                 raise (Failure ("Expecting " ^ string_of_int param_length ^ (*if not, fail*)
                                                 " arguments in " ^ string_of_expr call))
-                              else   ( let check_call ft e = (*oooh, basically checks to see that function type equals arg type. Lol *)
+                              else   ( let check_call ft e : Sast.sexpr = (*oooh, basically checks to see that function type equals arg type. Lol *)
                                         let (et, e') = check_expr table e in
                                         if ft = et
                                         then (et, e')

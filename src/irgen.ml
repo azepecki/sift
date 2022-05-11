@@ -50,6 +50,8 @@ let translate (script, functions) =
   let context = L.global_context () in
   let the_module = L.create_module context "Sift" in
 
+  L.set_data_layout "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128" the_module ;
+
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
   and i8_t       = L.i8_type     context
@@ -96,6 +98,18 @@ let translate (script, functions) =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
     L.declare_function "printf" printf_t the_module in
+
+  (* Done *)
+  let input_t : L.lltype =
+    L.var_arg_function_type str_t [| i32_t |] in
+  let input_func : L.llvalue =
+    L.declare_function "input" input_t the_module in
+  
+  (* Done *)
+  let output_t : L.lltype =
+    L.var_arg_function_type i32_t [| str_t |] in
+  let output_func : L.llvalue =
+    L.declare_function "output" output_t the_module in
   
   (* TODO: nlp tokenize, return type, list of strings *)
   let word_tokenize_t : L.lltype =
@@ -177,10 +191,11 @@ let translate (script, functions) =
 
     *)
 
-    let rec build_expr table builder ((_, e) : sexpr) = match e with
-        SLiteral i  -> L.const_int i32_t i
+    let rec build_expr table builder ((typ, e) : sexpr) = match e with
+      | SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
-      | SId name       ->  
+      | SStrLit s    -> L.build_global_stringptr s "str_literal" builder
+      | SId name    ->  
         (try 
         let addr = lookup name table in 
         (* load whatever is in addr to named variable *)
@@ -188,7 +203,7 @@ let translate (script, functions) =
         with Not_found -> 
           let (v, fdef) = StringMap.find name function_decls 
           in
-          v (* load the fuction into name *)
+          v (* return the function address *)
         ) 
 
       | SAssign (s, e) -> let e' = build_expr table builder e in
@@ -209,20 +224,61 @@ let translate (script, functions) =
            binary operation
           *)
       | SBinop (e1, op, e2) ->
+        let (t1, _) = e1 
+        and (t2, _) = e2 in
         let e1' = build_expr table builder e1
         and e2' = build_expr table builder e2 in
         (match op with
-            A.Add     -> L.build_add
-          | A.Sub     -> L.build_sub
-          | A.And     -> L.build_and
-          | A.Or      -> L.build_or
-          | A.Equal   -> L.build_icmp L.Icmp.Eq
-          | A.Neq     -> L.build_icmp L.Icmp.Ne
-          | A.Less    -> L.build_icmp L.Icmp.Slt
-        ) e1' e2' "tmp" builder
 
+          | A.Add when t1=String   -> (fun a b c d -> L.build_call string_concat_func   [| a ; b |] "str_add" d)
+          | A.Equal when t1=String -> (fun a b c d -> L.build_call string_equality_func [| a ; b |] "str_eql" d)
+
+          | A.Add   when t1=Int   -> L.build_add
+          | A.Sub   when t1=Int   -> L.build_sub
+          | A.Mul   when t1=Int   -> L.build_mul
+          | A.Div   when t1=Int   -> L.build_sdiv
+          | A.Mod   when t1=Int   -> L.build_srem
+
+          | A.Add   when t1=Float -> L.build_fadd
+          | A.Sub   when t1=Float -> L.build_fsub
+          | A.Mul   when t1=Float -> L.build_fmul
+          | A.Div   when t1=Float -> L.build_fdiv
+
+          | A.Equal when t1=Int || t1=Bool  -> L.build_icmp L.Icmp.Eq
+          | A.Neq   when t1=Int || t1=Bool  -> L.build_icmp L.Icmp.Ne
+
+          | A.Less  when t1=Int    -> L.build_icmp L.Icmp.Slt
+          | A.Leq   when t1=Int    -> L.build_icmp L.Icmp.Sle
+          | A.Greater when t1=Int  -> L.build_icmp L.Icmp.Sgt
+          | A.Geq  when t1=Int     -> L.build_icmp L.Icmp.Sge
+
+          | A.And   when t1=Bool  -> L.build_and
+          | A.Or    when t1=Bool  -> L.build_or
+
+          | A.Equal when t1=Float    -> L.build_fcmp L.Fcmp.Oeq
+          | A.Neq   when t1=Float    -> L.build_fcmp L.Fcmp.One
+          | A.Less  when t1=Float    -> L.build_fcmp L.Fcmp.Olt
+          | A.Leq   when t1=Float    -> L.build_fcmp L.Fcmp.Ole
+          | A.Greater when t1=Float  -> L.build_fcmp L.Fcmp.Ogt
+          | A.Geq  when t1=Float     -> L.build_fcmp L.Fcmp.Oge
+
+        ) e1' e2' "tmp" builder
+        | SUnop (op, e) ->
+          let e' = build_expr table builder e in
+          (match op with
+            | A.Not -> L.build_not
+            | A.Neg -> L.build_neg
+          ) e' "tmp" builder
+
+      | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
+      | SStdout(e) -> L.build_call output_func [| (build_expr table builder e) |] "output" builder  
+      | SCall ("str_add", [e1 ; e2]) ->
+         L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_add" builder       
+      | SCall ("str_eql", [e1 ; e2]) ->
+         L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_eql" builder 
       (* General Call *)
       | SCall (f, args) ->
+        (
         try 
         let addr = lookup f table in 
         let llargs = List.rev (List.map (build_expr table builder) (List.rev args)) in
@@ -233,6 +289,7 @@ let translate (script, functions) =
         let llargs = List.rev (List.map (build_expr table builder) (List.rev args)) in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
+        )
 
       (* 
         On all these calls, do not confuse the name with which they invoked
@@ -241,13 +298,8 @@ let translate (script, functions) =
       (* | SCall ("print", [e1]) ->
         L.build_call printf_func [| int_format_str ; (build_expr table builder e1) |]
           "printf" builder *)
+
       (*
-      | SCall ("str_add", [e1, e2]) ->
-         L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
-          "str_add" builder       
-      | SCall ("str_eql", [e1, e2]) ->
-         L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
-          "str_eql" builder 
       | SCall ("len", [e1]) ->
          L.build_call len_func [| (build_expr table builder e1) |]
           "len" builder 
