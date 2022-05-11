@@ -77,8 +77,8 @@ RunFail() {
 Check() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.tl//'`
-    reffile=`echo $1 | sed 's/.tl$//'`
+                             s/.sf//'`
+    reffile=`echo $1 | sed 's/.sf$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
@@ -115,8 +115,8 @@ Check() {
 CheckFail() {
     error=0
     basename=`echo $1 | sed 's/.*\\///
-                             s/.tl//'`
-    reffile=`echo $1 | sed 's/.tl$//'`
+                             s/.sf//'`
+    reffile=`echo $1 | sed 's/.sf$//'`
     basedir="`echo $1 | sed 's/\/[^\/]*$//'`/."
 
     echo -n "$basename..."
