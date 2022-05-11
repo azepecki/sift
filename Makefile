@@ -19,11 +19,11 @@
 # 	rm -r _build
 
 
-# .PHONY: test
-# test: all generate.sh test.sh
-# 	./generate.sh ./tests/*-test/test-*.sf
-# 	./test.sh ./tests/*-test/test-*.sf
-# 	./generate.sh ./tests/fails/test-*.sf
+.PHONY: test
+test: all generate.sh test.sh
+	./generate.sh ./tests/test-*.sf
+	./test.sh ./tests/test-*.sf
+	./generate.sh ./tests/fail-*.sf
 
 .PHONY: all
 all: sift.native
