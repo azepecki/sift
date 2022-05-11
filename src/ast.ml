@@ -25,6 +25,8 @@ type expr =
 | Unop of uop * expr
 | Assign of string * expr
 | Call of string * expr list
+| Stdin of expr
+| Stdout of expr
 (* | Lambda of string list * expr *)
 (* | LambdaCall of expr * expr list *)
 (* | Noexpr *)
@@ -102,10 +104,10 @@ let rec string_of_expr = function
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(op, e) -> string_of_uop op ^ " " ^ string_of_expr e
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
-  (* | Lambda(v, e) -> "( " ^ (String.concat "," ((v))) ^ " ) => " ^ string_of_expr e add support for printing all args *)
   | Call(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  (* | LambdaCall(l, a) -> 
-    "(" ^ (string_of_expr l) ^ ")(" ^ (String.concat "," (List.map string_of_expr (a))) ^ ")" *)
+  | Stdin(e) -> "stdin(" ^ string_of_expr e ^ ")"
+  | Stdout(e) -> "stdout(" ^ string_of_expr e ^ ")"
+
 
 let rec string_of_stmt = function
     Block(stmts) ->

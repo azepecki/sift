@@ -98,6 +98,18 @@ let translate (script, functions) =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
     L.declare_function "printf" printf_t the_module in
+
+  (* Done *)
+  let input_t : L.lltype =
+    L.var_arg_function_type str_t [| i32_t |] in
+  let input_func : L.llvalue =
+    L.declare_function "input" input_t the_module in
+  
+  (* Done *)
+  let output_t : L.lltype =
+    L.var_arg_function_type i32_t [| str_t |] in
+  let output_func : L.llvalue =
+    L.declare_function "output" output_t the_module in
   
   (* TODO: nlp tokenize, return type, list of strings *)
   let word_tokenize_t : L.lltype =
@@ -180,9 +192,10 @@ let translate (script, functions) =
     *)
 
     let rec build_expr table builder ((typ, e) : sexpr) = match e with
-        SLiteral i  -> L.const_int i32_t i
+      | SLiteral i  -> L.const_int i32_t i
       | SBoolLit b  -> L.const_int i1_t (if b then 1 else 0)
-      | SId name       ->  
+      | SStrLit s    -> L.build_global_stringptr s "str_literal" builder
+      | SId name    ->  
         (try 
         let addr = lookup name table in 
         (* load whatever is in addr to named variable *)
@@ -216,6 +229,9 @@ let translate (script, functions) =
         let e1' = build_expr table builder e1
         and e2' = build_expr table builder e2 in
         (match op with
+
+          | A.Add when t1=String   -> (fun a b c d -> L.build_call string_concat_func   [| a ; b |] "str_add" d)
+          | A.Equal when t1=String -> (fun a b c d -> L.build_call string_equality_func [| a ; b |] "str_eql" d)
 
           | A.Add   when t1=Int   -> L.build_add
           | A.Sub   when t1=Int   -> L.build_sub
@@ -253,6 +269,13 @@ let translate (script, functions) =
             | A.Not -> L.build_not
             | A.Neg -> L.build_neg
           ) e' "tmp" builder
+
+      | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
+      | SStdout(e) -> L.build_call output_func [| (build_expr table builder e) |] "output" builder  
+      | SCall ("str_add", [e1 ; e2]) ->
+         L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_add" builder       
+      | SCall ("str_eql", [e1 ; e2]) ->
+         L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_eql" builder 
       (* General Call *)
       | SCall (f, args) ->
         (
@@ -275,10 +298,7 @@ let translate (script, functions) =
       (* | SCall ("print", [e1]) ->
         L.build_call printf_func [| int_format_str ; (build_expr table builder e1) |]
           "printf" builder *)
-      (* | SCall ("str_add", [a, b]) ->
-         L.build_call string_concat_func [| (build_expr table builder a) ; (build_expr table builder b) |] "str_add" builder       
-      | SCall ("str_eql", [e1, e2]) ->
-         L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_eql" builder  *)
+
       (*
       | SCall ("len", [e1]) ->
          L.build_call len_func [| (build_expr table builder e1) |]

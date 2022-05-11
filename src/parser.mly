@@ -30,6 +30,7 @@
 %token <string> STRING_LITERAL
 %token <bool> BLIT
 %token <string> ID
+%token STDIN STDOUT
 %token INCREMENT DECREMENT
 %token EOF
 
@@ -199,19 +200,24 @@ expr:
 
   /* id call */
   | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }
-  /* PIPING (alternate id call)*/
-  | piping              { $1 }
+  | STDIN                      { Stdin(Literal(0))}
+  | STDIN LPAREN expr RPAREN   { Stdin($3) }
+  | STDOUT LPAREN expr RPAREN  { Stdout($3) }
 
   /* arrays! */
   | LSQBRACE args_opt RSQBRACE { ArrayLit($2) }
   | ID LSQBRACE expr RSQBRACE  { ArrayAccess($1, $3) }
   | ID LSQBRACE expr RSQBRACE ASSIGN expr  { ArrayAssign($1, $3, $6) }
 
+  /* PIPING (alternate id call)*/
+  | piping              { $1 }
 
 piping:
   /* PIPING (alternate id call)*/
     expr PIPE ID LPAREN args_opt RPAREN  { Call ($3, $1::$5) }
   | expr PIPE ID                         { Call ($3, [$1]) }
+  | expr PIPE STDIN                      { Stdout($1) }
+  | expr PIPE STDOUT                     { Stdout($1) }
 
 /* args_opt*/
 args_opt:

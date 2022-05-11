@@ -7,8 +7,7 @@ char *str_add(char *s1, char *s2) {
     char *new = (char *) malloc(strlen(s1) + strlen(s2));
     strncpy(new, s1, strlen(s1)-1);
     strncat(new, s2+1, strlen(s2)-1);
-	free(new);
-    return new;
+    return new; //MUST BE FREED LATER!!!!
 }
 
 bool str_eql(char *s1, char *s2) {
@@ -32,6 +31,18 @@ int len(const char *str) {
 	return l;
 }
 
+char *input(int size) {
+	char buffer[1024];
+	fgets(buffer, size, stdin);
+	char *new = (char *) malloc(strlen(buffer));
+	return new;
+}
+
+int output(char *text) {
+	printf("%s", text);
+	return 0;
+}
+
 char **word_tokenize(char *str) {
 	char *sentence = (char *) malloc(strlen(str) + 1);
 	strcpy(sentence, str);
@@ -50,8 +61,7 @@ char **word_tokenize(char *str) {
 		i++;
 		token = strtok(NULL, " ");
 	}
-
-	free(result);
+	
 	free(sentence);
 	return result;
 }

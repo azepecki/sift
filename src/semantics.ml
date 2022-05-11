@@ -106,10 +106,9 @@ let check_program (script: stmt list) (functions: func_def list) =
                               and typ2 = fst e2' in
                               if typ1 = typ2 (* types must be equal in all binops SBinop(checked e1, op, checked e2) *)
                               then match op with
-                                  (* STRING FUNCTIONS!!! Convert operations to functions!! *)
-                                  | Add when typ1 = String                                                -> (String, SCall("str_add", [e1'; e2']))
-                                  | Equal when typ1 = String                                              -> (Bool, SCall("str_eql", [e1'; e2']))
-                                  | Neq when typ1 = String                                                -> (Bool, SUnop(Not, (Bool, SCall("str_eql", [e1'; e2']))))
+                                  (* STRING FUNCTIONS!!! Convert operations to functions!! Not proper, but gets the job done *)
+                                  | Add when typ1 = String                                                -> (String,  SBinop(e1', op, e2'))
+                                  | Equal | Neq when typ1 = String                                        -> (Bool, SBinop(e1', op, e2'))
                                   (* List/Array concat: Add when typ1 = Arr -> (String, SBinop(e1', op, e2')) *)
                                   | Add | Sub | Mul | Div | Mod when typ1 = Int                           -> (Int,    SBinop(e1', op, e2'))  
                                   | Add | Sub | Mul | Div when typ1 = Float                               -> (Float,  SBinop(e1', op, e2'))  
@@ -134,6 +133,14 @@ let check_program (script: stmt list) (functions: func_def list) =
                         if v_type = typ
                         then (typ, SAssign(s, e'))
                         else raise (Failure ("Expression of type " ^ Ast.string_of_typ v_type ^ " cannot be assigned to variable of type " ^ Ast.string_of_typ typ))
+    | Stdin(e) -> let e' = check_expr table e in
+                if fst e' = Int
+                then (String, SStdin(e')) 
+                else raise (Failure ("Stdin buffer size must be an int"))
+    | Stdout(e) -> let e' = check_expr table e in
+                  if fst e' = String
+                  then (Int, SStdout(e')) 
+                  else raise (Failure ("Only strings can be piped to stdout"))
     (* First look for a variable that references a function. If not found, look at global list of funcs. *)
     | Call(fname, args) as call -> (
                             let helper h t = 
