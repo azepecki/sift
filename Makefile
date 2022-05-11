@@ -16,9 +16,9 @@ sift.native:
 	opam  exec -- \
 	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.bitreader,llvm.analysis sift.native
 	chmod 777 sift.native
-	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/regex.cpp
+	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.cpp
 	chmod 777 sift_func.o similarity.o regex.o
-	cc -emit-llvm -o sift_func.bc similarity.bc regex.bc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/regex.cpp -Wno-varargs
+	cc -emit-llvm -o sift_func.bc similarity.bc regex.bc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.cpp -Wno-varargs
 
 
 .PHONY: test
