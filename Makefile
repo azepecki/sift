@@ -26,10 +26,11 @@ test: all generate.sh test.sh
 	./generate.sh ./tests/fail-*.sf
 
 .PHONY: all
-all: sift.native
+all: sift.native regex.o sift_func.o 
 
 sift.native:
 	opam config exec -- \
+	rm -f *.o
 	ocamlbuild -I src -use-ocamlfind sift.native
 
 .PHONY: clean

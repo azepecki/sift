@@ -45,7 +45,10 @@ Generate() {
     echo "###### Generating $basename.s" 1>&2
 
     Run "$SIFT" "./$1" ">" "${basename}.ll" &&
-    Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s"
+    Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
+    Run "$CC" "-o" "${basename}.exe" "${basename}.s" "sift_func.o" "regex.o" &&
+    Run "./${basename}.exe" > "${basename}.out" &&
+    Compare ${basename}.out ${reffile}.out ${basename}.diff
 }
 
 CheckFail() {
