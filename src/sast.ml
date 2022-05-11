@@ -17,7 +17,6 @@ and sx =
 | SBinop of sexpr * op * sexpr
 | SUnop of uop * sexpr
 | SAssign of string * sexpr
-
 | SCall of string * sexpr list
 (* | SLambda of string list * sexpr *)
 
@@ -56,9 +55,7 @@ let rec string_of_sexpr (t, e) =
   | SFloatLit(l) -> string_of_float l
   | SBoolLit(true) -> "true"
   | SBoolLit(false) -> "false"
-  (* | SCharLit(c) -> String.make 1 c *)
   | SStrLit(s) -> "\"" ^ s ^ "\""
-  (* | SSymLit(s) -> s *)
   | SArrayLit(e) -> "[" ^ String.concat "," (List.map string_of_sexpr (List.rev e)) ^ "]"
   | SArrayAccess (s, e) ->  s ^ "[" ^ string_of_sexpr e ^ "]"
   | SArrayAssign(s, e1, e2) -> s ^ "[" ^ string_of_sexpr e1 ^ "] = " ^ string_of_sexpr  e2

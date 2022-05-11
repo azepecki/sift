@@ -106,9 +106,6 @@ let rec string_of_expr = function
   | Call(f, el) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   (* | LambdaCall(l, a) -> 
     "(" ^ (string_of_expr l) ^ ")(" ^ (String.concat "," (List.map string_of_expr (a))) ^ ")" *)
-  (* | Increment(v, e) -> v ^ "+= " ^ string_of_expr e
-  | Decrement(v, e) -> v ^ "-="  ^ string_of_expr e 
-  | Noexpr -> "" *)
 
 let rec string_of_stmt = function
     Block(stmts) ->
