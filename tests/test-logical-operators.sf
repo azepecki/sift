@@ -1,0 +1,38 @@
+
+def int main () {
+
+	bool a = 2 > 1 && 3 < 2;
+	print(a);
+
+	bool b = 2 > 1 && 3 < 4; 
+	print(b);
+
+	bool c = 2 < 1 && 3 < 2;
+	print(c);
+
+	bool d = 3 > 2 || 3 < 2;
+	print(d);
+
+	bool e = 3 > 2 || 2 > 1;
+	print(e);
+
+	bool f = 3 < 2 || 3 > 2;
+	print(f);
+
+	bool g = 3 < 2 || 1 > 2;
+	print(g);
+
+	bool h = (1+2) == 3;
+	print(h);
+
+	bool i = (1+3) == 3;
+	print(i);
+
+	bool j = !(1 == 1);
+	print(j);
+
+	bool k = !(1 == 2);
+	print(k);
+	
+	return 0;
+}

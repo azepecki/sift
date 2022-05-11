@@ -1,0 +1,16 @@
+def int main() {
+
+	int x = 2;
+	print(x);
+
+	str y = "test str";
+	print(y);
+
+	bool a = true;
+	print(a);
+
+	char b = 'a';
+	print(b);
+
+	return 0;
+}

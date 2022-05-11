@@ -1,0 +1,21 @@
+def int main() {
+	int x = 1 + 2;
+	print(x);
+
+	int y = 5 - 4;
+	print(y);
+
+	int z = 2 * 3;
+	print(z);
+
+	int a = 20 / 5;
+	print(a);
+
+	int b = 5 % 2;
+	print(b);
+
+	return 0;
+}
+
+
+

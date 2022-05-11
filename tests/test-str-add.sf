@@ -1,11 +1,11 @@
 def str add_two_strings(str a, str b) {
-	return a + b;
+	return str_add(a, b);
 }
 
 def int main() {
 	str a = "apple";
 	str b = "mango";
-	a = a + " " + b;
+	a = add_two_strings(a, b);
 	print(a);
 	return 0;
 }
