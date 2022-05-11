@@ -6,7 +6,7 @@ def int while_test(int a){
 }
 
 def int main(){
-    while_test(2)
+    while_test(2);
     return 0;
 }
 
