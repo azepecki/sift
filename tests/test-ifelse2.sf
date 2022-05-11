@@ -1,8 +1,8 @@
 def int main() { 
     if(false){
-        return 0;
+        "Inside if" |> <out>;
     } else {
-        return 1;
+        "Inside else" |> <out>;
     }
     return 0;
 }

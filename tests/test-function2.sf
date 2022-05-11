@@ -3,6 +3,6 @@ def int func(int x){
 }
 
 def int main(){
-    printf(func(3));
+    print(func(3));
     return 0;
 }
