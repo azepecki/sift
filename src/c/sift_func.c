@@ -7,6 +7,7 @@ char *str_add(char *s1, char *s2) {
     char *new = (char *) malloc(strlen(s1) + strlen(s2));
     strncpy(new, s1, strlen(s1)-1);
     strncat(new, s2+1, strlen(s2)-1);
+	free(new);
     return new;
 }
 
@@ -27,7 +28,8 @@ bool str_eql(char *s1, char *s2) {
 int len(const char *str) {
 	int l;
 	size_t len = strlen(str);
-	l = (int)(len) -2 ;
+	l = (int)(len) - 2;
+	return l;
 }
 
 char **word_tokenize(char *str) {
@@ -48,5 +50,8 @@ char **word_tokenize(char *str) {
 		i++;
 		token = strtok(NULL, " ");
 	}
+
+	free(result);
+	free(sentence);
 	return result;
 }
