@@ -1,0 +1,10 @@
+def int foo(int a, int b) {
+	int c = a + b;
+	return c;
+}
+
+def int main() {
+	int c = foo(3);
+	print(c);
+	return 0;
+}

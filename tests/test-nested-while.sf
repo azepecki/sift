@@ -1,0 +1,14 @@
+def int main(){
+    int a = 1; 
+    while(a < 4) {
+        int b = 2;
+        while ( b < 4 ) {
+            b = b + 1; 
+        }
+        a = a + 1; 
+    }
+    printf(a)
+    printf(b)
+    return 0;
+}
+

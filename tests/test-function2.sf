@@ -1,0 +1,8 @@
+def int func(int x){
+     return x+1;
+}
+
+def int main(){
+    printf(func(3));
+    return 0;
+}
