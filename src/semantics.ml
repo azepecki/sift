@@ -48,8 +48,8 @@ let check_program (script: stmt list) (functions: func_def list) =
 
   let pre_built_functions = [
     {rtyp=Int; fname="print"; formals=[(String , "input")]; body=[]};
-    {rtyp=Int; fname="stringLength"; formals=[(String , "s")]; body=[]};
-    {rtyp=String; fname="stringClear"; formals=[(String , "s")]; body=[]};
+    (* {rtyp=Int; fname="stringLength"; formals=[(String , "s")]; body=[]}; *)
+    (* {rtyp=String; fname="stringClear"; formals=[(String , "s")]; body=[]};
     {rtyp=Bool; fname="stringEmpty"; formals=[(String , "s")]; body=[]};
     {rtyp=String; fname="charAt"; formals=[(String , "s");(Int, "index")]; body=[]}; 
     {rtyp=String; fname="stringAppend"; formals=[(String , "left"); (String, "right")]; body=[]}; 
@@ -66,7 +66,7 @@ let check_program (script: stmt list) (functions: func_def list) =
     {rtyp=String; fname="lastName"; formals=[(String , "s")]; body=[]};
     {rtyp=String; fname="capitalize"; formals=[(String , "s")]; body=[]};
     {rtyp=Bool; fname="include"; formals=[(String , "s"); (String , "c")]; body=[]};
-    {rtyp=String; fname="substitute"; formals=[(String , "s"); (String , "target");(String , "replacement")]; body=[]};
+    {rtyp=String; fname="substitute"; formals=[(String , "s"); (String , "target");(String , "replacement")]; body=[]}; *)
     {rtyp=Float; fname="get_jaro"; formals=[(String , "str1"); (String , "str3")]; body=[]};
     {rtyp=String; fname="str_add"; formals=[(String , "s1"); (String , "s2")]; body=[]};
     {rtyp=Bool; fname="str_eql"; formals=[(String , "s1"); (String , "s2")]; body=[]};

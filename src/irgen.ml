@@ -97,7 +97,7 @@ let translate (script, functions) =
   let printf_t : L.lltype =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func : L.llvalue =
-    L.declare_function "printf" printf_t the_module in
+    L.declare_function "print" printf_t the_module in
 
   (* Done *)
   let input_t : L.lltype =
@@ -117,12 +117,6 @@ let translate (script, functions) =
   let word_tokenize_func : L.llvalue =
     L.declare_function "word_tokenize" word_tokenize_t the_module in
 
-  (* TODO: sent tokenize, return type, list of strings *)
-  let sent_tokenize_t : L.lltype =
-    L.function_type i32_t [| str_t |] in  
-  let sent_tokenize_func : L.llvalue =
-    L.declare_function "sent_tokenize" sent_tokenize_t the_module in
-
   (* TODO: regex, return type, list of strings *)
   let reg_match_t : L.lltype =
     L.function_type i32_t [| str_t; str_t |] in  
@@ -140,6 +134,12 @@ let translate (script, functions) =
     L.function_type i32_t [| str_t; str_t |] in  
   let reg_match_indices_func : L.llvalue =
     L.declare_function "match_indices" reg_match_indices_t the_module in
+  
+
+  let get_jaro_t : L.lltype =
+    L.function_type float_t [| str_t; str_t |] in  
+  let get_jaro_func : L.llvalue =
+    L.declare_function "get_jaro" get_jaro_t the_module in
 
   (* Define each function (arguments and return type) so we can
      call it even before we've created its body 
@@ -276,7 +276,18 @@ let translate (script, functions) =
          L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_add" builder       
       | SCall ("str_eql", [e1 ; e2]) ->
          L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_eql" builder 
-      (* General Call *)
+      | SCall ("len", [e1]) ->
+          L.build_call len_func [| (build_expr table builder e1) |] "len" builder
+      | SCall ("reg_test", [e1 ; e2]) ->
+          L.build_call reg_test_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "test" builder 
+      
+      | SCall ("reg_match", [e1 ; e2]) ->
+        L.build_call reg_match_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match" builder 
+      | SCall ("reg_match_indices", [e1 ; e2]) ->
+        L.build_call reg_match_indices_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match_indices" builder 
+      | SCall ("get_jaro", [e1 ; e2]) ->
+        L.build_call get_jaro_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "get_jaro" builder 
+        (* General Call *)
       | SCall (f, args) ->
         (
         try 
