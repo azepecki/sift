@@ -170,7 +170,7 @@ expr:
   /* nesting */
    LPAREN expr RPAREN  { $2                     }
   /* literals and id */
-  | INT_LITERAL        { Literal($1)            }
+  | INT_LITERAL         { Literal($1)            }
   | STRING_LITERAL      { StrLit($1)             }
   | FLOAT_LITERAL       { FloatLit($1)           }
   | BLIT                { BoolLit($1)            }
