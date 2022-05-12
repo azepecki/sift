@@ -29,7 +29,7 @@ test: all generate.sh
 
 .PHONY: clean
 clean: cleandir
-	rm -rf *.ll *.out *.s *.diff *.exe *.err
+	rm -rf *.ll *.out *.s *.diff *.exe *.err testall.log
 	rm -rf sift.native
 	rm -rf _build
 	rm -f *.o *.output

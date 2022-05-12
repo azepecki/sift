@@ -1,0 +1,20 @@
+def str search_if_present(str str1, str regex) {
+        str return_val = "apple";
+	if (reg_test(str1, regex)) {
+		return_val = str1;
+	}
+        return return_val;
+}
+
+def int main() {
+
+	str regex = "(w|m)i*ld";
+	str string1 = "The wiiiiiiiiiild wild cat lived in a mild climate.";
+	str string2 = "My name is Anthony Gonsalves.";
+
+	search_if_present(string1, regex) |> print(); 
+	search_if_present(string2, regex) |> print();
+	
+	return 0;
+
+}
