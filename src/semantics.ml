@@ -244,8 +244,8 @@ let check_program (script: stmt list) (functions: func_def list) =
       let updated_table = add a typ table in
       (SFor(fst (check_stmt table e1 func), check_bool_expr updated_table e2, check_expr updated_table e3, fst (check_stmt updated_table st func)) , table)
     | For(_, _, _, _)     -> raise (Failure ("First statement in for loop must be assignment"))
-    | Continue            -> (SContinue, table) (* Add proper checks!!! *)
-    | Break               -> (SBreak , table) (* Add proper checks!!! *)
+    | Continue            -> (SContinue, table)
+    | Break               -> (SBreak , table) 
     | Return e            -> let (t, e') = check_expr table e in
                             (
                              match func with 
