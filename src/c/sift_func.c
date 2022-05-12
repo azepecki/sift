@@ -97,6 +97,26 @@ char *to_str_b(bool b) {
 	}
 }
 
+int len_s(char *s) {
+	return strlen(s);
+}
+
+int len_arr_s(char **s) {
+	return sizeof(s) / sizeof(char *);
+}
+
+int len_arr_i(int *i) {
+	return sizeof(i) / sizeof(int);
+}
+
+int len_arr_d(double *d) {
+	return sizeof(d) / sizeof(double);
+}
+
+int len_arr_b(bool *b) {
+	return sizeof(b) / sizeof(bool);
+}
+
 char **word_tokenize(char *str) {
 	char *sentence = (char *) malloc(strlen(str) + 1);
 	strcpy(sentence, str);

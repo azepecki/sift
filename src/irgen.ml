@@ -65,15 +65,18 @@ in
       A.Int   -> i32_t
     | A.Bool  -> i1_t
     | A.Float -> float_t
-    (*| A.Void  -> void_t*)
     | A.String -> str_t
-    (* Arrays as list of strings *)
     | A.Fun(hd::tl) -> 
       let formal_types = Array.of_list (List.map (fun t -> ltype_of_typ t) tl)
       and return_type = ltype_of_typ hd
       in 
       L.pointer_type (L.function_type return_type formal_types )
-    | _ -> i1_t (* garbage, just to make ocaml shut up *)
+    (* ARRAYS (only depth 1 for now) *)
+    | A.Arr(A.Int)    -> L.pointer_type i32_t
+    | A.Arr(A.Bool)   -> L.pointer_type i1_t
+    | A.Arr(A.Float)  -> L.pointer_type float_t
+    | A.Arr(A.String) -> L.pointer_type str_t
+    | _ -> i1_t (* garbage, just to make ocaml shut up for now (nested arrays, fun[]) *)
 
   in
 
@@ -89,11 +92,32 @@ in
   let string_equality_func : L.llvalue =
     L.declare_function "str_eql" string_equality_t the_module in
 
-  (* Done *)
-  let len_t : L.lltype =
+  (* ALL LENS *)
+  let len_s_t : L.lltype =
     L.function_type i32_t [| str_t |] in  
-  let len_func : L.llvalue =
-    L.declare_function "len" len_t the_module in
+  let len_s_func : L.llvalue =
+    L.declare_function "len_s" len_s_t the_module in
+
+  (* ALL LENS FOR ARRAYS *)
+  let len_arr_s_t : L.lltype =
+    L.function_type i32_t [| L.pointer_type str_t |] in  
+  let len_arr_s_func : L.llvalue =
+    L.declare_function "len_arr_s" len_arr_s_t the_module in
+
+  let len_arr_i_t : L.lltype =
+    L.function_type i32_t [| L.pointer_type i32_t |] in  
+  let len_arr_i_func : L.llvalue =
+    L.declare_function "len_arr_i" len_arr_i_t the_module in
+
+  let len_arr_d_t : L.lltype =
+    L.function_type i32_t [| L.pointer_type float_t |] in  
+  let len_arr_d_func : L.llvalue =
+    L.declare_function "len_arr_d" len_arr_d_t the_module in
+
+  let len_arr_b_t : L.lltype =
+    L.function_type i32_t [| L.pointer_type i1_t |] in  
+  let len_arr_b_func : L.llvalue =
+    L.declare_function "len_arr_b" len_arr_b_t the_module in
 
   (* ALL PRINTS! none for arrays, those are handled by calling to_string and invoking print_s *)
   let print_i_t : L.lltype =
@@ -225,21 +249,9 @@ in
 
       | SAssign (s, e) -> let e' = build_expr table builder e in
 
-        (*
-          E.code ||
-          e' -> e.addr
-
-          stores whatever in e.addr to whatever is in looked up address
-        *)
         ignore(L.build_store e' (lookup s table) builder); 
         e'
-        (*
-          e1' = e1.eddr
-          e2' = e2.addr
-          temp = e1.addr op e2.addr
-           Then we use the llvm's operation to perform the respective
-           binary operation
-          *)
+
       | SBinop (e1, op, e2) ->
         let (t1, _) = e1 in
         let e1' = build_expr table builder e1
@@ -291,6 +303,17 @@ in
             | A.Neg -> L.build_neg
           ) e' "tmp" builder
 
+        | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
+        | SStdout(e) -> L.build_call output_func [| (build_expr table builder e) |] "output" builder  
+
+
+      (* | SArrayAccess(s, e) ->  *)
+
+      (* 
+        PRE-BUILT FUNCTIONS!
+        On all these calls, do not confuse the name with which they invoked
+        with the name that they have in the C file (though they may be the same ) 
+      *)
 
       | SCall ("print", [(typ, _) as e]) ->
             (
@@ -299,30 +322,37 @@ in
             | Float  -> L.build_call print_d_func [| build_expr table builder e |] "print_d" builder 
             | String -> L.build_call print_s_func [| build_expr table builder e |] "print_s" builder 
             | Bool   -> L.build_call print_b_func [| build_expr table builder e |] "print_b" builder
-            | Arr(sub_typ) -> raise (Failure "not implemented")
-            | _ -> raise (Failure "not implemented")
+            | Arr(sub_typ) -> raise (Failure ("print with argument of type " ^ Ast.string_of_typ typ ^ " not implemented"))
+            | _ -> raise (Failure ("print with argument of type " ^ Ast.string_of_typ typ ^ " not implemented"))
+            )
+
+        | SCall ("len", [(typ, _) as e]) ->
+            (
+            match typ with
+            | String        -> L.build_call len_s_func     [| build_expr table builder e |] "len_s" builder 
+            | Arr(Int)      -> L.build_call len_arr_i_func [| build_expr table builder e |] "len_arr_i" builder 
+            | Arr(Float)    -> L.build_call len_arr_d_func [| build_expr table builder e |] "len_arr_d" builder 
+            | Arr(String)   -> L.build_call len_arr_s_func [| build_expr table builder e |] "len_arr_s" builder 
+            | Arr(Float)    -> L.build_call len_arr_b_func [| build_expr table builder e |] "len_arr_b" builder 
+            | _ -> raise (Failure ("len with argument of type " ^ (Ast.string_of_typ typ) ^ " not implemented"))
             )
     
-      | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
-      | SStdout(e) -> L.build_call output_func [| (build_expr table builder e) |] "output" builder  
       | SCall ("str_add", [e1 ; e2]) ->
          L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_add" builder       
       | SCall ("str_eql", [e1 ; e2]) ->
          L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_eql" builder 
-      | SCall ("len", [e1]) ->
-          L.build_call len_func [| (build_expr table builder e1) |] "len" builder
-      | SCall ("reg_test", [e1 ; e2]) ->
+      | SCall ("test", [e1 ; e2]) ->
           L.build_call reg_test_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "test" builder 
-      
-      | SCall ("reg_match", [e1 ; e2]) ->
+      | SCall ("match", [e1 ; e2]) ->
         L.build_call reg_match_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match" builder 
-      | SCall ("reg_match_indices", [e1 ; e2]) ->
+      | SCall ("match_indices", [e1 ; e2]) ->
         L.build_call reg_match_indices_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match_indices" builder 
       | SCall ("get_jaro", [e1 ; e2]) ->
         L.build_call get_jaro_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "get_jaro" builder 
       | SCall ("word_tokenize", [e]) ->
         L.build_call word_tokenize_func [| (build_expr table builder e) |] "word_tokenize" builder 
-        (* General Call *)
+
+      (* General Call *)
       | SCall (f, args) ->
         (
         try 
@@ -341,24 +371,6 @@ in
       | _ -> raise (Failure "not implemented") 
       *)
 
-      (* 
-        On all these calls, do not confuse the name with which they invoked
-        with the name that they have in the C file (though they may be the same ) 
-      *)
-
-      (*
-      | SCall ("sent_tokenize", [e1]) ->
-         L.build_call sent_tokenize_func [| (build_expr table builder e1) |]
-          "sent_tokenize" builder 
-      | SCall ("match", [e1, e2]) ->
-         L.build_call reg_match_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
-          "reg_match" builder 
-      | SCall ("match_indeces", [e1, e2]) ->
-         L.build_call reg_match_indeces_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
-          "reg_match_indeces" builder 
-      | SCall ("test", [e1, e2]) ->
-         L.build_call reg_test_func [| (build_expr table builder e1) ; (build_expr table builder e2) |]
-          "reg_test" builder  *)
     in
 
     (* LLVM insists each basic block end with exactly one "terminator"
@@ -408,8 +420,12 @@ in
 
       | SWhile (predicate, body) ->
         let while_bb = L.append_block context "while" the_function in
+
         let build_br_while = L.build_br while_bb in (* partial function *)
+
         ignore (build_br_while builder);
+
+
         let while_builder = L.builder_at_end context while_bb in
         let bool_val = build_expr table while_builder predicate in
 

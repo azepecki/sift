@@ -3,12 +3,12 @@ def int main(){
     while(a < 4) {
         int b = 2;
         while ( b < 4 ) {
-            b = b + 1; 
+            b++; 
         }
-        a = a + 1; 
+        a++; 
+        print(b);
     }
-    print(a)
-    print(b)
+    print(a);
     return 0;
 }
 

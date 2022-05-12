@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 char* first(char* sentence, char* key) {
     char *ret;
@@ -85,7 +86,7 @@ int count_word(char* file, char* word) {
   return count;
 }
 
-int is_present(char* file, char* word) {
+bool is_present(char* file, char* word) {
 
  FILE *fp;
  char ch;
@@ -96,11 +97,12 @@ int is_present(char* file, char* word) {
  int i = 0, count = 0;
     while (fscanf(fp, " %1023s", ret) != EOF) {
         if (strcmp(ret, word) == 0) {
-            count++;
+            fclose(fp);
+            return true;
         }
     }
   fclose(fp);
-  return count;
+  return false;
 }
 
 // int main() {

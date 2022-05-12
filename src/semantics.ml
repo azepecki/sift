@@ -47,7 +47,6 @@ let new_table_from_formals formals : symbol_table =
 let check_program (script: stmt list) (functions: func_def list) =
 
   let pre_built_functions = [
-    {rtyp=Int; fname="print"; formals=[(String , "input")]; body=[]};
     (* {rtyp=Int; fname="stringLength"; formals=[(String , "s")]; body=[]}; *)
     (* {rtyp=String; fname="stringClear"; formals=[(String , "s")]; body=[]};
     {rtyp=Bool; fname="stringEmpty"; formals=[(String , "s")]; body=[]};
@@ -67,23 +66,37 @@ let check_program (script: stmt list) (functions: func_def list) =
     {rtyp=String; fname="capitalize"; formals=[(String , "s")]; body=[]};
     {rtyp=Bool; fname="include"; formals=[(String , "s"); (String , "c")]; body=[]};
     {rtyp=String; fname="substitute"; formals=[(String , "s"); (String , "target");(String , "replacement")]; body=[]}; *)
+    (* {rtyp=Arr(String); fname="split"; formals=[(String, "line"); (String, "ch")]; body=[]}; *)
     {rtyp=Float; fname="get_jaro"; formals=[(String , "str1"); (String , "str3")]; body=[]};
     {rtyp=String; fname="str_add"; formals=[(String , "s1"); (String , "s2")]; body=[]};
     {rtyp=Bool; fname="str_eql"; formals=[(String , "s1"); (String , "s2")]; body=[]};
-    {rtyp=Int; fname="len"; formals=[(String , "str")]; body=[]};
-    {rtyp=String; fname="word_tokenize"; formals=[(String , "str")]; body=[]};
+<<<<<<< HEAD
+    {rtyp=Arr(String); fname="word_tokenize"; formals=[(String , "str")]; body=[]};
     {rtyp=Bool; fname="test"; formals=[(String , "str");(String , "exp")]; body=[]};
     {rtyp=Arr(String); fname="match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
     {rtyp=Arr(Int); fname="match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
+    {rtyp=String; fname="first"; formals=[(String, "sentence"); (String, "key")]; body=[]};
+    {rtyp=String; fname="read"; formals=[(String, "file")]; body=[]};
+    {rtyp=String; fname="copy"; formals=[(String, "input"); (String, "output")]; body=[]};
+    {rtyp=String; fname="replace"; formals=[(String, "file"); (String, "word"); (String, "replace")]; body=[]};
+    {rtyp=Int; fname="count_word"; formals=[(String, "file"); (String, "word")]; body=[]};
+    {rtyp=Bool; fname="is_present"; formals=[(String, "file"); (String, "word")]; body=[]};
+=======
+    {rtyp=Int; fname="len"; formals=[(String , "str")]; body=[]};
+    {rtyp=String; fname="word_tokenize"; formals=[(String , "str")]; body=[]};
+    {rtyp=Bool; fname="reg_test"; formals=[(String , "str");(String , "exp")]; body=[]};
+    {rtyp=Arr(String); fname="reg_match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
+    {rtyp=Arr(Int); fname="reg_match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
     {rtyp=Arr(String); fname="split"; formals=[(String, "line"); (String, "ch")]; body=[]};
     {rtyp=String; fname="InputString"; formals=[]; body=[]};
     {rtyp=Int; fname="InputInteger"; formals=[]; body=[]};
     {rtyp=String; fname="InputSentence"; formals=[]; body=[]}
+>>>>>>> cc9b40328e0f88c9aa7f3f07bf54f4510bc24f66
     ]
   
   in
 
-  let overloaded = ["print"; "to_str"] in
+  let overloaded = ["print"; "to_str"; "len"] in
 
   let all_functions = functions @ pre_built_functions in
   
@@ -202,11 +215,16 @@ let check_program (script: stmt list) (functions: func_def list) =
                             match f_typ with
                             | Some(Fun(hd::tl)) -> helper hd tl
                             | _  ->  if List.mem fname overloaded && List.length args = 1
-                                     then let e' = check_expr table (List.hd args) in
+                                     then let (t, _) as e' = check_expr table (List.hd args) in
                                         match fname with
                                         | "print"  -> (Int, SCall("print", [e']))
                                         | "to_str" -> (String, SCall("print", [e']))
-                                        | _ -> raise (Failure ("Expecting 1 argument in " ^ fname))
+                                        | "len"    -> (match t with
+                                                      | String -> (Int, SCall("len", [e']))
+                                                      | Arr(sub_t) -> (Int, SCall("len", [e']))
+                                                      | _ -> raise (Failure ("str or arr expected in len"))
+                                                      )
+                                        | _ -> raise (Failure ("function " ^ fname ^ " not found"))
                                      else
                                         let fd = find_func fname in (* find function in function delcarations *)
                                         helper fd.rtyp (List.map fst fd.formals)

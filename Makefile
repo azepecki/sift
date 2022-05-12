@@ -16,7 +16,7 @@ sift.native:
 	opam  exec -- \
 	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis sift.native
 	chmod 777 sift.native
-	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.cpp ./src/c/file_ops.c
+	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.c ./src/c/file_ops.c
 	chmod 777 sift_func.o similarity.o regex.o
 
 .PHONY: dummy
@@ -24,18 +24,15 @@ dummy:
 	./generate.sh ./tests/test-dummy.sf
 
 .PHONY: test
-test: all generate.sh test.sh
+test: all generate.sh
 	./generate.sh ./tests/test-*.sf
-	#./test.sh ./tests/test-*.sf
-	#./generate.sh ./tests/fail-*.sf
 
 .PHONY: clean
 clean: cleandir
 	rm -rf *.ll *.out *.s *.diff *.exe *.err
 	rm -rf sift.native
 	rm -rf _build
-	rm -f *.o *.output sift_func.bc similarity.bc regex.bc file_ops.bc
-
+	rm -f *.o *.output
 cleandir :
 	@if [ -d build ]; then make -C build clean; \
 	else echo "build not exist"; fi

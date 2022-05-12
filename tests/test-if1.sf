@@ -1,8 +1,9 @@
 def int main() { 
     if(true) {
-        "Inside If" |> <out>;
+        print(20);
     }
-    "Hello" |> <out>;
-    "World" |> <out>;
+    if(false) {
+        print("hahahahaha");
+    }
     return 0;
 }
