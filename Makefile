@@ -13,7 +13,6 @@
 all: sift.native
 
 sift.native:
-	opam  exec -- \
 	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis sift.native
 	chmod 777 sift.native
 	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.c ./src/c/file_ops.c
