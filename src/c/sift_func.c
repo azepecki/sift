@@ -40,6 +40,7 @@ char *input(int size) {
 
 int output(char *text) {
 	printf("%s", text);
+	fflush(stdout);
 	return 0;
 }
 
@@ -66,6 +67,34 @@ int print_b(bool b) {
 		printf("false\n");
 	}
 	return 0;
+}
+
+char *to_str_i(int i) {
+	int length = snprintf(NULL, 0, "%d", i);
+	char* str = malloc(length + 1);
+	snprintf(str, length + 1, "%d", i);
+	return str;
+}
+
+char *to_str_d(double d) {
+	int length = snprintf(NULL, 0, "%.6f", d);
+	char* str = malloc(length + 1);
+	snprintf(str, length + 1, "%.6f", d);
+	return str;
+}
+
+char *to_str_s(char *s) {
+	return s;
+}
+
+
+char *to_str_b(bool b) {
+	if (b) {
+		return "true";
+	} 
+	else {
+		return "false";
+	}
 }
 
 char **word_tokenize(char *str) {

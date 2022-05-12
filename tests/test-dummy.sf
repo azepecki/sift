@@ -3,5 +3,3 @@ def int main(int x, int y) {
 	"hi" |> <out>;
 	return z;
 }
-
-main(3, 5);

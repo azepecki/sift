@@ -19,6 +19,9 @@ sift.native:
 	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.cpp
 	chmod 777 sift_func.o similarity.o regex.o
 
+.PHONY: dummy
+dummy: 
+	./generate.sh ./tests/test-dummy.sf
 
 .PHONY: test
 test: all generate.sh test.sh
