@@ -377,7 +377,7 @@ in
       match stmt with
      (* This will apply the builder statement to every statement *)
      | SBlock sl -> 
-      let (new_builder, new_table, new_loop) = List.fold_left (fun (b,t, loop) stmt -> build_stmt t b loop stmt) (builder, add_scope table, None) sl in
+      let (new_builder, new_table, new_loop) = List.fold_left (fun (b,t, loop) stmt -> build_stmt t b loop stmt) (builder, add_scope table, loop) sl in
       (new_builder, table, loop)
       
      | SExpr e -> ignore(build_expr table builder e); 
@@ -422,14 +422,14 @@ in
 
       | SContinue -> 
         (match loop with 
-        | Some((while_bb, _)) -> ignore(L.build_br while_bb builder); (builder, table, loop)
+        | Some(while_bb, _) -> ignore(L.build_br while_bb builder); (builder, table, loop)
         | None -> (builder, table, loop) (* This doesn't happen *)
         ) 
 
       | SBreak -> 
         (match loop with 
-        | Some((_, end_bb)) -> ignore(L.build_br end_bb builder); (builder, table, loop)
-        | None -> (builder, table, loop) (* This doesn't happen *)
+        | Some(_, end_bb) -> print_string("break\n"); ignore(L.build_br end_bb builder); (builder, table, loop)
+        | None -> print_string("no break\n"); (builder, table, loop) (* This doesn't happen *)
         ) 
   
       | SFor (declr, predicate, inc, body) -> 
