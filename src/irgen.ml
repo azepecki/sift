@@ -54,11 +54,10 @@ let translate (script, functions) =
 
   (* Get types from the context *)
   let i32_t      = L.i32_type    context
-  and i8_t       = L.i8_type     context
   and str_t      = L.pointer_type (L.i8_type context)
   and i1_t       = L.i1_type     context
   and float_t    = L.double_type context
-  and void_t     = L.void_type   context in
+in
 
   let rec ltype_of_typ = function
       A.Int   -> i32_t
@@ -150,7 +149,6 @@ let translate (script, functions) =
   let reg_match_indices_func : L.llvalue =
     L.declare_function "match_indices" reg_match_indices_t the_module in
   
-
   let get_jaro_t : L.lltype =
     L.function_type float_t [| str_t; str_t |] in  
   let get_jaro_func : L.llvalue =
@@ -236,8 +234,7 @@ let translate (script, functions) =
            binary operation
           *)
       | SBinop (e1, op, e2) ->
-        let (t1, _) = e1 
-        and (t2, _) = e2 in
+        let (t1, _) = e1 in
         let e1' = build_expr table builder e1
         and e2' = build_expr table builder e2 in
         (match op with
@@ -284,11 +281,13 @@ let translate (script, functions) =
 
 
       | SCall ("print", [(typ, _) as e]) ->
+            (
             match typ with
             | Int    -> L.build_call print_i_func [| build_expr table builder e |] "print_i" builder 
             | Float  -> L.build_call print_d_func [| build_expr table builder e |] "print_d" builder 
             | String -> L.build_call print_s_func [| build_expr table builder e |] "print_s" builder 
-            | Bool   -> L.build_call print_b_func [| build_expr table builder e |] "print_b" builder 
+            | Bool   -> L.build_call print_b_func [| build_expr table builder e |] "print_b" builder
+            )
     
       | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
       | SStdout(e) -> L.build_call output_func [| (build_expr table builder e) |] "output" builder  

@@ -44,31 +44,26 @@ int output(char *text) {
 }
 
 int print_i(int i) {
-	printf("%d", i);
+	printf("%d\n", i);
 	return 0;
 }
 
 int print_d(double d) {
-	printf("%.6f", d);
+	printf("%.6f\n", d);
 	return 0;
 }
 
 int print_s(char *s) {
-	printf("%s", s);
-	return 0;
-}
-
-int print_s(char *s) {
-	printf("%s", s);
+	printf("%s\n", s);
 	return 0;
 }
 
 int print_b(bool b) {
 	if (b) {
-		printf("true");
+		printf("true\n");
 	} 
 	else {
-		printf("false");
+		printf("false\n");
 	}
 	return 0;
 }

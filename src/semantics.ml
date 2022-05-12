@@ -79,11 +79,14 @@ let check_program (script: stmt list) (functions: func_def list) =
     {rtyp=String; fname="InputString"; formals=[]; body=[]};
     {rtyp=Int; fname="InputInteger"; formals=[]; body=[]};
     {rtyp=String; fname="InputSentence"; formals=[]; body=[]}
-    ]in
+    ]
+  
+  in
+
+  let overloaded = ["print"; "to_str"] in
 
   let all_functions = functions @ pre_built_functions in
   
-
   let find_func fname = 
     match (List.find_opt (fun x -> x.fname = fname) (all_functions)) with
     | Some (fd) -> fd
@@ -191,13 +194,20 @@ let check_program (script: stmt list) (functions: func_def list) =
                                       in
                                       let args' = List.map2 (check_call) t args (* Calls check_call on each (formal, arg) pair *)
                                       in 
-                                      (h, SCall(fname, args'))  )
+                                      (h, SCall(fname, args')))
                             in
                             let f_typ = find_opt fname table in
                             match f_typ with
                             | Some(Fun(hd::tl)) -> helper hd tl
-                            | _ ->  let fd = find_func fname in (* find function in function delcarations *)
-                                    helper fd.rtyp (List.map fst fd.formals)
+                            | _  ->  if List.mem fname overloaded && List.length args = 1
+                                     then let e' = check_expr table (List.hd args) in
+                                        match fname with
+                                        | "print"  -> (Int, SCall("print", [e']))
+                                        | "to_str" -> (String, SCall("print", [e']))
+                                        | _ -> raise (Failure ("Expecting 1 argument in " ^ fname))
+                                     else
+                                        let fd = find_func fname in (* find function in function delcarations *)
+                                        helper fd.rtyp (List.map fst fd.formals)
     )
 (* | Lambda (s, e) -> GET TYPE OF e (check_expr e), THEN _INFER_ TYPE OF s (WEIRD!) *)
   in
