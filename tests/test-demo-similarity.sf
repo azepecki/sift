@@ -1,0 +1,22 @@
+def str get_result_string(str a, str b, str c) {
+	str result = str_add(a, " is more similar to ") |> str_add(b) |> str_add(" than ") |> str_add(c);
+	return result;
+}
+
+def int main() {
+
+	str smellyfish = "SMELLYFISH";
+	str jellyfish = "JELLYFISH";
+	str apple = "SHARK";
+
+	float smelly_apple = get_jaro(smellyfish, apple);
+	float smelly_jelly = get_jaro(smellyfish, jellyfish);
+
+	if (smelly_apple > smelly_jelly) {
+		print(get_result_string(apple, smellyfish, jellyfish));
+	} else {
+		print(get_result_string(jellyfish, smellyfish, apple));
+	}
+	
+    return 0;
+}
