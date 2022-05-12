@@ -70,28 +70,20 @@ let check_program (script: stmt list) (functions: func_def list) =
     {rtyp=Float; fname="get_jaro"; formals=[(String , "str1"); (String , "str3")]; body=[]};
     {rtyp=String; fname="str_add"; formals=[(String , "s1"); (String , "s2")]; body=[]};
     {rtyp=Bool; fname="str_eql"; formals=[(String , "s1"); (String , "s2")]; body=[]};
-<<<<<<< HEAD
     {rtyp=Arr(String); fname="word_tokenize"; formals=[(String , "str")]; body=[]};
-    {rtyp=Bool; fname="test"; formals=[(String , "str");(String , "exp")]; body=[]};
-    {rtyp=Arr(String); fname="match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
-    {rtyp=Arr(Int); fname="match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
     {rtyp=String; fname="first"; formals=[(String, "sentence"); (String, "key")]; body=[]};
     {rtyp=String; fname="read"; formals=[(String, "file")]; body=[]};
     {rtyp=String; fname="copy"; formals=[(String, "input"); (String, "output")]; body=[]};
     {rtyp=String; fname="replace"; formals=[(String, "file"); (String, "word"); (String, "replace")]; body=[]};
     {rtyp=Int; fname="count_word"; formals=[(String, "file"); (String, "word")]; body=[]};
     {rtyp=Bool; fname="is_present"; formals=[(String, "file"); (String, "word")]; body=[]};
-=======
-    {rtyp=Int; fname="len"; formals=[(String , "str")]; body=[]};
-    {rtyp=String; fname="word_tokenize"; formals=[(String , "str")]; body=[]};
     {rtyp=Bool; fname="reg_test"; formals=[(String , "str");(String , "exp")]; body=[]};
     {rtyp=Arr(String); fname="reg_match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
     {rtyp=Arr(Int); fname="reg_match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
-    {rtyp=Arr(String); fname="split"; formals=[(String, "line"); (String, "ch")]; body=[]};
-    {rtyp=String; fname="InputString"; formals=[]; body=[]};
+    (* {rtyp=Arr(String); fname="split"; formals=[(String, "line"); (String, "ch")]; body=[]}; *)
+    (* {rtyp=String; fname="InputString"; formals=[]; body=[]};
     {rtyp=Int; fname="InputInteger"; formals=[]; body=[]};
-    {rtyp=String; fname="InputSentence"; formals=[]; body=[]}
->>>>>>> cc9b40328e0f88c9aa7f3f07bf54f4510bc24f66
+    {rtyp=String; fname="InputSentence"; formals=[]; body=[]} *)
     ]
   
   in
