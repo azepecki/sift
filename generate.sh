@@ -35,6 +35,7 @@ Compare() {
         echo "FAILED $1 differs from $2" 1>&2
         globalerror=1
     }
+    return
 }
 
 Generate() {
@@ -54,14 +55,16 @@ Generate() {
     Run "$CC" "-o" "${basename}.exe" "${basename}.s" "sift_func.o" "similarity.o" "regex.o" &&
     Run "./${basename}.exe" > "${basename}.out" &&
     Compare ${basename}.out ${reffile}.out ${basename}.diff
-    if [ $gloabalerror -eq 0 ] ; then
-	    rm -f $generatedfiles
-	echo "OK"
-	echo "###### SUCCESS" 1>&2
+
+    if [ $globalerror -eq 0 ] ; then
+            rm -f $generatedfiles
+        echo "OK"
+        echo "###### SUCCESS" 1>&2
     else
-	echo "###### FAILED" 1>&2
-	globalerror=$error
+        echo "###### FAILED" 1>&2
+        globalerror=$error
     fi
+
 }
 
 CheckFail() {
