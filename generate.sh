@@ -88,7 +88,7 @@ CheckFail() {
 
     # Report the status and clean up the generated files
 
-    if [ $gloabalerror -eq 0 ] ; then
+    if [ $globalerror -eq 0 ] ; then
 	    rm -f $generatedfiles
 	echo "OK"
 	echo "###### SUCCESS" 1>&2
@@ -99,12 +99,13 @@ CheckFail() {
 }
 
 RunFail() {
+    globalerror=0
     echo $* 1>&2
     eval $* && {
 	SignalError "failed: $* did not report an error"
-	return 1
+	globalerror=1
     }
-    return 0
+    return
 }
 
 if [ $# -ge 1 ]

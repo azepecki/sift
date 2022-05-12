@@ -24,7 +24,7 @@ dummy:
 
 .PHONY: test
 test: all generate.sh
-	./generate.sh ./tests/test-*.sf
+	./generate.sh
 
 .PHONY: clean
 clean: cleandir
