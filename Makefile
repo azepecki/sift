@@ -23,8 +23,8 @@ sift.native:
 .PHONY: test
 test: all generate.sh test.sh
 	./generate.sh ./tests/test-*.sf
-	./test.sh ./tests/test-*.sf
-	./generate.sh ./tests/fail-*.sf
+	#./test.sh ./tests/test-*.sf
+	#./generate.sh ./tests/fail-*.sf
 
 .PHONY: clean
 clean: cleandir
