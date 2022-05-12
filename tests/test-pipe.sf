@@ -2,6 +2,7 @@ def int func(int a, int b, int c, int d) {
     return a + b + c + d;
 }
 
-def int main(){
-   return 2 |> func(6, 4, 9);
+def int main() {
+   print((2 |> func(6, 4, 9)));
+   return 0;
 }
