@@ -72,9 +72,9 @@ let check_program (script: stmt list) (functions: func_def list) =
     {rtyp=Bool; fname="str_eql"; formals=[(String , "s1"); (String , "s2")]; body=[]};
     {rtyp=Int; fname="len"; formals=[(String , "str")]; body=[]};
     {rtyp=String; fname="word_tokenize"; formals=[(String , "str")]; body=[]};
-    {rtyp=Bool; fname="test"; formals=[(String , "str");(String , "exp")]; body=[]};
-    {rtyp=Arr(String); fname="match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
-    {rtyp=Arr(Int); fname="match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
+    {rtyp=Bool; fname="reg_test"; formals=[(String , "str");(String , "exp")]; body=[]};
+    {rtyp=Arr(String); fname="reg_match"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
+    {rtyp=Arr(Int); fname="reg_match_indices"; formals=[(String, "sentence"); (String, "exp")]; body=[]};
     {rtyp=Arr(String); fname="split"; formals=[(String, "line"); (String, "ch")]; body=[]};
     {rtyp=String; fname="InputString"; formals=[]; body=[]};
     {rtyp=Int; fname="InputInteger"; formals=[]; body=[]};
