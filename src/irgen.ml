@@ -93,11 +93,26 @@ let translate (script, functions) =
   let len_func : L.llvalue =
     L.declare_function "len" len_t the_module in
 
-  (* Done *)
-  let printf_t : L.lltype =
-    L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-  let printf_func : L.llvalue =
-    L.declare_function "print" printf_t the_module in
+  (* ALL PRINTS! none for arrays, those are handled by calling to_string and invoking print_s *)
+  let print_i_t : L.lltype =
+    L.var_arg_function_type i32_t [| i32_t |] in
+  let print_i_func : L.llvalue =
+    L.declare_function "print_i" print_i_t the_module in
+
+  let print_d_t : L.lltype =
+    L.var_arg_function_type i32_t [| float_t |] in
+  let print_d_func : L.llvalue =
+    L.declare_function "print_d" print_d_t the_module in
+
+  let print_s_t : L.lltype =
+    L.var_arg_function_type i32_t [| str_t |] in
+  let print_s_func : L.llvalue =
+    L.declare_function "print_s" print_s_t the_module in
+
+  let print_b_t : L.lltype =
+    L.var_arg_function_type i32_t [| i1_t |] in
+  let print_b_func : L.llvalue =
+    L.declare_function "print_b" print_b_t the_module in
 
   (* Done *)
   let input_t : L.lltype =
@@ -159,9 +174,6 @@ let translate (script, functions) =
 
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
     let builder = L.builder_at_end context (L.entry_block the_function) in
-  
-    (* Only for the int print, loool *)
-    let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
   
     (* Construct the function's "locals": formal arguments. Allocate each on the stack, 
     initialize their value and remember their values in the "locals" map *)
@@ -270,6 +282,14 @@ let translate (script, functions) =
             | A.Neg -> L.build_neg
           ) e' "tmp" builder
 
+
+      | SCall ("print", [(typ, _) as e]) ->
+            match typ with
+            | Int    -> L.build_call print_i_func [| build_expr table builder e |] "print_i" builder 
+            | Float  -> L.build_call print_d_func [| build_expr table builder e |] "print_d" builder 
+            | String -> L.build_call print_s_func [| build_expr table builder e |] "print_s" builder 
+            | Bool   -> L.build_call print_b_func [| build_expr table builder e |] "print_b" builder 
+    
       | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
       | SStdout(e) -> L.build_call output_func [| (build_expr table builder e) |] "output" builder  
       | SCall ("str_add", [e1 ; e2]) ->
