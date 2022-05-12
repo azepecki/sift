@@ -4,7 +4,10 @@
 
 using namespace std;
 
-int test(char *str, char *exp){
+
+char* substr(const char *src, int m, int n);
+
+int test(char *str, char *exp) {
 	regex e(exp);
 	bool match = regex_match(str, e);
 	return (match ? 1 : 0);
