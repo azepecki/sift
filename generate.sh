@@ -12,23 +12,28 @@ SIFT="./sift.native"
 
 globallog=testall.log
 rm -f $globallog
+globalerror=0
 
 # Run <args>
 # Report the command, run it, and report any errors
 Run() {
+    globalerror=0
     echo $* 1>&2
     eval $* || {
 	SignalError "$1 failed on $*"
-	return 1
+	globalerror=1
     }
+    return
 }
 
 Compare() {
+    globalerror=0
     generatedfiles="$generatedfiles $3"
     echo diff -b $1 $2 ">" $3 1>&2
     diff -b "$1" "$2" > "$3" 2>&1 || {
-	SignalError "$1 differs"
-	echo "FAILED $1 differs from $2" 1>&2
+        SignalError "$1 differs"
+        echo "FAILED $1 differs from $2" 1>&2
+        globalerror=1
     }
 }
 
@@ -49,6 +54,14 @@ Generate() {
     Run "$CC" "-o" "${basename}.exe" "${basename}.s" "sift_func.o" "similarity.o" "regex.o" &&
     Run "./${basename}.exe" > "${basename}.out" &&
     Compare ${basename}.out ${reffile}.out ${basename}.diff
+    if [ $gloabalerror -eq 0 ] ; then
+	    rm -f $generatedfiles
+	echo "OK"
+	echo "###### SUCCESS" 1>&2
+    else
+	echo "###### FAILED" 1>&2
+	globalerror=$error
+    fi
 }
 
 CheckFail() {
@@ -71,7 +84,7 @@ CheckFail() {
 
     # Report the status and clean up the generated files
 
-    if [ $error -eq 0 ] ; then
+    if [ $gloabalerror -eq 0 ] ; then
 	    rm -f $generatedfiles
 	echo "OK"
 	echo "###### SUCCESS" 1>&2
@@ -101,7 +114,7 @@ for file in $files
 do
     case $file in
 	*test-*)
-	    Generate $file 2
+	    Generate $file 2 >> $globallog
 	    ;;
 	*fail-*)
 	    CheckFail $file 2 >> $globallog
