@@ -3,14 +3,14 @@
 #include <ctype.h>
 #include <stdio.h>
 
-char* firstoccurance(char* sentence, char* key) {
+char* first(char* sentence, char* key) {
 
     char *ret;
     ret = strstr(sentence, key);
     return ret;
 }
 
-char* readfile(char* file) {
+char* read(char* file) {
 
  FILE *fp;
  char ch;
@@ -28,7 +28,7 @@ char* readfile(char* file) {
   return ret;
 }
 
-char* copyfile(char* input, char* output) {
+char* copy(char* input, char* output) {
 
  FILE *fp1, *fp2;
  char ch;
@@ -46,7 +46,7 @@ char* copyfile(char* input, char* output) {
   return ret;
 }
 
-char* replaceword(char* file, char* word, char* replace) {
+char* replace(char* file, char* word, char* replace) {
 
  FILE *fp, *ofp;
  char ch;
@@ -68,7 +68,7 @@ char* replaceword(char* file, char* word, char* replace) {
   return ret;
 }
 
-int countword(char* file, char* word) {
+int count_word(char* file, char* word) {
 
  FILE *fp;
  char ch;
