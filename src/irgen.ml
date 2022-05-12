@@ -174,7 +174,7 @@ in
   let reg_match_indices_t : L.lltype =
     L.function_type i32_t [| str_t; str_t |] in  
   let reg_match_indices_func : L.llvalue =
-    L.declare_function "match_indices" reg_match_indices_t the_module in
+    L.declare_function "reg_match_indices" reg_match_indices_t the_module in
   
   let get_jaro_t : L.lltype =
     L.function_type float_t [| str_t; str_t |] in  
@@ -341,12 +341,12 @@ in
          L.build_call string_concat_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_add" builder       
       | SCall ("str_eql", [e1 ; e2]) ->
          L.build_call string_equality_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "str_eql" builder 
-      | SCall ("test", [e1 ; e2]) ->
-          L.build_call reg_test_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "test" builder 
-      | SCall ("match", [e1 ; e2]) ->
-        L.build_call reg_match_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match" builder 
-      | SCall ("match_indices", [e1 ; e2]) ->
-        L.build_call reg_match_indices_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match_indices" builder 
+      | SCall ("reg_test", [e1 ; e2]) ->
+          L.build_call reg_test_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "reg_test" builder 
+      | SCall ("reg_match", [e1 ; e2]) ->
+        L.build_call reg_match_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "reg_match" builder 
+      | SCall ("reg_match_indices", [e1 ; e2]) ->
+        L.build_call reg_match_indices_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "reg_match_indices" builder 
       | SCall ("get_jaro", [e1 ; e2]) ->
         L.build_call get_jaro_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "get_jaro" builder 
       | SCall ("word_tokenize", [e]) ->

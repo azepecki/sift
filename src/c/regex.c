@@ -464,7 +464,7 @@ char* substr(const char *src, int m, int n)
     return dest - len;
 }
 
-int reg_test(char *str, char *exp) {
+bool reg_test(char *str, char *exp) {
 	char *post;
 	State *start;
 	post = re2post(exp);
@@ -475,7 +475,7 @@ int reg_test(char *str, char *exp) {
 	l1.s = malloc(nstate*sizeof l1.s[0]);
 	l2.s = malloc(nstate*sizeof l2.s[0]);
 
-	return (regex_match(startdstate(start), str) ? 1 : 0);
+	return (regex_match(startdstate(start), str) ? true : false);
 }
 
 char **reg_match(char *sentence, char *exp) {
