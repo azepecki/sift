@@ -27,9 +27,42 @@ Sift draws inspiration from the elegance of C’s syntax while adding its own un
 
 ##  2. <a name='LanguageTutorial'></a>Language Tutorial
 
-Sift files are signified with the `.sf` extention. The entry point of a sift program is the main function.(Just like C :) )
+### Installation
+
+**LLVM Installation**
+
+Installation under Ubuntu 20.04
+
+Use LLVM 10. Install the matching version of the OCaml LLVM bindings:
+
+```
+sudo apt install cmake
+sudo apt install ocaml llvm-10 llvm-10-dev llvm-runtime m4 opam
+opam init
+opam install llvm.10.0.0
+opam install ocamlbuild
+eval `opam config env`
+```
+
+Clone the git repo and checkout
+
+```
+git clone https://github.com/azepecki/sift.git
+cd sift
+git checkout rishav-final
+```
+
+```
+make clean
+make
+make test
+```
+
+
 
 ### Fundamentals 
+
+Sift files are signified with the `.sf` extention. The entry point of a sift program is the main function.(Just like C :) )
 
 **Data Types** 
 
