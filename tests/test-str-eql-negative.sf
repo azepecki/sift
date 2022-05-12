@@ -2,10 +2,11 @@ def int main() {
 
 	str a = "apple";
 	str b = "mango";
-	if str_eql(a, b) {
-		print("The two strings are equal");
+        bool is_equal = str_eql(a, b);
+	if (is_equal) {
+		"Equal" |> <out>;
 	} else {
-		print("The two strings are not equal");
+		"Not Equal" |> <out>;
 	}
 	
 	return 0;

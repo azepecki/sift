@@ -79,19 +79,19 @@ double get_jaro(const char *str1, const char *str2) {
         ((matches - transpositions) / matches)) / 3.0;
 }
  
-void rununittests(){
+// void rununittests(){
     
-    printf("%s%s%s", "Similarity between: ", "MARTHA ", "MARHTA ");
-    printf("%f\n", get_jaro("MARTHA", "MARHTA"));
-    printf("%s%s%s", "Similarity between: ", "VERGIL ", "VERIGU ");
-    printf("%f\n", get_jaro("VERGIL", "VERIGU"));
-    printf("%s%s%s", "Similarity between: ", "JELLYFISH ", "SMELLYFISH ");
-    printf("%f\n", get_jaro("JELLYFISH", "SMELLYFISH"));
-    printf("%s%s%s", "Similarity between: ", "I WILL GO TO THE MOVIES ", "DRINKING COFFEE IS GOOD ");
-    printf("%f\n", get_jaro("I WILL GO TO THE MOVIES", "DRINKING COFFEE IS GOOD"));
+//     printf("%s%s%s", "Similarity between: ", "MARTHA ", "MARHTA ");
+//     printf("%f\n", get_jaro("MARTHA", "MARHTA"));
+//     printf("%s%s%s", "Similarity between: ", "VERGIL ", "VERIGU ");
+//     printf("%f\n", get_jaro("VERGIL", "VERIGU"));
+//     printf("%s%s%s", "Similarity between: ", "JELLYFISH ", "SMELLYFISH ");
+//     printf("%f\n", get_jaro("JELLYFISH", "SMELLYFISH"));
+//     printf("%s%s%s", "Similarity between: ", "I WILL GO TO THE MOVIES ", "DRINKING COFFEE IS GOOD ");
+//     printf("%f\n", get_jaro("I WILL GO TO THE MOVIES", "DRINKING COFFEE IS GOOD"));
 
-}
+// }
 
-int main() {
-    rununittests();
-}
+// int main() {
+//     rununittests();
+// }

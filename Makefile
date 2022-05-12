@@ -8,16 +8,6 @@
 #	Suryanarayana V Akella  sa4084
 #	Rishav Kumar            rk3142
 
-# default:
-# 	ocamlbuild run.native
-
-# run:
-# 	./run.native
-
-# clean: 
-# 	rm -f run.native
-# 	rm -r _build
-
 
 .PHONY: all
 all: sift.native
@@ -26,9 +16,9 @@ sift.native:
 	opam  exec -- \
 	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.bitreader,llvm.analysis sift.native
 	chmod 777 sift.native
-	gcc -c ./src/c/sift_func.c
-	chmod 777 sift_func.o
-	cc -emit-llvm -o sift_func.bc -c ./src/c/sift_func.c -Wno-varargs
+	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.cpp
+	chmod 777 sift_func.o similarity.o regex.o
+
 
 .PHONY: test
 test: all generate.sh test.sh
@@ -36,13 +26,12 @@ test: all generate.sh test.sh
 	./test.sh ./tests/test-*.sf
 	./generate.sh ./tests/fail-*.sf
 
-
 .PHONY: clean
 clean: cleandir
 	rm -rf *.ll *.out *.s *.diff *.exe *.err
 	rm -rf sift.native
 	rm -rf _build
-	rm -f *.o *.output sift_func.bc
+	rm -f *.o *.output sift_func.bc similarity.bc regex.bc
 
 cleandir :
 	@if [ -d build ]; then make -C build clean; \
