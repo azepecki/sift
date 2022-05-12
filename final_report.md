@@ -351,20 +351,126 @@ if_end:                                           ; preds = %else, %then
 
 
 
-**Functions** 
+**SQL Syntax Flavor** 
 
-See an example program that tests functions (`test-function1.sf`)
+The idea of pipe was to give functions a flavor of declarative sql syntax. The below example demonstrates the use of pipe operator as a where clause. In the example, we use two sentences, matched against the same regular expression. You can visualize it as running select value from xyz where column like (regex). The output of this is then give to the print() function. If you look carefully, print function doesn't take any argument. It's argument is the output produced by the function called. 
+This functionality will be very helpful in association with word_tokenize(nlp function). It will give the developers power to match regular expression for the entire sentence and then pass that to the next stage of their pipeline.
 
-```js
-def int func(int x, int y){
-     return x+y;
+Sift Source Program:
+
+```
+
+def str search_if_present(str str1, str regex) {
+        str return_val = "";
+	if (reg_test(str1, regex)) {
+		return_val = str1;
+	}
+        return return_val;
 }
 
-def int main(){
-    print(func(3,4));
-    return 0;
+def int main() {
+
+	str regex = "(w|m)i*ld";
+	str string1 = "The wiiiiiiiiiild wild cat lived in a mild climate.";
+	str string2 = "My name is Anthony Gonsalves.";
+
+	search_if_present(string1, regex) |> print(); 
+	search_if_present(string2, regex) |> print();
+	
+	return 0;
+
+}
+```
+LLVM Target Program:
+
+```
+; ModuleID = 'Sift'
+source_filename = "Sift"
+target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
+
+@str_literal = private unnamed_addr constant [1 x i8] zeroinitializer, align 1
+@str_literal.1 = private unnamed_addr constant [10 x i8] c"(w|m)i*ld\00", align 1
+@str_literal.2 = private unnamed_addr constant [52 x i8] c"The wiiiiiiiiiild wild cat lived in a mild climate.\00", align 1
+@str_literal.3 = private unnamed_addr constant [30 x i8] c"My name is Anthony Gonsalves.\00", align 1
+
+declare i8* @str_add(i8*, i8*)
+
+declare i1 @str_eql(i8*, i8*)
+
+declare i32 @len_s(i8*)
+
+declare i32 @len_arr_s(i8**)
+
+declare i32 @len_arr_i(i32*)
+
+declare i32 @len_arr_d(double*)
+
+declare i32 @len_arr_b(i1*)
+
+declare i32 @print_i(i32, ...)
+
+declare i32 @print_d(double, ...)
+
+declare i32 @print_s(i8*, ...)
+
+declare i32 @print_b(i1, ...)
+
+declare i8* @input(i32, ...)
+
+declare i32 @output(i8*, ...)
+
+declare i8** @word_tokenize(i8*)
+
+declare i32 @reg_match(i8*, i8*)
+
+declare i1 @reg_test(i8*, i8*)
+
+declare i32 @reg_match_indices(i8*, i8*)
+
+declare double @get_jaro(i8*, i8*)
+
+define i8* @search_if_present(i8* %str1, i8* %regex) {
+entry:
+  %str11 = alloca i8*
+  store i8* %str1, i8** %str11
+  %regex2 = alloca i8*
+  store i8* %regex, i8** %regex2
+  %return_val = alloca i8*
+  store i8* getelementptr inbounds ([1 x i8], [1 x i8]* @str_literal, i32 0, i32 0), i8** %return_val
+  %regex3 = load i8*, i8** %regex2
+  %str14 = load i8*, i8** %str11
+  %reg_test = call i1 @reg_test(i8* %str14, i8* %regex3)
+  br i1 %reg_test, label %then, label %if_end
+
+then:                                             ; preds = %entry
+  %str15 = load i8*, i8** %str11
+  store i8* %str15, i8** %return_val
+  br label %if_end
+
+if_end:                                           ; preds = %entry, %then
+  %return_val6 = load i8*, i8** %return_val
+  ret i8* %return_val6
 }
 
+define i32 @main() {
+entry:
+  %regex = alloca i8*
+  store i8* getelementptr inbounds ([10 x i8], [10 x i8]* @str_literal.1, i32 0, i32 0), i8** %regex
+  %string1 = alloca i8*
+  store i8* getelementptr inbounds ([52 x i8], [52 x i8]* @str_literal.2, i32 0, i32 0), i8** %string1
+  %string2 = alloca i8*
+  store i8* getelementptr inbounds ([30 x i8], [30 x i8]* @str_literal.3, i32 0, i32 0), i8** %string2
+  %regex1 = load i8*, i8** %regex
+  %string12 = load i8*, i8** %string1
+  %search_if_present_result = call i8* @search_if_present(i8* %string12, i8* %regex1)
+  %print_s = call i32 (i8*, ...) @print_s(i8* %search_if_present_result)
+  %regex3 = load i8*, i8** %regex
+  %string24 = load i8*, i8** %string2
+  %search_if_present_result5 = call i8* @search_if_present(i8* %string24, i8* %regex3)
+  %print_s6 = call i32 (i8*, ...) @print_s(i8* %search_if_present_result5)
+  ret i32 0
+}
+```
 
 ### Automation
 
