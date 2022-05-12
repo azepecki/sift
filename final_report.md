@@ -134,17 +134,6 @@ The reg_match method checks for all the instances where the regex expression mat
 The reg_match_indices method checks for all the instances where the regex expression matches with the string provided. It returns an array of starting indices of all the text that match with the given regex expression.
 
 
-See example usage of `match`: 
-
-```js
-arr<str> numbers = match("The wiiiiiiiiiild wild cat lived in a mild climate.", "(w|m)i*ld");
-
-Expected output:
-wiiiiiiiiiild
-wild 
-mild
-```
-
 **NLP Features** 
 
 We have two nlp functions currently supported
