@@ -7,8 +7,8 @@ def int main(){
         }
         a = a + 1; 
     }
-    printf(a)
-    printf(b)
+    print(a)
+    print(b)
     return 0;
 }
 

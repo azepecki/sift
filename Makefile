@@ -18,9 +18,6 @@ sift.native:
 	chmod 777 sift.native
 	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.cpp
 	chmod 777 sift_func.o similarity.o regex.o
-	cc -emit-llvm -o sift_func.bc ./src/c/sift_func.c -Wno-varargs
-	cc -emit-llvm -o similarity.bc ./src/c/similarity.c -Wno-varargs
-	cc -emit-llvm -o regex.bc -c ./src/c/regex.cpp -Wno-varargs
 
 
 .PHONY: test
