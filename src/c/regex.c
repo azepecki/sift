@@ -464,7 +464,7 @@ char* substr(const char *src, int m, int n)
     return dest - len;
 }
 
-int test(char *str, char *exp) {
+int reg_test(char *str, char *exp) {
 	char *post;
 	State *start;
 	post = re2post(exp);
@@ -478,7 +478,7 @@ int test(char *str, char *exp) {
 	return (regex_match(startdstate(start), str) ? 1 : 0);
 }
 
-char **match(char *sentence, char *exp) {
+char **reg_match(char *sentence, char *exp) {
 	int n = strlen(sentence);
 	char *post;
 	State *start;
@@ -508,7 +508,7 @@ char **match(char *sentence, char *exp) {
 	return result;
 }
 
-int *match_indices(char *sentence, char *exp){
+int *reg_match_indices(char *sentence, char *exp){
 	int n = strlen(sentence);
 	char *post;
 	State *start;

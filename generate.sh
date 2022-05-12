@@ -61,6 +61,7 @@ Generate() {
         echo "OK"
         echo "###### SUCCESS" 1>&2
     else
+	echo "FAIL"
         echo "###### FAILED" 1>&2
         globalerror=$error
     fi
