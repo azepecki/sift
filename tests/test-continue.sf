@@ -1,7 +1,10 @@
 def int main() {
-    arr<str> names = ["plt","esaas"];
-    for(int i=0; i < len(names); i = i + 1){    
-        print(names[i]);
+    
+    for(int i=0; i < 10; i = i + 1){    
+        if(i == 7) {
+            continue;
+        }
+        print(i);
     }
     return 0;
 }

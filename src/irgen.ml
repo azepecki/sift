@@ -233,8 +233,9 @@ in
       | SLiteral i  ->   L.const_int i32_t i
       | SBoolLit b  ->   L.const_int i1_t (if b then 1 else 0)
       | SFloatLit d  ->  L.const_float float_t d
-      | SArrayLit lst ->  let Arr(sub_typ) = typ in
+      | SArrayLit lst ->  (match typ with Arr(sub_typ) ->
                           L.const_array (ltype_of_typ sub_typ) (Array.of_list (List.map (build_expr table builder) lst))
+                          | _ -> raise (Failure ("not implemented typ " ^ Ast.string_of_typ typ)))
       | SStrLit s    -> L.build_global_stringptr s "str_literal" builder
       | SId name    ->  
         (try 
@@ -293,7 +294,7 @@ in
           | A.Greater when t1=Float  -> L.build_fcmp L.Fcmp.Ogt
           | A.Geq  when t1=Float     -> L.build_fcmp L.Fcmp.Oge
 
-          (* | _ -> raise (Failure "not implemented") *)
+          | _ -> raise (Failure ("binop " ^ Ast.string_of_op op ^ " not implemented for typ " ^ Ast.string_of_typ t1))
 
         ) e1' e2' "tmp" builder
         | SUnop (op, e) ->
@@ -333,7 +334,7 @@ in
             | Arr(Int)      -> L.build_call len_arr_i_func [| build_expr table builder e |] "len_arr_i" builder 
             | Arr(Float)    -> L.build_call len_arr_d_func [| build_expr table builder e |] "len_arr_d" builder 
             | Arr(String)   -> L.build_call len_arr_s_func [| build_expr table builder e |] "len_arr_s" builder 
-            | Arr(Float)    -> L.build_call len_arr_b_func [| build_expr table builder e |] "len_arr_b" builder 
+            | Arr(Bool)     -> L.build_call len_arr_b_func [| build_expr table builder e |] "len_arr_b" builder 
             | _ -> raise (Failure ("len with argument of type " ^ (Ast.string_of_typ typ) ^ " not implemented"))
             )
     
