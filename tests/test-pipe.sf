@@ -3,5 +3,5 @@ def int func(int a, int b, int c, int d) {
 }
 
 def int main(){
-   return 2 |> x => x + 7 |> y => func(a, b, 4, 9);
+   return 2 |> func(6, 4, 9);
 }

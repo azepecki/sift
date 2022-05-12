@@ -1,8 +1,7 @@
-def int func(int x){
-     return x+1;
-}
+def int func(int x) => x+1;
+
 
 def int main(){
-    printf(func(3));
+    print(func(3));
     return 0;
 }

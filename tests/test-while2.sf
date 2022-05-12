@@ -8,7 +8,7 @@ def int while_test(int a){
 }
 
 def int main(){
-    printf(while_test(2));
+    print(while_test(2));
     return 0;
 }
 
