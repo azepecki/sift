@@ -9,26 +9,25 @@ main:                                   # @main
 	pushq	%rax
 	.cfi_def_cfa_offset 16
 	movl	$0, 4(%rsp)
-	.p2align	4, 0x90
-.LBB0_1:                                # %while
-                                        # =>This Inner Loop Header: Depth=1
 	cmpl	$14, 4(%rsp)
-	jg	.LBB0_4
-# %bb.2:                                # %while_body
-                                        #   in Loop: Header=BB0_1 Depth=1
+	jg	.LBB0_3
+	.p2align	4, 0x90
+.LBB0_2:                                # %while_body
+                                        # =>This Inner Loop Header: Depth=1
 	movl	$1, %edi
 	xorl	%eax, %eax
 	callq	print_i@PLT
-	cmpl	$1, 4(%rsp)
-	jg	.LBB0_1
-# %bb.3:                                # %if_end
-                                        #   in Loop: Header=BB0_1 Depth=1
+	cmpl	$2, 4(%rsp)
+	jge	.LBB0_3
+# %bb.4:                                # %if_end
+                                        #   in Loop: Header=BB0_2 Depth=1
 	movl	$3, %edi
 	xorl	%eax, %eax
 	callq	print_i@PLT
 	incl	4(%rsp)
-	jmp	.LBB0_1
-.LBB0_4:                                # %while_end
+	cmpl	$14, 4(%rsp)
+	jle	.LBB0_2
+.LBB0_3:                                # %while_end
 	xorl	%eax, %eax
 	popq	%rcx
 	.cfi_def_cfa_offset 8

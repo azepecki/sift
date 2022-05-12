@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 char* first(char* sentence, char* key) {
-
     char *ret;
     ret = strstr(sentence, key);
     return ret;
@@ -104,18 +103,18 @@ int is_present(char* file, char* word) {
   return count;
 }
 
-int main() {
-    // printf("%s", middleName("Secondfirst","first"));
-    // printf("%s", readfile("text.txt"));
-    // printf("%s", copyfile("text.txt", "copy.txt"));
-    // printf("%c", )
+// int main() {
+//     // printf("%s", middleName("Secondfirst","first"));
+//     // printf("%s", readfile("text.txt"));
+//     // printf("%s", copyfile("text.txt", "copy.txt"));
+//     // printf("%c", )
 
-    // printf("%s", readfile("text.txt"));
+//     // printf("%s", readfile("text.txt"));
 
-    // replaceword("text.txt", "live", "delhi");
-    // printf("%s", readfile("text.txt"));
+//     // replaceword("text.txt", "live", "delhi");
+//     // printf("%s", readfile("text.txt"));
 
-    // printf("%d", countword("text.txt", "line"));
+//     // printf("%d", countword("text.txt", "line"));
 
-  return 0;
-}
+//   return 0;
+// }

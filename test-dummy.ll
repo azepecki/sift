@@ -36,7 +36,7 @@ entry:
   store i32 0, i32* %i, align 4
   br label %while
 
-while:                                            ; preds = %if_end, %then, %entry
+while:                                            ; preds = %if_end, %entry
   %i1 = load i32, i32* %i, align 4
   %tmp = icmp slt i32 %i1, 15
   br i1 %tmp, label %while_body, label %while_end
@@ -47,11 +47,11 @@ while_body:                                       ; preds = %while
   %tmp3 = icmp sgt i32 %i2, 1
   br i1 %tmp3, label %then, label %if_end
 
-while_end:                                        ; preds = %while
+while_end:                                        ; preds = %while, %then
   ret i32 0
 
 then:                                             ; preds = %while_body
-  br label %while
+  br label %while_end
 
 if_end:                                           ; preds = %while_body
   %print_i4 = call i32 (i32, ...) @print_i(i32 3)

@@ -46,7 +46,7 @@ Generate() {
 
     Run "$SIFT" "./$1" ">" "${basename}.ll" &&
     Run "$LLC" "-relocation-model=pic" "${basename}.ll" ">" "${basename}.s" &&
-    Run "$CC" "-o" "${basename}.exe" "${basename}.s" "sift_func.o" "similarity.o" && #removed "regex.o" since it doesn't work
+    Run "$CC" "-o" "${basename}.exe" "${basename}.s" "sift_func.o" "similarity.o" "file_ops.o"&& #removed "regex.o" since it doesn't work
     Run "./${basename}.exe" > "${basename}.out" &&
     Compare ${basename}.out ${reffile}.out ${basename}.diff
 }
