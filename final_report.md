@@ -27,26 +27,35 @@ Sift draws inspiration from the elegance of C’s syntax while adding its own un
 
 ##  2. <a name='LanguageTutorial'></a>Language Tutorial
 
-Sift files are signified with the `.sf` suffix.
+Sift files are signified with the `.sf` extention. The entry point of a sift program is the main function.(Just like C :) )
 
 ### Fundamentals 
 
 **Data Types** 
 
-Sift consists of several key primitive data types: `int`, `float`, `char`, `str`, and `bool`. Sift also includes an `arr` non-primitive data type that holds an array of non-primitive type `t` in `arr<t>`. 
+Sift consists of several key primitive data types: `int`, `float`, `char`, `str`, and `bool`. 
 
-__For strings, we also implemented additional string operations since Sift is a language meant for text-processing__. 
+__For strings, we also implemented additional string operations since Sift is a language meant for text-processing__.
 
 Example usage with `str_add`: 
 
 ```js
-str a = "ap";
-str b = "ple";
-str c = str_add(a, b);
-c |> <out>;
+def int main() {
+  str a = "ap";
+  str b = "ple";
+  str c = str_add(a, b);
+  print(c);
+  return 0;
+}
 ```
 
+**Comments**
+
+Comments begin with `/*` and close with `*/`; they cannot be nested and may not appear within literals. Like whitespaces, comments are ignored.
+
 **Identifiers** 
+
+Identifiers are composed of a sequence of letters, digits, and the `_` punctuation. The first character of any identifier must be in the range [a-z A-Z] (cannot be a digit). Upper and lowercase letters are distinct. Identifiers may not have the same value as a keyword.
 
 Variable declaration follows the following syntax: 
 
@@ -69,23 +78,20 @@ The following logical operators are available: `&&`, `||`, `!`. These operators 
 **Control Flow**
 
 The following functionality for control flow is available: 
-`if/else` blocks, `while` loops, `for` loops, `continue` keyword, `return` keyword, `break` keyword. 
+`if` blocks, `if/else` blocks, `while` loops, `for` loops, `return` keyword, `break` keyword. 
 
 **Function Calls**
 
-In Sift, functions are declared with the keyword `def`. The function should have a name and a consequent block of code to be executed when the function is called.
+In Sift, functions are declared with the keyword `def`. The function should have a name, followed by it's return type, and a consequent block of code to be executed when the function is called.
 A function can take zero, one or more arguments and return an expression of a certain type; the retuned type should be declared in the function header. 
 
 **Syntax:**
+
+
 ```js
-def arr<(str,int)> 
-    get_frequencies(arr<str> tokens) {
-    return ... ; 
-}
-```
-```js
-def hello() {
+def int hello() {
     print(“Hello World!”);
+    return 0;
 }
 ```
 
@@ -109,17 +115,9 @@ def int main() {
 ```
 In the above example, 2 is provided as an input to the function func that has only three arguments. This operation can be used for pipelining the various string operations.
 
-**Lambdas**
-
-The `lambda` keyword is used to denote an anonymous function. 
-
-```js 
-lambda x : x + 1;
-```
-
 **Regular Expressions** 
 
-We have implemented built-in regex functionality as a part of Sift based on Thompson's NFA expressions(https://swtch.com/~rsc/regexp/). There are three regex functionalities supported in test.
+We have implemented built-in regex functionality as a part of Sift based on Thompson's NFA expressions(https://swtch.com/~rsc/regexp/). There are three regex functionalities supported in test. The regex doesn't support escape characters as of now.
 
 ```
 bool reg_test(string, regex);
@@ -133,32 +131,35 @@ The reg_match method checks for all the instances where the regex expression mat
 
 The reg_match_indices method checks for all the instances where the regex expression matches with the string provided. It returns an array of starting indices of all the text that match with the given regex expression.
 
+Note: As of now, arrays aren't implemented and thus methods reg_match and reg_match_indices return values are not compatible with the language.
 
 **NLP Features** 
 
 We have two nlp functions currently supported
 ```
-word_tokenize
-get_jaro
+arr<str> word_tokenize(str);
+float get_jaro(str1, str2);
 ```
 
 The word_tokenize method returns an array of strings separated by space.
-The get_jaro method calculates the similarity between two strings.(https://rosettacode.org/wiki/Jaro_similarity). The higher the value of jaro_similarity, more similar the two sentences are.
-
-See example usage of `word_tokenize`:
+The get_jaro method calculates the similarity between two strings.(https://rosettacode.org/wiki/Jaro_similarity). The higher the value of get_jaro, more similar the two sentences are.
+The similarity value is in the range of 0 to 1.
 
 ```js
-str big_line = "Lorem ipsum dolor sit amet";
-arr<str> tokenized_version = word_tokenize(big_line);
-for(int i=0; i < len(tokenized_version); i++) {
-    print(tokenized_version[i]);
+def int main() {
+    print(get_jaro("THOUGHT",    "THROW"));
+    print(get_jaro("ANALYZE",     "PARALYZE"));
+    print(get_jaro("JELLYFISH", "SMELLYFISH"));
+    return 0;
 }
 
-Output:
-["Lorem", "ipsum", "dolor", "sit", "amet"]
 ```
 
+Note: As of now, arrays aren't implemented and thus methods word_tokenize return values are not compatible with the language.
+
 ##  3. <a name='ArchitecturalDesign'></a>Architectural Design 
+
+![](block_diagram.png)
 
 ### SCANNER
 
@@ -166,6 +167,8 @@ _Relevant files_: `scanner.mll`
 
 The scanner file takes a Sift source program and translates the stream of characters into a stream of tokens for identifiers, keywords, operators, literals, etc. At this stage, any whitespace and comments are discarded from the stream of tokens.
 The scanner is implemented in Ocamllex, and uses regular expressions for scanning string literals, identifiers, digits and other language constructs. If a token is not identified by the scanner, it will throw an error. The tokens processed by the scanner are passed to the parser for the next step in the pipeline.
+
+_Implemented by_: Rishav, José, Lama, Anne, Surya 
 
 ### PARSER AND AST
 
@@ -175,33 +178,41 @@ The parser accepts the tokens generated by the scanner and creates an abstract s
 
 The AST defines the token syntax tree and includes binary and unary operators, primitive data types, expression, and constructs of the language.
 
+_Implemented by_: José, Lama, Rishav, Anne, Surya
+
 ### SEMANTICS
 
 _Relevant files_: `sast.ml` and `semantics.ml`
 
 The semantic checker converts the AST into a semantically checked syntax tree (SAST). The semantic analysis process performs validation like ensuring that variables are declared and have been declared with valid values. It  maintains the scope of the variables and functions using a symbol table (as Sift is a statically type language). The SAST also validates whether the built-in C functions were provided the correct types or not. Once the semantic checks are completed, an SAST is generated and passed as an input to the IR Generator.
 
+_Implemented by_: José and Lama
+
 ### IR GENERATION
 
-The IR generator takes an SAST and outputs LLVM code. We use ocaml llvm's library to map expression to LLVM accepted data types. 
+_Relevant files_: `irgen.ml`
+
+The IR generator takes an SAST and outputs LLVM code. We use ocaml llvm's library to map expression to LLVM accepted data types. The LLVM code is then compiled from the intermediate representation(IR) to the target machine code. We also define the custom C functions in the irgen.ml as SCall in order to call the custom C functions created.
+
+_Implemented by_: José, Lama, and Rishav
 
 ### BUILT-IN LIBRARIES
 
-We have a set on built-in libraries for string operations, regex and nlp-functionalities. We compile them while creating build for llvm and then use them
+Irgen interacts with custom c code in the src/c folders. regex.c contains the regex functionalities implementation(Reference: https://swtch.com/~rsc/regexp/). The similarity.c contains implementation of Jaro similarity. sift_func.c contains utility C functions and the custom print function implementations.
+
+_Implemented by_: Rishav and Surya
 
 ##  4. <a name='TestPlan'></a>Test Plan
 
 ### 4.1 <a name='Example Sift Programs'></a>Test Plan
 
-The following are two programs written in sift demonstrate the different text processing application that developers can do using sift.
+The following are two programs written in sift that demonstrates different text processing application that developers can do using SIFT.
 
-### Source Programs 
+### Source Programs
 
 **Most similar strings** 
 
 The below program checks the similarity of two strings(shark, jellyfish) to a string(smellyfish). The program uses the nlp functionality, get_jaro, to calculate the similarity between the two strings. Then the value obtained is used to make the decision. The function also demonstrate the use of pipe features which in this case is used to concatenate strings to form an output string.
-
-
 
 Sift Source Program:
 
@@ -338,8 +349,6 @@ if_end:                                           ; preds = %else, %then
 
 ```
 
-
-
 **SQL Syntax Flavor** 
 
 The idea of pipe was to give functions a flavor of declarative sql syntax. The below example demonstrates the use of pipe operator as a where clause. In the example, we use two sentences, matched against the same regular expression. You can visualize it as running select value from xyz where column like (regex). The output of this is then give to the print() function. If you look carefully, print function doesn't take any argument. It's argument is the output produced by the function called. 
@@ -463,7 +472,28 @@ entry:
 
 ### Automation
 
-In our `Makefile`, we have a target `make test` that runs an entire test suite that consists of tests for all of the major features of Sift. We compare the output of running each test with the expected `.out` file for that particular test to determine whether the test has passed or failed. 
+We followed a test-driven development. We had created test suites based on the LRM and one half of the team was working parallely on developing the features while the other half was working on creating the test suite. The test suite was being prepared in a separate branch test_suite. Once, the test suite were created, we created a generate.sh file adpated from the Prof. Stephen Edwards previous iterations MicroC code testall.sh.(Reference: http://www.cs.columbia.edu/~sedwards/classes/2021/4115-fall/index.html)
+The generate.sh runs all the tests in the tests folder with name starting from test-* for the positive tests and fail*- for the negative tests. It then creates a report testall.log that contains the test filename along with status OK/FAIL. All the passed test cases are marked as OK while the non-passed test cases are marked as FAIL.
+
+**How we vailidate the output**
+
+As mentioned above, we followed test-driven development. The test suites have a .sf file and a .out file. Initially the tests are compiled using the llvm compiler and then an executable file is created using C Compiler. This file is then executed and an outfile of the test case is generated. This outfile is compared with the expected output for the respective test case in the test folder. If they are an exact match, the test case is marked as OK else FAIL.
+For the negative test cases, we check if any output is produced. They are designed to produce parsing errors and functions not available error leading to compilation errors. If no output is generated, then that negative test case is considered as FAIL else OK.
+
+To run the test suite follow the below steps
+
+```
+make clean
+make
+make test
+```
+
+**Sample Report**
+
+Here is a sample report generated by the test suite.
+
+![](test_report.png)
+
 
 ##  5. <a name='Summary'></a>Summary
 
@@ -477,13 +507,21 @@ _Implemented by_: Anne, José, Rishav, Surya, Lama
 
 _Implemented by_: Anne, José, Surya, Rishav, Lama
 
-**Scanner**
+**Tests**
 
-_Implemented by_: Rishav, José, Lama, Anne, Surya 
+_Implemented by_: Rishav, Lama, Anne, Surya, José
+
+**Final Report**
+
+_Implemented by_: Anne, Rishav
+
+**Scanner** 
+
+_Implemented by_: Rishav, José, Lama, Anne, Surya
 
 **Parser and AST**
 
-_Implemented by_: José, Lama, Rishav, Anne, Surya 
+_Implemented by_: José, Lama, Rishav, Anne, Surya
 
 **Semantics**
 
@@ -493,17 +531,9 @@ _Implemented by_: José and Lama
 
 _Implemented by_: José, Lama, and Rishav
 
-**Built-In Libraries**
+**Built-in libraries** 
 
 _Implemented by_: Rishav and Surya
-
-**Tests**
-
-_Implemented by_: Rishav, Lama, Anne, Surya, José
-
-**Final Report**
-
-_Implemented by_: Anne, Rishav
 
 ### Takeaways 
 
@@ -511,15 +541,19 @@ _Implemented by_: Anne, Rishav
 
 My most important takeaway from the project was probably in gaining the understanding of how all the pieces of compiling a language come together. I thought that I understood well from the lectures, but I think it was a different experience actually working on the implementation and having to understand all the different minor details of a language and the way that it's implemented can make a really big difference. I think that it really stressed the importance of design more generally, but also specifically in the case of programming languages. I definitely gained more of an appreciation for the coding languages I use in my day-to-day life and the beauty of how they were implemented. 
 
-**Lama**
-
-**Jose**
-
 **Rishav**
 
-**Surya** 
-
+This was an altogether new arena for me. I would have installed programming languages many a time but never quite understood the linkage error and the dependencies involved. But while working on Irgen, and then running the test cases and finding out the dependencies impact, it did evolve me as a software engineer. It added a new perspective of thinking how can I ease work of the developer using my langauge. Each compilation phase was in itself, a milestone.
+Whoever wrote LLVM, deserves Turing Award. You can write a programming language in OCaml under 1000 lines. Just Wow!!
+On the day of hello world submission, I had an interview where the interviewer while detailing about their tech stack, discussed their in-house programming langauge, and I was like how could have you come up with designing parser of such a flexible language.
+At the beginning of the course, my belief was that I am never going to make a programming language,so why is this course mandatory? There are so many new languages, open-sourced. But now, I feel it builds you as a software engineer. You may not use it, but you will certainly carry the experience.
 
 ### Advice
 
+**Anne**
+
 The biggest piece of advice would be to try to implement each stage as soon as the relevant lecture is covered. We definitely found it useful to have for the most part completed the scanner/parser by the Hello World milestone. Working on things in stages makes it so that the work can build on top of each stage. 
+
+**Rishav**
+
+The lone wolf dies, but the pack survives. It would have been great if the deadline was same for all the class members as the class is curved.
