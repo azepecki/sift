@@ -9,8 +9,5 @@ def int main() {
 	bool a = true;
 	print(a);
 
-	char b = 'a';
-	print(b);
-
 	return 0;
 }
