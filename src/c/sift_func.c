@@ -43,6 +43,36 @@ int output(char *text) {
 	return 0;
 }
 
+int print_i(int i) {
+	printf("%d", i);
+	return 0;
+}
+
+int print_d(double d) {
+	printf("%.6f", d);
+	return 0;
+}
+
+int print_s(char *s) {
+	printf("%s", s);
+	return 0;
+}
+
+int print_s(char *s) {
+	printf("%s", s);
+	return 0;
+}
+
+int print_b(bool b) {
+	if (b) {
+		printf("true");
+	} 
+	else {
+		printf("false");
+	}
+	return 0;
+}
+
 char **word_tokenize(char *str) {
 	char *sentence = (char *) malloc(strlen(str) + 1);
 	strcpy(sentence, str);
