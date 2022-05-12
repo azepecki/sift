@@ -1,5 +1,5 @@
 def str search_if_present(str str1, str regex) {
-        str return_val = "apple";
+        str return_val = "";
 	if (reg_test(str1, regex)) {
 		return_val = str1;
 	}
