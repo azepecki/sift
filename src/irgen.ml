@@ -25,8 +25,10 @@ type symbol_table = (L.llvalue StringMap.t) list;;
 
 (* Declares a new variable in current scope *)
 (* int x; *)
-let add (id : string) (addr : L.llvalue) (current_scope :: tl : symbol_table) : symbol_table =
-  (StringMap.add id addr current_scope) :: tl
+let add (id : string) (addr : L.llvalue) (table : symbol_table) : symbol_table =
+  match table with
+  | current_scope :: tl -> (StringMap.add id addr current_scope) :: tl
+  | [] -> [StringMap.empty]
 
 (* Tries finding in current scope, if fails then goes up in symbol table *)
 (* x; *)
@@ -71,6 +73,7 @@ in
       and return_type = ltype_of_typ hd
       in 
       L.pointer_type (L.function_type return_type formal_types )
+    | _ -> i1_t (* garbage, just to make ocaml shut up *)
 
   in
 
@@ -127,7 +130,7 @@ in
   
   (* TODO: nlp tokenize, return type, list of strings *)
   let word_tokenize_t : L.lltype =
-    L.function_type i32_t [| str_t |] in  
+    L.function_type (L.pointer_type str_t) [| str_t |] in  
   let word_tokenize_func : L.llvalue =
     L.declare_function "word_tokenize" word_tokenize_t the_module in
 
@@ -271,6 +274,8 @@ in
           | A.Greater when t1=Float  -> L.build_fcmp L.Fcmp.Ogt
           | A.Geq  when t1=Float     -> L.build_fcmp L.Fcmp.Oge
 
+          (* | _ -> raise (Failure "not implemented") *)
+
         ) e1' e2' "tmp" builder
         | SUnop (op, e) ->
           let e' = build_expr table builder e in
@@ -287,6 +292,8 @@ in
             | Float  -> L.build_call print_d_func [| build_expr table builder e |] "print_d" builder 
             | String -> L.build_call print_s_func [| build_expr table builder e |] "print_s" builder 
             | Bool   -> L.build_call print_b_func [| build_expr table builder e |] "print_b" builder
+            | Arr(sub_typ) -> raise (Failure "not implemented")
+            | _ -> raise (Failure "not implemented")
             )
     
       | SStdin(e) -> L.build_call input_func [| (build_expr table builder e) |] "input" builder  
@@ -306,6 +313,8 @@ in
         L.build_call reg_match_indices_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "match_indices" builder 
       | SCall ("get_jaro", [e1 ; e2]) ->
         L.build_call get_jaro_func [| (build_expr table builder e1) ; (build_expr table builder e2) |] "get_jaro" builder 
+      | SCall ("word_tokenize", [e]) ->
+        L.build_call word_tokenize_func [| (build_expr table builder e) |] "word_tokenize" builder 
         (* General Call *)
       | SCall (f, args) ->
         (
@@ -322,20 +331,15 @@ in
         )
 
       (* 
+      | _ -> raise (Failure "not implemented") 
+      *)
+
+      (* 
         On all these calls, do not confuse the name with which they invoked
         with the name that they have in the C file (though they may be the same ) 
       *)
-      (* | SCall ("print", [e1]) ->
-        L.build_call printf_func [| int_format_str ; (build_expr table builder e1) |]
-          "printf" builder *)
 
       (*
-      | SCall ("len", [e1]) ->
-         L.build_call len_func [| (build_expr table builder e1) |]
-          "len" builder 
-      | SCall ("word_tokenize", [e1]) ->
-         L.build_call word_tokenize_func [| (build_expr table builder e1) |]
-          "word_tokenize" builder 
       | SCall ("sent_tokenize", [e1]) ->
          L.build_call sent_tokenize_func [| (build_expr table builder e1) |]
           "sent_tokenize" builder 
@@ -400,7 +404,18 @@ in
         ignore(L.build_cond_br bool_val body_bb end_bb while_builder);
         (L.builder_at_end context end_bb, table)
       | SFor (declr, predicate, inc, body) -> (builder, table)
-      | SIf (predicate, body) -> (builder, table)
+      | SIf (predicate, then_stmt) -> 
+        let bool_val = build_expr table builder predicate in
+
+        let then_bb = L.append_block context "then" the_function in
+        ignore (build_stmt table (L.builder_at_end context then_bb) then_stmt);
+
+        let end_bb = L.append_block context "if_end" the_function in
+        let build_br_end = L.build_br end_bb in (* partial function *)
+        add_terminal (L.builder_at_end context then_bb) build_br_end;
+
+        ignore(L.build_cond_br bool_val then_bb end_bb builder);
+        (L.builder_at_end context end_bb, table)
       | SContinue -> (builder, table)
       | SBreak -> (builder, table)
       | SDeclare (typ, name) -> 

@@ -21,7 +21,7 @@ sift.native:
 
 .PHONY: dummy
 dummy: 
-	./generate.sh ./tests/test-dummy.sf
+	./generate.sh ./tests/dummy.sf
 
 .PHONY: test
 test: all generate.sh test.sh
