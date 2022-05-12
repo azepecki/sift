@@ -464,18 +464,34 @@ char* substr(const char *src, int m, int n)
     return dest - len;
 }
 
-bool reg_test(char *str, char *exp) {
+bool reg_test(char *sentence, char *exp) {
+	int n = strlen(sentence);
 	char *post;
 	State *start;
 	post = re2post(exp);
 
 	start = post2nfa(post);
 	
+	int result = 0;
 
 	l1.s = malloc(nstate*sizeof l1.s[0]);
 	l2.s = malloc(nstate*sizeof l2.s[0]);
 
-	return (regex_match(startdstate(start), str) ? true : false);
+	int k = 0;
+	for(int i = 0 ; i <= n; i++) {
+		for(int j = i; j <= n; j++) {
+		
+		char *substring = substr(sentence, i, j);
+		bool match = regex_match(startdstate(start), substring);
+		if(match) {
+			result = 1;
+			break;
+		}
+
+		}
+	}
+	
+	return result;
 }
 
 char **reg_match(char *sentence, char *exp) {

@@ -1,3 +1,8 @@
+/*
+    Reference: https://rosettacode.org/wiki/Jaro_similarity
+*/
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
