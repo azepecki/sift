@@ -143,7 +143,9 @@ let check_program (script: stmt list) (functions: func_def list) =
                               and typ2 = fst e2' in
                               if typ1 = typ2 (* types must be equal in all binops SBinop(checked e1, op, checked e2) *)
                               then match op with
-                                  (* STRING FUNCTIONS!!! Convert operations to functions!! Not proper, but gets the job done *)
+                                  (* Array ops *)
+                                  | Add when (match typ1 with Arr(s) -> true | _ -> false)                -> (typ1,  SBinop(e1', op, e2'))
+                                  (* STRING OPS *)
                                   | Add when typ1 = String                                                -> (String,  SBinop(e1', op, e2'))
                                   | Equal | Neq when typ1 = String                                        -> (Bool, SBinop(e1', op, e2'))
                                   (* List/Array concat: Add when typ1 = Arr -> (String, SBinop(e1', op, e2')) *)

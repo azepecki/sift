@@ -7,9 +7,7 @@ and sx =
   SLiteral of int
 | SFloatLit of float
 | SBoolLit of bool
-(* | SCharLit of char *)
 | SStrLit of string
-(* | SSymLit of string *)
 | SArrayLit of sexpr list
 | SArrayAccess of string * sexpr
 | SArrayAssign of string * sexpr * sexpr
@@ -20,7 +18,6 @@ and sx =
 | SCall of string * sexpr list
 | SStdin of sexpr
 | SStdout of sexpr
-(* | SLambda of string list * sexpr *)
 
 
 type sstmt =
