@@ -367,9 +367,9 @@ in
         L.build_call fdef (Array.of_list llargs) result builder
         )
 
-      (* 
-      | _ -> raise (Failure "not implemented") 
-      *)
+      
+      | _ -> raise (Error "arrays not implemented") 
+     
 
     in
 
