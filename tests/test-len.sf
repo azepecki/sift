@@ -1,6 +1,6 @@
 def int main() {
 	str a = "I am vengeance";
 	int n = len(a);
-	n |> <out>;
+	print(n);
 	return 0;
 }
