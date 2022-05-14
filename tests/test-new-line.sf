@@ -1,0 +1,4 @@
+def int main() { 
+    print("Hello world \n this is sift");
+    return 0;
+}
