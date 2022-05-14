@@ -32,6 +32,7 @@
 %token <string> ID
 %token STDIN STDOUT
 %token INCREMENT DECREMENT
+%token ADDASSIGN SUBASSIGN MULASSIGN DIVASSIGN
 %token EOF
 
 
@@ -46,7 +47,7 @@
 %start program
 %type <Ast.program> program
 
-%right ASSIGN
+%right ASSIGN SUBASSIGN ADDASSIGN MULASSIGN DIVASSIGN
 %left PIPE
 %right ANON
 %left OR 
@@ -195,8 +196,12 @@ expr:
   | SUBTRACT expr       { Unop(Neg, $2)          }
   /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
-  | ID INCREMENT          { Assign($1, Binop(Id($1), Add, Literal(1)))}
-  | ID DECREMENT          { Assign($1, Binop(Id($1), Sub, Literal(1)))}
+  | ID ADDASSIGN expr   { Assign($1, Binop(Id($1), Add, $3))}
+  | ID SUBASSIGN expr   { Assign($1, Binop(Id($1), Sub, $3))}
+  | ID MULASSIGN expr   { Assign($1, Binop(Id($1), Mul, $3))}
+  | ID DIVASSIGN expr   { Assign($1, Binop(Id($1), Div, $3))}
+  | ID INCREMENT        { Assign($1, Binop(Id($1), Add, Literal(1)))}
+  | ID DECREMENT        { Assign($1, Binop(Id($1), Sub, Literal(1)))}
 
   /* id call */
   | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }

@@ -40,6 +40,10 @@ rule token = parse
 
 (* assignment *)
 | "=" { ASSIGN }
+| "+=" { ADDASSIGN }
+| "-=" { SUBASSIGN }
+| "*=" { MULASSIGN }
+| "/=" { DIVASSIGN }
 | "++" { INCREMENT }
 | "--" { DECREMENT }
 
