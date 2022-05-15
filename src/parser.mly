@@ -6,7 +6,7 @@
 /* Arithmetic Operators */
 %token ADD SUBTRACT MULTIPLY DIVIDE MOD
 /* Relational Operators */
-%token EQ LEQ GT GEQ NEQ LT
+%token EQ LEQ GT GEQ NEQ LT EOL
 /* Logical Operators */
 %token AND OR NOT
 /* Features */
