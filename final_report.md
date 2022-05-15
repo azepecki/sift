@@ -426,6 +426,7 @@ My main takeaway from this project is learning how different components of a pro
 
 **Surya** 
 
+My main takeaway from this project was to learn how various components of a compiler are integrated and how each stage has a single responsible principle. Learning how we could develop our features in C and use them in sift and integrate multiple languages was also interesting. I also think that testing at each stage is very important to have a good code quality and also ensures correctness.
 
 ### Advice
 
