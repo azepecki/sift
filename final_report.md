@@ -601,3 +601,8 @@ The biggest piece of advice would be to try to implement each stage as soon as t
 
 The lone wolf dies, but the pack survives. It would have been great if the deadline was same for all the class members as the class is curved.
 
+### References
+
+https://rosettacode.org/wiki/Jaro_similarity
+https://www.geeksforgeeks.org/c-program-to-find-and-replace-a-word-in-a-file-by-another-given-word/
+https://gist.github.com/ybakos/9078101
