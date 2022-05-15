@@ -84,11 +84,11 @@ typ:
   | FLOAT           { Float }
   | STRING          { String }
   | ARRAY LT typ GT { Arr($3) }
-  | FUNCTION LT typ_list GT  { Fun ($3) }
+//   | FUNCTION LT typ_list GT  { Fun ($3) }
 
-typ_list:
-  | typ {[$1]}
-  | typ COMMA typ_list {$1 :: $3}
+// typ_list:
+//   | typ {[$1]}
+//   | typ COMMA typ_list {$1 :: $3}
 
 /* fdecl */
 fdecl:
