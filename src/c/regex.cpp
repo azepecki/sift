@@ -14,7 +14,7 @@ int test(char *str, char *exp) {
 	return (match ? 1 : 0);
 }
 
-char **match(char *sentence, char *exp) {
+char *match(char *sentence, char *exp) {
 	int n = strlen(sentence);
 	regex e(exp);
 
@@ -32,8 +32,8 @@ char **match(char *sentence, char *exp) {
 
 		}
 	}
-	
-	return set_arr_s(n, result);
+	return set_arr_s(result, 0, 'c');
+	// return result;
 }
 
 int *match_indices(char *sentence, char *exp){
@@ -56,7 +56,8 @@ int *match_indices(char *sentence, char *exp){
 
 		}
 	}
-	return result;
+	return set_arr_s(result, 0, 'c');
+	// return result;
 }
 
 

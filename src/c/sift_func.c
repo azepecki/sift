@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "array.c"
 
 char *str_add(char *s1, char *s2) {
-    char *new = (char *) malloc(strlen(s1) + strlen(s2));
-    strncpy(new, s1, strlen(s1));
-    strncat(new, s2, strlen(s2));
-    return new; //MUST BE FREED LATER!!!!
+    char *newi = (char *) malloc(strlen(s1) + strlen(s2));
+    strncpy(newi, s1, strlen(s1));
+    strncat(newi, s2, strlen(s2));
+	return set_arr_s(result, 0, 'c');
+    // return newi; //MUST BE FREED LATER!!!!
 }
 
 bool str_eql(char *s1, char *s2) {
@@ -21,14 +23,16 @@ bool str_eql(char *s1, char *s2) {
 		bres = false;
 	}
 	result = bres;
-	return result;
+	return set_arr_s(result, 0, 'c');
+	// return result;
 }
 
 char *input(int size) {
 	char buffer[1024];
 	fgets(buffer, size, stdin);
-	char *new = (char *) malloc(strlen(buffer));
-	return new;
+	char *newi = (char *) malloc(strlen(buffer));
+	return set_arr_s(newi, 0, 'c');
+	// return new;
 }
 
 int output(char *text) {
@@ -66,14 +70,18 @@ char *to_str_i(int i) {
 	int length = snprintf(NULL, 0, "%d", i);
 	char* str = malloc(length + 1);
 	snprintf(str, length + 1, "%d", i);
-	return str;
+	return set_arr_s(str, 0, 'c');
+
+	// return str;
 }
 
 char *to_str_d(double d) {
 	int length = snprintf(NULL, 0, "%.6f", d);
 	char* str = malloc(length + 1);
 	snprintf(str, length + 1, "%.6f", d);
-	return str;
+	return set_arr_s(str, 0, 'c');
+
+	// return str;
 }
 
 char *to_str_s(char *s) {
@@ -130,5 +138,6 @@ char **word_tokenize(char *str) {
 	}
 	
 	free(sentence);
-	return result;
+	return set_arr_s(result, 0, 'c');
+	// return result;
 }
