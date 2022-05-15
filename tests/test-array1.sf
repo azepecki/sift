@@ -1,6 +1,8 @@
 def int main() {
-    arr<int> numbers = [1,2,3,4,5];
-    print(numbers[0]);
+    arr<int> numbers = [9,3,2,1,0];
+    for (int i = 0; i < len(numbers); i++) {
+		print(numbers[i]);
+	}
     return 0;
 }
 

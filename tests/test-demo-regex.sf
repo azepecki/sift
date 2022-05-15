@@ -1,5 +1,5 @@
 def int main() {
-	str regex = "";
+	str regex = "rk";
 	str valid_email = "rk3142@columbia.edu";
 	str invalid_email = "rk3142";
         

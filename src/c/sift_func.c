@@ -24,13 +24,6 @@ bool str_eql(char *s1, char *s2) {
 	return result;
 }
 
-int len(const char *str) {
-	int l;
-	size_t len = strlen(str);
-	l = (int)(len);
-	return l;
-}
-
 char *input(int size) {
 	char buffer[1024];
 	fgets(buffer, size, stdin);
@@ -98,23 +91,23 @@ char *to_str_b(bool b) {
 }
 
 int len_s(char *s) {
-	return strlen(s);
+	return (int)strlen(s);
 }
 
 int len_arr_s(char **s) {
-	return sizeof(s) / sizeof(char *);
+	return ((int *)s)[0];
 }
 
 int len_arr_i(int *i) {
-	return sizeof(i) / sizeof(int);
+	return ((int *)i)[0];
 }
 
 int len_arr_d(double *d) {
-	return sizeof(d) / sizeof(double);
+	return ((int *)d)[0];
 }
 
 int len_arr_b(bool *b) {
-	return sizeof(b) / sizeof(bool);
+	return ((int *)b)[0];
 }
 
 char **word_tokenize(char *str) {

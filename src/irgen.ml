@@ -80,17 +80,102 @@ in
 
   in
 
-  (* Done *)
+  (* String OPS *)
   let string_concat_t : L.lltype =
     L.function_type str_t [| str_t; str_t |] in  
   let string_concat_func : L.llvalue =
     L.declare_function "str_add" string_concat_t the_module in
   
-  (* Done *)
   let string_equality_t : L.lltype = 
     L.function_type i1_t [| str_t; str_t |] in
   let string_equality_func : L.llvalue =
     L.declare_function "str_eql" string_equality_t the_module in
+
+  (* ARRAYS METHODS (to facilitate implementation of array length) *)
+  (* allocation *)
+  let alloc_arr_s_t : L.lltype =
+    L.function_type (L.pointer_type str_t) [| i32_t |] in  
+  let alloc_arr_s_func : L.llvalue =
+    L.declare_function "alloc_arr_s" alloc_arr_s_t the_module in
+
+  let alloc_arr_i_t : L.lltype =
+    L.function_type (L.pointer_type i32_t) [| i32_t |] in  
+  let alloc_arr_i_func : L.llvalue =
+    L.declare_function "alloc_arr_i" alloc_arr_i_t the_module in
+
+  let alloc_arr_d_t : L.lltype =
+    L.function_type (L.pointer_type float_t) [| i32_t |] in  
+  let alloc_arr_d_func : L.llvalue =
+    L.declare_function "alloc_arr_d" alloc_arr_d_t the_module in
+
+  let alloc_arr_b_t : L.lltype =
+    L.function_type (L.pointer_type i1_t) [| i32_t |] in  
+  let alloc_arr_b_func : L.llvalue =
+    L.declare_function "alloc_arr_b" alloc_arr_b_t the_module in
+
+  (* access *)
+  let acc_arr_s_t : L.lltype =
+    L.function_type str_t [| L.pointer_type str_t; i32_t |] in  
+  let acc_arr_s_func : L.llvalue =
+    L.declare_function "acc_arr_s" acc_arr_s_t the_module in
+
+  let acc_arr_i_t : L.lltype =
+    L.function_type i32_t [| L.pointer_type i32_t; i32_t |] in  
+  let acc_arr_i_func : L.llvalue =
+    L.declare_function "acc_arr_i" acc_arr_i_t the_module in
+
+  let acc_arr_d_t : L.lltype =
+    L.function_type float_t [| L.pointer_type float_t; i32_t |] in  
+  let acc_arr_d_func : L.llvalue =
+    L.declare_function "acc_arr_d" acc_arr_d_t the_module in
+  
+  let acc_arr_b_t : L.lltype =
+    L.function_type i1_t [| L.pointer_type i1_t; i32_t |] in  
+  let acc_arr_b_func : L.llvalue =
+    L.declare_function "acc_arr_b" acc_arr_b_t the_module in
+
+  (* set *)
+  let set_arr_s_t : L.lltype =
+    L.function_type str_t [| L.pointer_type str_t; i32_t; str_t |] in  
+  let set_arr_s_func : L.llvalue =
+    L.declare_function "set_arr_s" set_arr_s_t the_module in
+
+  let set_arr_i_t : L.lltype =
+    L.function_type i32_t [| L.pointer_type i32_t; i32_t; i32_t |] in  
+  let set_arr_i_func : L.llvalue =
+    L.declare_function "set_arr_i" set_arr_i_t the_module in
+
+  let set_arr_d_t : L.lltype =
+    L.function_type float_t [| L.pointer_type float_t; i32_t; float_t |] in  
+  let set_arr_d_func : L.llvalue =
+    L.declare_function "set_arr_d" set_arr_d_t the_module in
+
+  let set_arr_b_t : L.lltype =
+    L.function_type i1_t [| L.pointer_type i1_t; i32_t; i1_t |] in  
+  let set_arr_b_func : L.llvalue =
+    L.declare_function "set_arr_b" set_arr_b_t the_module in
+
+  (* from existing array *)
+  let literal_arr_s_t : L.lltype =
+    L.function_type (L.pointer_type str_t) [| i32_t ; L.pointer_type str_t |] in  
+  let literal_arr_s_func : L.llvalue =
+    L.declare_function "literal_arr_s" literal_arr_s_t the_module in
+
+  let literal_arr_i_t : L.lltype =
+    L.function_type (L.pointer_type i32_t) [| i32_t ; L.pointer_type i32_t |] in  
+  let literal_arr_i_func : L.llvalue =
+    L.declare_function "literal_arr_i" literal_arr_i_t the_module in
+
+  let literal_arr_d_t : L.lltype =
+    L.function_type (L.pointer_type float_t) [| i32_t ; L.pointer_type float_t |] in  
+  let literal_arr_d_func : L.llvalue =
+    L.declare_function "literal_arr_d" literal_arr_d_t the_module in
+
+  let literal_arr_b_t : L.lltype =
+    L.function_type (L.pointer_type i1_t)[| i32_t ; L.pointer_type i1_t |] in  
+  let literal_arr_b_func : L.llvalue =
+    L.declare_function "literal_arr_b" literal_arr_b_t the_module in
+
 
   (* ALL LENS *)
   let len_s_t : L.lltype =
@@ -233,20 +318,75 @@ in
       | SLiteral i  ->   L.const_int i32_t i
       | SBoolLit b  ->   L.const_int i1_t (if b then 1 else 0)
       | SFloatLit d  ->  L.const_float float_t d
-      | SArrayLit lst ->  (match typ with Arr(sub_typ) ->
-                          L.const_array (ltype_of_typ sub_typ) (Array.of_list (List.map (build_expr table builder) lst))
-                          | _ -> raise (Failure ("not implemented typ " ^ Ast.string_of_typ typ)))
+      | SArrayLit lst ->  (match typ with Arr(sub_typ) -> (* FIX!!! *)
+                          let length = (List.length lst) in (* build_expr table builder SLiteral *)
+                          let arr_type = L.array_type (ltype_of_typ sub_typ) length in
+                          let c = L.const_array arr_type (Array.of_list (List.map (build_expr table builder) lst)) in
+                          (* Sets name of the c value *)
+                          (* L.set_value_name "tmp_arr" c';  *)
+                          (* Allocates var of correct type with given name, address discarded *)
+                          let local = L.build_alloca (arr_type) "tmp_arr" builder in
+                          (* Stores the value in e' (e.address) at allocated address *)
+                          ignore (L.build_store c local builder);
+
+                          (* Allocate pointer var *)
+                          let arr_ptr_typ = ltype_of_typ typ in
+
+                          let ptr = L.build_alloca (arr_ptr_typ) "tmp_arr_ptr" builder in
+
+                          let new_local = L.build_bitcast local arr_ptr_typ "casted" builder in
+                          
+                          ignore(L.build_store new_local ptr builder);
+                          
+                          let (build_call, fname) = 
+                          (match sub_typ with 
+                          | Int    -> (L.build_call literal_arr_i_func, "literal_arr_i")
+                          | Float  -> (L.build_call literal_arr_d_func, "literal_arr_d")
+                          | Bool   -> (L.build_call literal_arr_b_func, "literal_arr_b")
+                          | String -> (L.build_call literal_arr_s_func, "literal_arr_s")
+                          | _ -> raise (Failure ("4 not implemented typ " ^ Ast.string_of_typ typ))
+                          ) in
+                          build_call [| (build_expr table builder (Int, SLiteral(length))) ; new_local|] fname builder
+                          (* new_local *)
+
+                          | _ -> raise (Failure ("1 not implemented typ " ^ Ast.string_of_typ typ)))
       | SStrLit s    -> L.build_global_stringptr s "str_literal" builder
       | SId name    ->  
         (try 
-        let addr = lookup name table in 
+        let x = lookup name table in 
         (* load whatever is in addr to named variable *)
-        L.build_load addr name builder (* I imagine it returns name.addr *)
+        L.build_load x name builder (* I imagine it returns name.addr *)
         with Not_found -> 
           let (v, fdef) = StringMap.find name function_decls 
           in
           v (* return the function address *)
         ) 
+
+      | SArrayAccess (name, e_i) ->
+        let arr_ptr_ptr = lookup name table in  
+        let arr_ptr = L.build_load arr_ptr_ptr (name^"_v") builder in
+        let (build_call, fname) = 
+          (match typ with 
+          | Int    -> (L.build_call acc_arr_i_func, "acc_arr_i")
+          | Float  -> (L.build_call acc_arr_d_func, "acc_arr_d")
+          | Bool   -> (L.build_call acc_arr_b_func, "acc_arr_b")
+          | String -> (L.build_call acc_arr_s_func, "acc_arr_s")
+          | _ -> raise (Failure ("2 not implemented typ " ^ Ast.string_of_typ typ))
+          ) in
+          build_call [| arr_ptr ; (build_expr table builder e_i) |] fname builder
+
+      | SArrayAssign (name, e_i, e) ->
+        let arr_ptr_ptr = lookup name table in 
+        let arr_ptr = L.build_load arr_ptr_ptr name builder in
+        let (build_call, fname) = 
+          (match typ with 
+          | Arr(Int)    -> (L.build_call set_arr_i_func, "set_arr_i")
+          | Arr(Float)  -> (L.build_call set_arr_d_func, "set_arr_d")
+          | Arr(Bool)   -> (L.build_call set_arr_b_func, "set_arr_b")
+          | Arr(String) -> (L.build_call set_arr_s_func, "set_arr_s")
+          | _ -> raise (Failure ("3 not implemented typ " ^ Ast.string_of_typ typ))
+          ) in
+          build_call [| arr_ptr ; (build_expr table builder e_i) ; (build_expr table builder e)|] fname builder
 
       | SAssign (s, e) -> let e' = build_expr table builder e in
 
