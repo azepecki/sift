@@ -1,7 +1,0 @@
-def int main() {
-    arr<bool> numbers = [true, false];
-    for (int i = 0; i < len(numbers); i++) {
-		print(numbers[i]);
-	}
-    return 0;
-}

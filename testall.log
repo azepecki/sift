@@ -1,8 +1,8 @@
 test-arithmetic-int...OK
 test-array1...OK
-test-break...FAIL
-test-continue...FAIL
-test-demo-regex...FAIL
+test-break...OK
+test-continue...OK
+test-demo-regex...OK
 test-demo-similarity...OK
 test-dummy...FAIL
 test-forLoop...OK
@@ -16,7 +16,6 @@ test-logical-operators...OK
 test-match-indices...OK
 test-match-test...OK
 test-match...OK
-test-nested-array...FAIL
 test-nested-while...OK
 test-new-line...OK
 test-pipe...OK
@@ -24,7 +23,7 @@ test-similarity_index...OK
 test-str-add...OK
 test-str-eql-negative...OK
 test-str-eql...OK
-test-tokenize...FAIL
+test-tokenize...OK
 test-variable-declarations...OK
 test-while1...OK
 test-while2...OK

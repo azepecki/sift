@@ -121,16 +121,18 @@ char **word_tokenize(char *str) {
 		}
 	}
 	
-	int len = (int)(sizeof (char *) * spaces);
-	char **result = malloc(len);
+	char **result = malloc((int)(sizeof (char *) * spaces));
 	char *token = strtok(sentence, " ");
 	int i = 0;
 	while (token != NULL) {
-		result[i] = token;
+		char *word= (char *) malloc(strlen(token) + 1);
+		strcpy(word, token);
+		result[i] = word;
 		i++;
 		token = strtok(NULL, " ");
 	}
 	
+	int len = i;
 	char **arr = literal_arr_s(len, result);
 	free(sentence);
 	free(result);
