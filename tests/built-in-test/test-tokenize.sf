@@ -1,0 +1,10 @@
+def int main() {
+	
+	str big_line = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. In ornare quam viverra orci sagittis eu volutpat odio facilisis. Pharetra sit amet aliquam id diam maecenas ultricies mi. Proin sed libero enim sed faucibus turpis in eu mi. Feugiat in fermentum posuere urna nec. Arcu cursus euismod quis viverra nibh cras pulvinar mattis nunc. Aliquam id diam maecenas ultricies. Aliquet nec ullamcorper sit amet risus nullam eget felis. Nulla porttitor massa id neque. Curabitur vitae nunc sed velit dignissim sodales ut. Id porta nibh venenatis cras sed felis eget velit. Sit amet risus nullam eget felis eget. Volutpat ac tincidunt vitae semper quis lectus. Nisl purus in mollis nunc sed. Interdum velit laoreet id donec ultrices tincidunt. Dolor sit amet consectetur adipiscing elit pellentesque.";
+	arr<str> tokenized_version = word_tokenize(big_line);
+	for(int i=0; i < 10; i++) {
+		print(tokenized_version[i]);
+	}
+
+	return 0;
+}

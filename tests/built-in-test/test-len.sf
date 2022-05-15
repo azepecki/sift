@@ -1,0 +1,6 @@
+def int main() {
+	str a = "I am vengeance";
+	int n = len(a);
+	printf(n);
+	return 0;
+}
