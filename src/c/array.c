@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "array.h"
 
 char **alloc_arr_s(int len) {
     char **arr = (char **) malloc(sizeof(int) + len * sizeof(char *));

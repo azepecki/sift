@@ -245,7 +245,7 @@ in
 
   (* TODO: regex, return type, list of strings *)
   let reg_match_t : L.lltype =
-    L.function_type i32_t [| str_t; str_t |] in  
+    L.function_type (L.pointer_type str_t) [| str_t; str_t |] in  
   let reg_match_func : L.llvalue =
     L.declare_function "reg_match" reg_match_t the_module in
   
@@ -257,7 +257,7 @@ in
   
   (* TODO: match_indices, return type, list of indices *)
   let reg_match_indices_t : L.lltype =
-    L.function_type i32_t [| str_t; str_t |] in  
+    L.function_type (L.pointer_type i32_t) [| str_t; str_t |] in  
   let reg_match_indices_func : L.llvalue =
     L.declare_function "reg_match_indices" reg_match_indices_t the_module in
   

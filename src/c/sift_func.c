@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "array.h"
 
 char *str_add(char *s1, char *s2) {
     char *new = (char *) malloc(strlen(s1) + strlen(s2));
@@ -120,7 +121,8 @@ char **word_tokenize(char *str) {
 		}
 	}
 	
-	char **result = malloc (sizeof (char *) * spaces);
+	int len = (int)(sizeof (char *) * spaces);
+	char **result = malloc(len);
 	char *token = strtok(sentence, " ");
 	int i = 0;
 	while (token != NULL) {
@@ -129,6 +131,9 @@ char **word_tokenize(char *str) {
 		token = strtok(NULL, " ");
 	}
 	
+	char **arr = literal_arr_s(len, result);
 	free(sentence);
-	return result;
+	free(result);
+
+	return arr;
 }

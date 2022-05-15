@@ -1,6 +1,6 @@
 def int main() {
     
-    arr<int> numbers = match_indices("The wiiiiiiiiiild wild cat lived in a mild climate.", "(w|m)i*ld");
+    arr<int> numbers = reg_match_indices("The wiiiiiiiiiild wild cat lived in a mild climate.", "(w|m)i*ld");
     print(numbers[0]);
     print(numbers[1]);
     print(numbers[2]);

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include "array.h"
 
 /*
  * Convert infix regexp re to postfix notation.
@@ -431,8 +432,7 @@ nextstate(DState *d, int c)
 }
 
 /* Run DFA to determine whether it matches s. */
-int
-regex_match(DState *start, char *s)
+int regex_match(DState *start, char *s)
 {
 	DState *d, *next;
 	int c;
@@ -492,6 +492,7 @@ char **reg_match(char *sentence, char *exp) {
 
 	char **result = (char **) malloc (sizeof (char *) * 100);
 	int k = 0;
+
 	for(int i = 0 ; i <= n; i++) {
 		for(int j = i; j <= n; j++) {
 		
@@ -505,7 +506,10 @@ char **reg_match(char *sentence, char *exp) {
 		}
 	}
 	
-	return result;
+	int len = k;
+	char **arr = literal_arr_s(len, result);
+	free(result);
+	return arr;
 }
 
 int *reg_match_indices(char *sentence, char *exp){
@@ -520,7 +524,7 @@ int *reg_match_indices(char *sentence, char *exp){
 	l1.s = malloc(nstate*sizeof l1.s[0]);
 	l2.s = malloc(nstate*sizeof l2.s[0]);
 
-	int *result = (int *) malloc (sizeof (int) * 100);
+	int *result = (int *) malloc(sizeof(int) * 100);
 	int k = 0;
 
 	for(int i = 0 ; i < n; i++){
@@ -536,5 +540,9 @@ int *reg_match_indices(char *sentence, char *exp){
 
 		}
 	}
-	return result;
+
+	int len = k;
+	int *arr = literal_arr_i(len, result);
+	free(result);
+	return arr;
 }
