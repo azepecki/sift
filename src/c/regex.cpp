@@ -1,6 +1,7 @@
 #include <regex>
 #include <string>
 #include <stdlib.h>
+#include "array.c"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ char **match(char *sentence, char *exp) {
 		}
 	}
 	
-	return result;
+	return set_arr_s(n, result);
 }
 
 int *match_indices(char *sentence, char *exp){
