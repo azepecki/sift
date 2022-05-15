@@ -418,6 +418,8 @@ My most important takeaway from the project was probably in gaining the understa
 
 **Lama**
 
+My main takeaway from this project is learning how different components of a program language are linked together. Implementing the scanner, parse, ast,  and code generation, helped me better understand what was taught during the lecture and how these components interact with one another. 
+
 **Jose**
 
 **Rishav**
