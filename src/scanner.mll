@@ -1,11 +1,21 @@
 (* Ocamllex scanner for Sift *)
 
-{ open Parser }
+{ open Parser 
+
+let unescape s =
+Scanf.sscanf ("\"" ^ s ^ "\"") "%S%!" (fun x -> x)
+
+}
+
 
 let digit = ['0' - '9']
 let letter = ['a'-'z''A'-'Z']
 let digits = digit+
 let exponent = ['e' 'E'] ['+' '-']? digits
+let ascii = ([' '-'!' '#'-'[' ']'-'~'])
+let escape = '\\' ['\\' ''' '"' 'n' 'r' 't']
+let string = '"' ( (ascii | escape)* as s) '"'
+
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
@@ -16,7 +26,7 @@ rule token = parse
 | '}' { RBRACE }
 | '[' { LSQBRACE }
 | ']' { RSQBRACE }
-
+ 
 (* arithmetic operators *)
 | '+' { ADD }
 | '-' { SUBTRACT }
@@ -31,6 +41,7 @@ rule token = parse
 | "<=" { LEQ }
 | '<'  { LT }
 | "!=" { NEQ }
+| '\n'     { EOL }
 
 (* delimiters *)
 | ',' { COMMA }
@@ -40,6 +51,10 @@ rule token = parse
 
 (* assignment *)
 | "=" { ASSIGN }
+| "+=" { ADDASSIGN }
+| "-=" { SUBASSIGN }
+| "*=" { MULASSIGN }
+| "/=" { DIVASSIGN }
 | "++" { INCREMENT }
 | "--" { DECREMENT }
 
@@ -91,9 +106,13 @@ rule token = parse
 | "str"      { STRING }
 | "sym"      { SYMBOL }
 
+| ("<" ("stdin"|"STDIN"|"in")? ">")    { STDIN }
+| ("<" ("stdout"|"STDOUT"|"out") ">")  { STDOUT }
+
 (* identifiers and literals *)
 | "true"                                { BLIT(true)  }
 | "false"                               { BLIT(false) }
+| string            { STRING_LITERAL( (unescape s) ) }
 | digits as lit                         { INT_LITERAL(int_of_string lit) }
 | '"' [ ^ '"' ]* '"' as lit             { STRING_LITERAL(if (String.length lit) = 2 then "" else String.sub lit (1) (String.length lit-2))} 
 | (digits '.' digit* exponent? 

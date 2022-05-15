@@ -1,0 +1,17 @@
+def int main() {
+	str regex =  "rk(0|1|2|3|4|5|6|7|8|9)*@columbia.edu";
+	str valid_email = "rk3142@columbia.edu";
+	str invalid_email = "rk3142";
+        
+
+	if (reg_test(valid_email, regex)) {
+		str result_str = str_add(valid_email, " is valid");
+		print(result_str);
+	} else {
+		print((str_add(valid_email, " is an invalid website url")));
+	}
+
+
+	return 0;
+
+}

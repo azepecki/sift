@@ -66,7 +66,7 @@ Sift files are signified with the `.sf` extention. The entry point of a sift pro
 
 **Data Types** 
 
-Sift consists of several key primitive data types: `int`, `float`, `char`, `str`, and `bool`. 
+Sift consists of several key primitive data types: `int`, `float`, `str`, and `bool`. 
 
 __For strings, we also implemented additional string operations since Sift is a language meant for text-processing__.
 
@@ -82,9 +82,16 @@ def int main() {
 }
 ```
 
-**Comments**
+Alternatively, one can use the + operator as shorthand:
 
-Comments begin with `/*` and close with `*/`; they cannot be nested and may not appear within literals. Like whitespaces, comments are ignored.
+```js
+def int main() {
+  print("ap" + "ple");
+  return 0;
+}
+```
+
+Additionally, we support arrays of primitives, given by `arr<t>`, where `t`  is one of the primitive data types.
 
 **Identifiers** 
 
@@ -98,11 +105,11 @@ int a = 3;
 
 **Operators: Arithmetic**
 
-The following arithmetic operators are available: `+`, `-`, `/`, `*`, and `%`. These operators function in the same way as they would in C. 
+The following arithmetic operators are available: `+`, `-`, `/`, `*`, and `%`. These operators function in the same way as they would in C, with + also working for string concatenation. 
 
 **Operators: Relational**
 
-The following relational operators are available: `>`, `<`, `==`, `!=`, `<=`, `>=`. These operators function in the same way as they would in C. 
+The following relational operators are available: `>`, `<`, `==`, `!=`, `<=`, `>=`. These operators function in the same way as they would in C, with == also working for string equality. 
 
 **Operators: Logical**
 
@@ -115,7 +122,7 @@ The following functionality for control flow is available:
 
 **Function Calls**
 
-In Sift, functions are declared with the keyword `def`. The function should have a name, followed by it's return type, and a consequent block of code to be executed when the function is called.
+In Sift, functions are declared with the keyword `def`. The function should have a return type, followed by its name, and a consequent block of code to be executed when the function is called.
 A function can take zero, one or more arguments and return an expression of a certain type; the retuned type should be declared in the function header. 
 
 **Syntax:**
@@ -150,7 +157,7 @@ In the above example, 2 is provided as an input to the function func that has on
 
 **Regular Expressions** 
 
-We have implemented built-in regex functionality as a part of Sift based on Thompson's NFA expressions(https://swtch.com/~rsc/regexp/). There are three regex functionalities supported in test. The regex doesn't support escape characters as of now.
+We have implemented built-in regex functionality as a part of Sift based on Thompson's NFA expressions(https://swtch.com/~rsc/regexp/). There are three regex functionalities supported in test. The regex doesn't support escaped regex characters ('(', ')', '|', '*', '+', '?') as of now.
 
 ```
 bool reg_test(string, regex);
@@ -163,8 +170,6 @@ The reg_test method checks if the string matches the given regex expression with
 The reg_match method checks for all the instances where the regex expression matches with the string provided. It returns an array of all the words that match with the given regex expression.
 
 The reg_match_indices method checks for all the instances where the regex expression matches with the string provided. It returns an array of starting indices of all the text that match with the given regex expression.
-
-Note: As of now, arrays aren't implemented and thus methods reg_match and reg_match_indices return values are not compatible with the language.
 
 **NLP Features** 
 
@@ -187,8 +192,6 @@ def int main() {
 }
 
 ```
-
-Note: As of now, arrays aren't implemented and thus methods word_tokenize return values are not compatible with the language.
 
 ##  3. <a name='ArchitecturalDesign'></a>Architectural Design 
 
@@ -591,7 +594,7 @@ My main takeaway from this project is learning how different components of a pro
 My main takeaway from this project was to learn how various components of a compiler are integrated and how each stage has a single responsible principle. Learning how we could develop our features in C and use them in sift and integrate multiple languages was also interesting. I also think that testing at each stage is very important to have a good code quality and also ensures correctness.
 
 **José**
-
+This was an adventure. Being involved at all steps– from scanner all the way to ir generation –one starts to appreciate the sound design principle of isolating each phase of the compiler, treating it as a "function" of sorts (quite literally, in the case of a compiler written in OCaml!). This way, one has less to edit whenever a new feature is to be implemented, since all the phases are so decoupled. This ocurred many, many times. I'd say my main takeaway was definitely the ability to write big, yet modularized functional programs. Besides learning llvm, of course (hint: C -> llvm is almost a direct translation). :) 
 
 
 ### Advice

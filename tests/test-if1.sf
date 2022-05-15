@@ -1,0 +1,9 @@
+def int main() { 
+    if(true) {
+        print(20);
+    }
+    if(false) {
+        print("hahahahaha");
+    }
+    return 0;
+}

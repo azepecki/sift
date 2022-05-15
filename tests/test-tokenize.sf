@@ -1,0 +1,10 @@
+def int main() {
+	
+	str big_line = "Lorem ipsum dolor sit amet";
+	arr<str> tokenized_version = word_tokenize(big_line);
+	for(int i=0; i < len(tokenized_version) ; i++) {
+		print(tokenized_version[i]);
+	}
+
+	return 0;
+}

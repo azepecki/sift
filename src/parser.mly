@@ -6,7 +6,7 @@
 /* Arithmetic Operators */
 %token ADD SUBTRACT MULTIPLY DIVIDE MOD
 /* Relational Operators */
-%token EQ LEQ GT GEQ NEQ LT
+%token EQ LEQ GT GEQ NEQ LT EOL
 /* Logical Operators */
 %token AND OR NOT
 /* Features */
@@ -30,7 +30,9 @@
 %token <string> STRING_LITERAL
 %token <bool> BLIT
 %token <string> ID
+%token STDIN STDOUT
 %token INCREMENT DECREMENT
+%token ADDASSIGN SUBASSIGN MULASSIGN DIVASSIGN
 %token EOF
 
 
@@ -45,7 +47,7 @@
 %start program
 %type <Ast.program> program
 
-%right ASSIGN
+%right ASSIGN SUBASSIGN ADDASSIGN MULASSIGN DIVASSIGN
 %left PIPE
 %right ANON
 %left OR 
@@ -82,11 +84,11 @@ typ:
   | FLOAT           { Float }
   | STRING          { String }
   | ARRAY LT typ GT { Arr($3) }
-  | FUNCTION LT typ_list GT  { Fun ($3) }
+//   | FUNCTION LT typ_list GT  { Fun ($3) }
 
-typ_list:
-  | typ {[$1]}
-  | typ COMMA typ_list {$1 :: $3}
+// typ_list:
+//   | typ {[$1]}
+//   | typ COMMA typ_list {$1 :: $3}
 
 /* fdecl */
 fdecl:
@@ -169,7 +171,7 @@ expr:
   /* nesting */
    LPAREN expr RPAREN  { $2                     }
   /* literals and id */
-  | INT_LITERAL        { Literal($1)            }
+  | INT_LITERAL         { Literal($1)            }
   | STRING_LITERAL      { StrLit($1)             }
   | FLOAT_LITERAL       { FloatLit($1)           }
   | BLIT                { BoolLit($1)            }
@@ -191,26 +193,36 @@ expr:
   | expr AND    expr    { Binop($1, And,   $3)   }
   | expr OR     expr    { Binop($1, Or,    $3)   }
   | NOT expr            { Unop(Not, $2)          }
+  | SUBTRACT expr       { Unop(Neg, $2)          }
   /* assignment */
   | ID ASSIGN expr      { Assign($1, $3)         }
-  | ID INCREMENT          { Assign($1, Binop(Id($1), Add, Literal(1)))}
-  | ID DECREMENT          { Assign($1, Binop(Id($1), Sub, Literal(1)))}
+  | ID ADDASSIGN expr   { Assign($1, Binop(Id($1), Add, $3))}
+  | ID SUBASSIGN expr   { Assign($1, Binop(Id($1), Sub, $3))}
+  | ID MULASSIGN expr   { Assign($1, Binop(Id($1), Mul, $3))}
+  | ID DIVASSIGN expr   { Assign($1, Binop(Id($1), Div, $3))}
+  | ID INCREMENT        { Assign($1, Binop(Id($1), Add, Literal(1)))}
+  | ID DECREMENT        { Assign($1, Binop(Id($1), Sub, Literal(1)))}
 
   /* id call */
   | ID LPAREN args_opt RPAREN  { Call ($1, $3)   }
-  /* PIPING (alternate id call)*/
-  | piping              { $1 }
+  | STDIN                      { Stdin(Literal(0))}
+  | STDIN LPAREN expr RPAREN   { Stdin($3) }
+  | STDOUT LPAREN expr RPAREN  { Stdout($3) }
 
   /* arrays! */
   | LSQBRACE args_opt RSQBRACE { ArrayLit($2) }
   | ID LSQBRACE expr RSQBRACE  { ArrayAccess($1, $3) }
   | ID LSQBRACE expr RSQBRACE ASSIGN expr  { ArrayAssign($1, $3, $6) }
 
+  /* PIPING (alternate id call)*/
+  | piping              { $1 }
 
 piping:
   /* PIPING (alternate id call)*/
     expr PIPE ID LPAREN args_opt RPAREN  { Call ($3, $1::$5) }
   | expr PIPE ID                         { Call ($3, [$1]) }
+  | expr PIPE STDIN                      { Stdout($1) }
+  | expr PIPE STDOUT                     { Stdout($1) }
 
 /* args_opt*/
 args_opt:

@@ -8,38 +8,31 @@
 #	Suryanarayana V Akella  sa4084
 #	Rishav Kumar            rk3142
 
-# default:
-# 	ocamlbuild run.native
-
-# run:
-# 	./run.native
-
-# clean: 
-# 	rm -f run.native
-# 	rm -r _build
-
-
-# .PHONY: test
-# test: all generate.sh test.sh
-# 	./generate.sh ./tests/*-test/test-*.tl
-# 	./test.sh ./tests/*-test/test-*.tl
-# 	./generate.sh ./tests/fails/fail-*.tl
 
 .PHONY: all
 all: sift.native
 
 sift.native:
-	opam config exec -- \
-	ocamlbuild -I src -use-ocamlfind sift.native
+	opam  exec -- \
+	ocamlbuild -I src -use-ocamlfind -pkgs llvm,llvm.analysis sift.native
+	chmod 777 sift.native
+	gcc -c ./src/c/sift_func.c ./src/c/similarity.c ./src/c/regex.c ./src/c/file_ops.c ./src/c/array.c ./src/c/array.h
+	chmod 777 sift_func.o similarity.o regex.o file_ops.o array.o
+
+.PHONY: dummy
+dummy: 
+	./generate.sh ./tests/test-dummy.sf
+
+.PHONY: test
+test: all generate.sh
+	./generate.sh ./tests/test-*.sf
 
 .PHONY: clean
 clean: cleandir
 	rm -rf *.ll *.out *.s *.diff *.exe *.err
 	rm -rf sift.native
 	rm -rf _build
-	rm -rf pe.o
-
+	rm -f *.o *.output
 cleandir :
 	@if [ -d build ]; then make -C build clean; \
 	else echo "build not exist"; fi
-
