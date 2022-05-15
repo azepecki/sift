@@ -581,16 +581,6 @@ Whoever wrote LLVM, deserves Turing Award. You can write a programming language 
 On the day of hello world submission, I had an interview where the interviewer while detailing about their tech stack, discussed their in-house programming langauge, and I was like how could have you come up with designing parser of such a flexible language.
 At the beginning of the course, my belief was that I am never going to make a programming language,so why is this course mandatory? There are so many new languages, open-sourced. But now, I feel it builds you as a software engineer. You may not use it, but you will certainly carry the experience.
 
-### Advice
-
-**Anne**
-
-The biggest piece of advice would be to try to implement each stage as soon as the relevant lecture is covered. We definitely found it useful to have for the most part completed the scanner/parser by the Hello World milestone. Working on things in stages makes it so that the work can build on top of each stage. 
-
-**Rishav**
-
-The lone wolf dies, but the pack survives. It would have been great if the deadline was same for all the class members as the class is curved.
-
 **Lama**
 
 My main takeaway from this project is learning how different components of a program language are linked together. Implementing the scanner, parse, ast,  and code generation, helped me better understand what was taught during the lecture and how these components interact with one another. 
@@ -601,3 +591,13 @@ My main takeaway from this project is learning how different components of a pro
 My main takeaway from this project was to learn how various components of a compiler are integrated and how each stage has a single responsible principle. Learning how we could develop our features in C and use them in sift and integrate multiple languages was also interesting. I also think that testing at each stage is very important to have a good code quality and also ensures correctness.
 
 **José**
+
+
+
+### Advice
+
+The biggest piece of advice would be to try to implement each stage as soon as the relevant lecture is covered. We definitely found it useful to have for the most part completed the scanner/parser by the Hello World milestone. Working on things in stages makes it so that the work can build on top of each stage. 
+
+
+The lone wolf dies, but the pack survives. It would have been great if the deadline was same for all the class members as the class is curved.
+
