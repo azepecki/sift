@@ -93,7 +93,7 @@ in
 
   (* ARRAYS METHODS (to facilitate implementation of array length) *)
   (* allocation *)
-  let alloc_arr_s_t : L.lltype =
+  (* let alloc_arr_s_t : L.lltype =
     L.function_type (L.pointer_type str_t) [| i32_t |] in  
   let alloc_arr_s_func : L.llvalue =
     L.declare_function "alloc_arr_s" alloc_arr_s_t the_module in
@@ -111,7 +111,7 @@ in
   let alloc_arr_b_t : L.lltype =
     L.function_type (L.pointer_type i1_t) [| i32_t |] in  
   let alloc_arr_b_func : L.llvalue =
-    L.declare_function "alloc_arr_b" alloc_arr_b_t the_module in
+    L.declare_function "alloc_arr_b" alloc_arr_b_t the_module in *)
 
   (* access *)
   let acc_arr_s_t : L.lltype =
@@ -321,7 +321,17 @@ in
       | SArrayLit lst ->  (match typ with Arr(sub_typ) -> (* FIX!!! *)
                           let length = (List.length lst) in (* build_expr table builder SLiteral *)
                           let arr_type = L.array_type (ltype_of_typ sub_typ) length in
-                          let c = L.const_array arr_type (Array.of_list (List.map (build_expr table builder) lst)) in
+
+                          (* get an array constant to start with *)
+                          let constant_t = (match sub_typ with 
+                          | Int -> i32_t 
+                          | Bool -> i1_t 
+                          | String -> str_t  
+                          | Float -> float_t 
+                          | _ -> raise (Error "arrays not implemented") 
+                          ) in
+                          let c = L.const_array constant_t (Array.of_list (List.map (build_expr table builder) lst)) in
+
                           (* Sets name of the c value *)
                           (* L.set_value_name "tmp_arr" c';  *)
                           (* Allocates var of correct type with given name, address discarded *)
@@ -507,9 +517,6 @@ in
         let result = f ^ "_result" in
         L.build_call fdef (Array.of_list llargs) result builder
         )
-
-      
-      | _ -> raise (Error "arrays not implemented") 
      
 
     in
