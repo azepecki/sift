@@ -26,6 +26,5 @@
        | Sast    -> print_string (Sast.string_of_sprogram (sscript, sfunctions))
        | LLVM_IR -> print_string (Llvm.string_of_llmodule (Irgen.translate (sscript, sfunctions)))
        | Compile -> let m = Irgen.translate (sscript, sfunctions) in
-     (* Llvm_analysis.assert_valid_module m; *)
-     print_string (Llvm.string_of_llmodule m)
-   
+                    Llvm_analysis.assert_valid_module m;
+                    print_string (Llvm.string_of_llmodule m) 

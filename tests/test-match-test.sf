@@ -1,0 +1,4 @@
+def int main() {
+    print(reg_test("hello", "h(i|e)llo"));
+    return 0;
+}

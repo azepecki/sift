@@ -1,0 +1,8 @@
+def int func(int x, int y){
+     return x+y;
+}
+
+def int main(){
+    print(func(3,4));
+    return 0;
+}

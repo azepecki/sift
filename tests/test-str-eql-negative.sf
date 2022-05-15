@@ -1,0 +1,14 @@
+def int main() {
+
+	str a = "apple";
+	str b = "mango";
+    bool is_equal = str_eql(a, b);
+
+	if (is_equal) {
+		print("Equal");
+	} else {
+		print("Not equal");
+	}
+	
+	return 0;
+}

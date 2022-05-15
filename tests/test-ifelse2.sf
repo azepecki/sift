@@ -1,0 +1,8 @@
+def int main() { 
+    if(false){
+        print("Inside if");
+    } else {
+        print("Inside else");
+    }
+    return 0;
+}

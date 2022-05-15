@@ -1,0 +1,7 @@
+def int main() {
+	str a = "ap";
+	str b = "ple";
+	str c = str_add(a, b);
+	c |> <out>;
+	return 0;
+}

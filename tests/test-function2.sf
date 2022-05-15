@@ -1,0 +1,7 @@
+def int func(int x) => x+1;
+
+
+def int main(){
+    print(func(3));
+    return 0;
+}
